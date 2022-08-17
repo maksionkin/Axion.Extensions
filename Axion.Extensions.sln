@@ -1,0 +1,72 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32602.215
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A1B6D571-E229-4ABC-846B-5CEBD43E0757}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		Axion.png = Axion.png
+		Directory.Build.props = Directory.Build.props
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BF827C08-FF9A-49DE-B022-44D6F5986A43}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Axion.Extensions.Polly.Caching.Serialization.Http", "Axion.Extensions.Polly.Caching.Serialization.Http\src\Axion.Extensions.Polly.Caching.Serialization.Http.csproj", "{176EBABF-E909-4919-963E-E31F3343C348}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7D10A7EC-1FC2-4955-BA68-C36CEEACB6EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Axion.Extensions.Polly.Caching.Serialization.Http.Tests", "Axion.Extensions.Polly.Caching.Serialization.Http\tests\Axion.Extensions.Polly.Caching.Serialization.Http.Tests.csproj", "{3E76253B-6B4B-4D21-BFBA-5B877FB98C32}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Axion.Extensions.Caching.Azure.Storage.Blobs", "Axion.Extensions.Caching.Azure.Storage.Blobs\src\Axion.Extensions.Caching.Azure.Storage.Blobs.csproj", "{3FE8AAF3-BC03-4888-9104-38FFFC4C0520}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Axion.Extensions.Caching.Azure.Storage.Blobs.Tests", "Axion.Extensions.Caching.Azure.Storage.Blobs\tests\Axion.Extensions.Caching.Azure.Storage.Blobs.Tests\Axion.Extensions.Caching.Azure.Storage.Blobs.Tests.csproj", "{934733DF-8644-47A6-918E-F4A427CBC8A3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{D0A6752E-1017-4DCE-86A5-9F800DEB8C9C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{C374690D-455C-4F99-A11D-599514E0F623}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{176EBABF-E909-4919-963E-E31F3343C348}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{176EBABF-E909-4919-963E-E31F3343C348}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{176EBABF-E909-4919-963E-E31F3343C348}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{176EBABF-E909-4919-963E-E31F3343C348}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E76253B-6B4B-4D21-BFBA-5B877FB98C32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E76253B-6B4B-4D21-BFBA-5B877FB98C32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E76253B-6B4B-4D21-BFBA-5B877FB98C32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E76253B-6B4B-4D21-BFBA-5B877FB98C32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FE8AAF3-BC03-4888-9104-38FFFC4C0520}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FE8AAF3-BC03-4888-9104-38FFFC4C0520}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FE8AAF3-BC03-4888-9104-38FFFC4C0520}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FE8AAF3-BC03-4888-9104-38FFFC4C0520}.Release|Any CPU.Build.0 = Release|Any CPU
+		{934733DF-8644-47A6-918E-F4A427CBC8A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{934733DF-8644-47A6-918E-F4A427CBC8A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{934733DF-8644-47A6-918E-F4A427CBC8A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{934733DF-8644-47A6-918E-F4A427CBC8A3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{176EBABF-E909-4919-963E-E31F3343C348} = {BF827C08-FF9A-49DE-B022-44D6F5986A43}
+		{3E76253B-6B4B-4D21-BFBA-5B877FB98C32} = {7D10A7EC-1FC2-4955-BA68-C36CEEACB6EA}
+		{3FE8AAF3-BC03-4888-9104-38FFFC4C0520} = {BF827C08-FF9A-49DE-B022-44D6F5986A43}
+		{934733DF-8644-47A6-918E-F4A427CBC8A3} = {7D10A7EC-1FC2-4955-BA68-C36CEEACB6EA}
+		{D0A6752E-1017-4DCE-86A5-9F800DEB8C9C} = {A1B6D571-E229-4ABC-846B-5CEBD43E0757}
+		{C374690D-455C-4F99-A11D-599514E0F623} = {D0A6752E-1017-4DCE-86A5-9F800DEB8C9C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D49421C8-BCAB-41BA-B981-4B5EDF125C41}
+	EndGlobalSection
+EndGlobal

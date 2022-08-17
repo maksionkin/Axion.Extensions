@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(NetCoreAppCurrent);$(NetCoreAppMinimum);netstandard2.0;$(NetFrameworkMinimum)</TargetFrameworks>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <AssemblyTitle>$(AssemblyName)</AssemblyTitle>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <VersionPrefix>$(AssemblyVersion)</VersionPrefix>
+    <Description>
+      A plugin for the Polly Cache policy to serialize/deserialize System.Net.Http.HttpResponseMessage. Can be used with Microsoft.Extensions.Http.PolicyHttpMessageHandler.
+    </Description>
+    <PackageDescription>$(Description)</PackageDescription>
+    <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
+    <PackageTags>PolicyHttpMessageHandler;Caching;Polly;HttpResponseMessage;CachePolicy</PackageTags>
+    <RepositoryUrl>https://github.com/maksionkin/Axion.Extensions/tree/main/Axion.Extensions.Polly.Caching.Serialization.Http/src</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/maksionkin/Axion.Extensions/</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackRelease>true</PackRelease>
+    <PackageIcon>Axion.png</PackageIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="Polly" Version="7.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Axion.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="README.nuget.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>
