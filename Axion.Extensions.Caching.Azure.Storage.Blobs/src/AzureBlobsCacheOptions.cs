@@ -22,30 +22,8 @@ public class AzureBlobsCacheOptions : IOptions<AzureBlobsCacheOptions>
         getBlobContainerClient = DefaultGetBlobContainerClient;
 
     /// <summary>
-    /// A prexix for blobs created. 
+    /// A prefix for blobs created. 
     /// </summary>
-
-    /* Unmerged change from project 'Axion.Extensions.Caching.Azure.Storage.Blobs (net6.0)'
-    Before:
-        public string? BlobPrefix { get; set; }
-
-        /// <summary>
-    After:
-        public string? BlobPrefix { get; set; }
-
-        /// <summary>
-    */
-
-    /* Unmerged change from project 'Axion.Extensions.Caching.Azure.Storage.Blobs (net462)'
-    Before:
-        public string? BlobPrefix { get; set; }
-
-        /// <summary>
-    After:
-        public string? BlobPrefix { get; set; }
-
-        /// <summary>
-    */
     public string? BlobPrefix { get; set; }
 
     /// <summary>

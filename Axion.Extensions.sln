@@ -32,6 +32,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\build.yml = .github\workflows\build.yml
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Axion.Extensions.Configuration.Kusto", "Axion.Extensions.Configuration.Kusto\src\Axion.Extensions.Configuration.Kusto.csproj", "{20C8B9A6-7BB0-4863-8C9E-7F36FADDCDFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,10 @@ Global
 		{934733DF-8644-47A6-918E-F4A427CBC8A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{934733DF-8644-47A6-918E-F4A427CBC8A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{934733DF-8644-47A6-918E-F4A427CBC8A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20C8B9A6-7BB0-4863-8C9E-7F36FADDCDFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20C8B9A6-7BB0-4863-8C9E-7F36FADDCDFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20C8B9A6-7BB0-4863-8C9E-7F36FADDCDFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20C8B9A6-7BB0-4863-8C9E-7F36FADDCDFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,6 +71,7 @@ Global
 		{934733DF-8644-47A6-918E-F4A427CBC8A3} = {7D10A7EC-1FC2-4955-BA68-C36CEEACB6EA}
 		{D0A6752E-1017-4DCE-86A5-9F800DEB8C9C} = {A1B6D571-E229-4ABC-846B-5CEBD43E0757}
 		{C374690D-455C-4F99-A11D-599514E0F623} = {D0A6752E-1017-4DCE-86A5-9F800DEB8C9C}
+		{20C8B9A6-7BB0-4863-8C9E-7F36FADDCDFB} = {BF827C08-FF9A-49DE-B022-44D6F5986A43}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D49421C8-BCAB-41BA-B981-4B5EDF125C41}

@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(NetCoreAppCurrent);$(NetCoreAppMinimum);netstandard2.0;$(NetFrameworkMinimum)</TargetFrameworks>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <AssemblyTitle>$(AssemblyName)</AssemblyTitle>
+    <AssemblyVersion>1.0.1</AssemblyVersion>
+    <FileVersion>1.0.1</FileVersion>
+    <VersionPrefix>$(AssemblyVersion)-preview.1</VersionPrefix>
+    <Description>
+      Configuration provider implementation based on Kusto query result.
+    </Description>
+    <PackageDescription>$(Description)</PackageDescription>
+    <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
+    <PackageTags>Configuration;ConfigurationProvider;IConfigurationProvider;Configuration Provider;Kusto</PackageTags>
+    <RepositoryUrl>https://github.com/maksionkin/Axion.Extensions/tree/main/$(AssemblyName)/src</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/maksionkin/Axion.Extensions/</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackRelease>true</PackRelease>
+    <PackageIcon>Axion.png</PackageIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Kusto.Data" Version="11.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Axion.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="README.nuget.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>

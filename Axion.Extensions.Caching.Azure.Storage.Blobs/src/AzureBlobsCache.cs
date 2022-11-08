@@ -129,7 +129,7 @@ public class AzureBlobsCache : IDistributedCache, IDisposable
             }
         }
 
-        switch (path[path.Length - 1])
+        switch (path[^1])
         {
             case '/':
             case '.':
