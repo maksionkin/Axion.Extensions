@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Axion.Extensions.Caching.Azure.Storage.Blobs.csproj" />
+    <ProjectReference Include="..\src\Axion.Extensions.Caching.Azure.Storage.Blobs.csproj" />
   </ItemGroup>
 
 </Project>

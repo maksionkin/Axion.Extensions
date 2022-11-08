@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Axion.Extensions.Polly.Cach
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Axion.Extensions.Caching.Azure.Storage.Blobs", "Axion.Extensions.Caching.Azure.Storage.Blobs\src\Axion.Extensions.Caching.Azure.Storage.Blobs.csproj", "{3FE8AAF3-BC03-4888-9104-38FFFC4C0520}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Axion.Extensions.Caching.Azure.Storage.Blobs.Tests", "Axion.Extensions.Caching.Azure.Storage.Blobs\tests\Axion.Extensions.Caching.Azure.Storage.Blobs.Tests\Axion.Extensions.Caching.Azure.Storage.Blobs.Tests.csproj", "{934733DF-8644-47A6-918E-F4A427CBC8A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Axion.Extensions.Caching.Azure.Storage.Blobs.Tests", "Axion.Extensions.Caching.Azure.Storage.Blobs\tests\Axion.Extensions.Caching.Azure.Storage.Blobs.Tests.csproj", "{934733DF-8644-47A6-918E-F4A427CBC8A3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{D0A6752E-1017-4DCE-86A5-9F800DEB8C9C}"
 EndProject

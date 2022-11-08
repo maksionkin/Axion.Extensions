@@ -13,7 +13,6 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-    <DebugType>embedded</DebugType>
     <EnablePackageValidation>true</EnablePackageValidation>
   </PropertyGroup>
 
