@@ -3,10 +3,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Kusto.Cloud.Platform.Data;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Axion.Extensions.Configuration;
 
@@ -57,14 +62,35 @@ public class KustoConfigurationProvider : ConfigurationProvider, IDisposable
     /// <inheritdoc/>
     public override void Load()
     {
-        var data = new Dictionary<string, string>();
+        using var memoryStream = new MemoryStream();
+        {
+            using var textWriter = new StreamWriter(memoryStream, Encoding.UTF8, 8192, true);
+            using var jsonWriter = new JsonTextWriter(textWriter) { AutoCompleteOnClose = true, CloseOutput = false, Formatting = Formatting.None};
 
-        using var provider = kustoConfigurationSource.GetCslQueryProvider();
-        using var dataReader = provider.ExecuteQuery(kustoConfigurationSource.Query);
+            foreach (var part in kustoConfigurationSource.KeyPrefix.Split(':'))
+            {
+                jsonWriter.WriteStartObject();
+                jsonWriter.WritePropertyName(part);
+            }
 
-        data.Add(kustoConfigurationSource.KeyPrefix, dataReader.ToJObjects());
+            jsonWriter.WriteStartArray();
 
-        Data = data;
+            using var provider = kustoConfigurationSource.GetCslQueryProvider();
+            using var dataReader = provider.ExecuteQuery(kustoConfigurationSource.Query);
+
+            foreach (var jobject in dataReader.ToJObjects())
+            {
+                using var reader = jobject.CreateReader();
+                jsonWriter.WriteToken(reader, true);
+            }
+        }
+
+        memoryStream.Position = 0;
+
+        var jsonConfigurationProvider = new JsonStreamConfigurationProviderEx(memoryStream);
+        jsonConfigurationProvider.Load(memoryStream);
+
+        Data = jsonConfigurationProvider.GetData();
 
         OnReload();
     }
@@ -93,5 +119,15 @@ public class KustoConfigurationProvider : ConfigurationProvider, IDisposable
     {
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
+    }
+
+    class JsonStreamConfigurationProviderEx : JsonStreamConfigurationProvider
+    {
+        public JsonStreamConfigurationProviderEx(Stream stream)
+            : base(new JsonStreamConfigurationSource { Stream = stream })
+        { }
+
+        public IDictionary<string, string?> GetData() =>
+            Data;
     }
 }

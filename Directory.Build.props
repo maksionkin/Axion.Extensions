@@ -4,7 +4,7 @@
     <EnableDefaultItems>true</EnableDefaultItems>
     <LangVersion>latest</LangVersion>
 
-    <!--NetCoreAppCurrent>net7.0</NetCoreAppCurrent-->
+    <NetCoreAppCurrent>net7.0</NetCoreAppCurrent>
     <NetCoreAppMinimum>net6.0</NetCoreAppMinimum>
     <NetFrameworkMinimum>net462</NetFrameworkMinimum>
 
@@ -14,7 +14,9 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <EnablePackageValidation>true</EnablePackageValidation>
-  </PropertyGroup>
+    <AssemblyVersion>7.0.0</AssemblyVersion>
+    <FileVersion>7.0.0</FileVersion>
+ </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Dawn.Guard" Version="1.12.0" />

@@ -16,8 +16,6 @@
 
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <AssemblyTitle>$(AssemblyName)</AssemblyTitle>
-    <AssemblyVersion>1.0.1</AssemblyVersion>
-    <FileVersion>1.0.1</FileVersion>
     <VersionPrefix>$(AssemblyVersion)</VersionPrefix>
     <Description>
       A plugin for the Polly Cache policy to serialize/deserialize System.Net.Http.HttpResponseMessage. Can be used with Microsoft.Extensions.Http.PolicyHttpMessageHandler.

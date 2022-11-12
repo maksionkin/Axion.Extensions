@@ -39,18 +39,18 @@ public class KustoConfigurationSource : IConfigurationSource
     /// <summary>
     /// A prefix for configuration keys. 
     /// </summary>
-    public string? KeyPrefix { get; init; }
+    public string KeyPrefix { get; set; } = "Value";
 
 
     /// <summary>
     /// The periodic interval to refresh Kusto configuration. Default is 30 minutes.
     /// </summary>
-    public TimeSpan RefreshInterval { get; init; } = TimeSpan.FromMinutes(30);
+    public TimeSpan RefreshInterval { get; set; } = TimeSpan.FromMinutes(30);
 
     /// <summary>
     /// <see langword="true"> if periodic refresh is disabled.</see>
     /// </summary>
-    public bool DisablePeriodicRefresh { get; init; }
+    public bool DisablePeriodicRefresh { get; set; }
 
     /// <summary>
     /// The query to the Kusto cluster.

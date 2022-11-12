@@ -16,9 +16,7 @@
 
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <AssemblyTitle>$(AssemblyName)</AssemblyTitle>
-    <AssemblyVersion>1.0.1</AssemblyVersion>
-    <FileVersion>1.0.1</FileVersion>
-    <VersionPrefix>$(AssemblyVersion)-preview.1</VersionPrefix>
+    <VersionPrefix>$(AssemblyVersion)</VersionPrefix>
     <Description>
       Configuration provider implementation based on Kusto query result.
     </Description>
@@ -33,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Kusto.Data" Version="11.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>

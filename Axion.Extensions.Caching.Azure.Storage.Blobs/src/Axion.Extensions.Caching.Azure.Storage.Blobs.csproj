@@ -16,8 +16,6 @@
 
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <AssemblyTitle>$(AssemblyName)</AssemblyTitle>
-    <AssemblyVersion>1.0.1</AssemblyVersion>
-    <FileVersion>1.0.1</FileVersion>
     <VersionPrefix>$(AssemblyVersion)</VersionPrefix>
     <Description>
       Distributed cache implementation using Azure Storage Blobs.
@@ -34,9 +32,9 @@
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.9.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Axion.png">
