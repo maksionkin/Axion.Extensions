@@ -315,7 +315,7 @@ public class AzureBlobsCache : IDistributedCache, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    struct CacheEntryMetadata
+    readonly struct CacheEntryMetadata
     {
         public CacheEntryMetadata(DateTimeOffset? absoluteExpiration, TimeSpan? slidingExpiration, DateTimeOffset lastAccessed)
         {
