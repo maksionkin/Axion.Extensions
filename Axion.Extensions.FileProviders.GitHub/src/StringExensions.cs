@@ -36,7 +36,7 @@ static class StringExensions
         else
         {
             var result = new StringBuilder(value!.Length);
-            var lastNotSeparator = -1;
+            var lastNotSeparator = 0;
             var lastCharIsSeparator = true; // we trim starting separators 
 
             foreach (var c in value)
