@@ -45,7 +45,7 @@ public class GitHubFileProviderTests
             var subpath = toProcess.Pop();
 
             TestContext.WriteLine($"Processing {subpath}.");
-
+         
             var phisycals = physicalProvider.GetDirectoryContents(subpath).ToDictionary(file => file.Name);
 
             foreach (var gitHubItem in gitHubProvider.GetDirectoryContents(subpath))

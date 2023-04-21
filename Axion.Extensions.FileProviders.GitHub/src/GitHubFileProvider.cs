@@ -95,10 +95,10 @@ public class GitHubFileProvider : IFileProvider
             : basePath + '/' + subpath;
     }
 
-    record struct GitHubProperties(GitHubClient Client, string Owner, string Repo, string? Reference)
+    record struct GitHubProperties(GitHubClient Client, string Owner, string Repo, string? Reference, bool SkipLoadingLastModified)
     {
         public GitHubProperties(GitHubFileProviderOptions options)
-            : this(options.GetGitHubClient(), Guard.Argument(options.Owner!).NotNull(), Guard.Argument(options.Name!).NotNull(), options.Reference)
+            : this(options.GetGitHubClient(), Guard.Argument(options.Owner!).NotNull(), Guard.Argument(options.Name!).NotNull(), options.Reference, options.SkipLoadingLastModified)
         { }
         public GitHubProperties(IOptions<GitHubFileProviderOptions> options)
              : this(options.Value)
@@ -146,31 +146,40 @@ public class GitHubFileProvider : IFileProvider
             this.properties = properties;
             this.content = content;
 
-            try
+            if (properties.SkipLoadingLastModified)
             {
-                var commit = properties.RepositoriesClient.Commit.GetAll(
-                        properties.Owner,
-                        properties.Repo,
-                        new()
-                        {
-                            Path = content.Path,
-                            Sha = properties.Reference
-                        },
-                        new()
-                        {
-                            PageSize = 1
-                        })
-                    .Result[0];
+                sha = properties.Reference;
 
-                LastModified = commit.Commit.Committer.Date;
-
-                sha = commit.Sha;
-
-                Exists = true;
+                LastModified = DateTimeOffset.UtcNow;
             }
-            catch (NotFoundException)
+            else
             {
-                Exists = false;
+                try
+                {
+                    var commit = properties.RepositoriesClient.Commit.GetAll(
+                            properties.Owner,
+                            properties.Repo,
+                            new()
+                            {
+                                Path = content.Path,
+                                Sha = properties.Reference
+                            },
+                            new()
+                            {
+                                PageSize = 1
+                            })
+                        .Result[0];
+
+                    LastModified = commit.Commit.Committer.Date;
+
+                    sha = commit.Sha;
+
+                    Exists = true;
+                }
+                catch (NotFoundException)
+                {
+                    Exists = false;
+                }
             }
         }
 

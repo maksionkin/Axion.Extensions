@@ -3,6 +3,7 @@
 
 using System;
 using Dawn;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Octokit;
 
@@ -24,22 +25,17 @@ public class GitHubFileProviderOptions : IOptions<GitHubFileProviderOptions>
     /// <summary>
     /// The owner of the repository.
     /// </summary>
-    public required string Owner { get; set; }
+    public required string Owner { get; init; }
 
     /// <summary>
     /// The name of the repository.
     /// </summary>
-    public required string Name { get; set; }
+    public required string Name { get; init; }
 
     /// <summary>
     /// The name of the commit/branch/tag. Default: the repository’s default branch (usually main).
     /// </summary>
     public string? Reference { get; set; }
-
-    /// <summary>
-    /// The base path/tree prefix for accessing only a portion of a repository. 
-    /// </summary>
-    public string? BasePath { get; set; }
 
     /// <summary>
     /// The address to point <see cref="GitHubClient"/> to. Typically used for GitHub Enterprise
@@ -78,6 +74,15 @@ public class GitHubFileProviderOptions : IOptions<GitHubFileProviderOptions>
         set => getGitHubClient = Guard.Argument(value).NotNull().Value;
     }
 
+    /// <summary>
+    /// Skips reading <see cref="IFileInfo.LastModified"/> property to reduce a numder of GitHub API calls.
+    /// </summary>
+    public bool SkipLoadingLastModified { get; set; }
+
+    /// <summary>
+    /// The base path/tree prefix for accessing only a portion of a repository. 
+    /// </summary>
+    public string? BasePath { get; set; }
     GitHubFileProviderOptions IOptions<GitHubFileProviderOptions>.Value =>
         this;
 }

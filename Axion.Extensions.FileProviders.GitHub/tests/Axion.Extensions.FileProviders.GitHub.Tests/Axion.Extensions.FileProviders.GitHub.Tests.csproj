@@ -21,4 +21,8 @@
     <ProjectReference Include="..\..\src\Axion.Extensions.FileProviders.GitHub.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
 </Project>

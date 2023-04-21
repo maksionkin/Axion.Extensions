@@ -34,7 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Axion.Extensions.Configuration.Kusto", "Axion.Extensions.Configuration.Kusto\src\Axion.Extensions.Configuration.Kusto.csproj", "{20C8B9A6-7BB0-4863-8C9E-7F36FADDCDFB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Axion.Extensions.Configuration.Kusto.Tests", "Axion.Extensions.Configuration.Kusto\tests\Axion.Extensions.Configuration.Kusto.Tests\Axion.Extensions.Configuration.Kusto.Tests.csproj", "{E069D87A-ACEA-4C7A-8ECF-FF6382386DE8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Axion.Extensions.Configuration.Kusto.Tests", "Axion.Extensions.Configuration.Kusto\tests\Axion.Extensions.Configuration.Kusto.Tests.csproj", "{E069D87A-ACEA-4C7A-8ECF-FF6382386DE8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Axion.Extensions.FileProviders.GitHub", "Axion.Extensions.FileProviders.GitHub\src\Axion.Extensions.FileProviders.GitHub.csproj", "{9CEEB3AD-9B77-49F6-AAB5-79106D3AE1A6}"
 EndProject
