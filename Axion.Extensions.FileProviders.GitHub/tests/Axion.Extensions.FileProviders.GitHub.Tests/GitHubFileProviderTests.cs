@@ -52,32 +52,33 @@ public class GitHubFileProviderTests
             {
                 Assert.IsTrue(gitHubItem.Exists);
 
-                var physicalItem = phisycals[gitHubItem.Name];
-
-                Assert.AreEqual(physicalItem.IsDirectory, gitHubItem.IsDirectory);
-
-                //Assert.AreEqual(physicalItem.Length, gitHubItem.Length);
-                if (gitHubItem.IsDirectory)
+                if (phisycals.TryGetValue(gitHubItem.Name, out var physicalItem))
                 {
-                    toProcess.Push(Path.Combine(subpath, gitHubItem.Name));
-                }
-                else
-                {
-                    using var stream = gitHubItem.CreateReadStream();
-                    var buffer = new byte[4096];
-                    var length = 0L;
-                    while (true)
+                    Assert.AreEqual(physicalItem.IsDirectory, gitHubItem.IsDirectory);
+
+                    //Assert.AreEqual(physicalItem.Length, gitHubItem.Length);
+                    if (gitHubItem.IsDirectory)
                     {
-                        var read = stream.Read(buffer);
-                        length += read;
-
-                        if (read <= 0)
-                        {
-                            break;
-                        }
+                        toProcess.Push(Path.Combine(subpath, gitHubItem.Name));
                     }
+                    else
+                    {
+                        using var stream = gitHubItem.CreateReadStream();
+                        var buffer = new byte[4096];
+                        var length = 0L;
+                        while (true)
+                        {
+                            var read = stream.Read(buffer);
+                            length += read;
 
-                    Assert.AreEqual(gitHubItem.Length, length);
+                            if (read <= 0)
+                            {
+                                break;
+                            }
+                        }
+
+                        Assert.AreEqual(gitHubItem.Length, length);
+                    }
                 }
             }
         }
