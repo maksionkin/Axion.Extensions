@@ -22,13 +22,13 @@ public class GitHubFileProviderTests
     [TestMethod]
     public void ContentAllCheck()
     {
-        throw new Exception(string.Join('\n', TestContext.TestDir, GetType().Assembly.Location));
-
         var root = GetType().Assembly.Location;
         for (var i = 0; i < 7; i++)
         {
             root = Path.GetDirectoryName(root)!;
         }
+
+        throw new Exception(root);
 
         var physicalProvider = new PhysicalFileProvider(root, Microsoft.Extensions.FileProviders.Physical.ExclusionFilters.None);
 
