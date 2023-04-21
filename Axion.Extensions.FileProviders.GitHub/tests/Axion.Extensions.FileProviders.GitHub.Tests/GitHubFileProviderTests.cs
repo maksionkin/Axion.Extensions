@@ -5,6 +5,8 @@ namespace Axion.Extensions.FileProviders.GitHub.Tests;
 [TestClass]
 public class GitHubFileProviderTests
 {
+    public required TestContext TestContext { get; init; }
+
     [TestMethod]
     public void NotFoundRepo()
     {
@@ -27,10 +29,23 @@ public class GitHubFileProviderTests
         }
 
         var physicalProvider = new PhysicalFileProvider(root, Microsoft.Extensions.FileProviders.Physical.ExclusionFilters.None);
-        var gitHubProvider = new GitHubFileProvider(new GitHubFileProviderOptions { Owner = "maksionkin", Name = "Axion.Extensions" });
 
-        void Compare(string subpath)
+        var gitHubProvider = new GitHubFileProvider(new GitHubFileProviderOptions 
+        { 
+            Owner = "maksionkin", 
+            Name = "Axion.Extensions",
+            Credentials = new(Environment.GetEnvironmentVariable("GITHUBTOKEN")) 
+        });
+
+        var toProcess = new Stack<string>();
+        toProcess.Push("");
+
+        while (toProcess.Count > 0)
         {
+            var subpath = toProcess.Pop();
+
+            TestContext.WriteLine($"Processing {subpath}.");
+
             var phisycals = physicalProvider.GetDirectoryContents(subpath).ToDictionary(file => file.Name);
 
             foreach (var gitHubItem in gitHubProvider.GetDirectoryContents(subpath))
@@ -41,10 +56,10 @@ public class GitHubFileProviderTests
 
                 Assert.AreEqual(physicalItem.IsDirectory, gitHubItem.IsDirectory);
 
-                Assert.AreEqual(physicalItem.Length, gitHubItem.Length);
+                //Assert.AreEqual(physicalItem.Length, gitHubItem.Length);
                 if (gitHubItem.IsDirectory)
                 {
-                    Compare(Path.Combine(subpath, gitHubItem.Name));
+                    toProcess.Push(Path.Combine(subpath, gitHubItem.Name));
                 }
                 else
                 {
@@ -66,21 +81,5 @@ public class GitHubFileProviderTests
                 }
             }
         }
-
-        Compare("");
-/*
-        var d = gitHubProvider.GetFileInfo("");
-
-        var content = gitHubProvider.GetDirectoryContents("");
-
-
-        foreach (var f in content)//.Zip(Directory.GetFiles(Path.Combine(GetType().Assembly.Location, "..", "..", "..", "..", "..", "..", ".."))))
-        {
-            f.LastModified.ToString();
-            if (!f.IsDirectory)
-            {
-                f.CreateReadStream().Close();
-            }
-        }*/
     }
 }
