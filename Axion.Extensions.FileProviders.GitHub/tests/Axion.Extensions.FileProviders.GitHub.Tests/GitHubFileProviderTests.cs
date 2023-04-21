@@ -28,8 +28,6 @@ public class GitHubFileProviderTests
             root = Path.GetDirectoryName(root)!;
         }
 
-        throw new Exception(root);
-
         var physicalProvider = new PhysicalFileProvider(root, Microsoft.Extensions.FileProviders.Physical.ExclusionFilters.None);
 
         var gitHubProvider = new GitHubFileProvider(new GitHubFileProviderOptions 
