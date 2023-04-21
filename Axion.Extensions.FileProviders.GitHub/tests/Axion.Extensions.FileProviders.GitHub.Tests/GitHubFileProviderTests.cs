@@ -22,6 +22,9 @@ public class GitHubFileProviderTests
     [TestMethod]
     public void ContentAllCheck()
     {
+
+        throw new Exception(GetType().Assembly.Location + "\n" + TestContext.DeploymentDirectory);
+
         var root = GetType().Assembly.Location;
         for (var i = 0; i < 7; i++)
         {
