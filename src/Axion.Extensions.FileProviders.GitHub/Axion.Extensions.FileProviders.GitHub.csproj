@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>File Provider implementation of GitHub or GitHub Enterprise repository.</Description>
+    <PackageTags>IFileProvider;GitHub;File Provider;FileProvider</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="$(PlatformVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="$(PlatformVersion)" />
+    <PackageReference Include="Octokit" Version="5.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Axion.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="README.nuget.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>
