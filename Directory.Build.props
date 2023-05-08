@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <PlatformVersion>7.0.0</PlatformVersion>
+    <PlatformVersion>.0.0-preview.3.23174.8</PlatformVersion>
   </PropertyGroup>
 
   <PropertyGroup>
