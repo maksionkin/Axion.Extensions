@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Distributed cache implementation using Azure Storage Blobs.</Description>
-    <PackageTags>Cache;DistributeCache;Distribute Cache;Caching;IDistributedCache;Azure Storage;Blobs</PackageTags>
+    <PackageTags>Cache;DistributedCache;Distributed Cache;Caching;IDistributedCache;Azure Storage;Blobs</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.13.0" />
