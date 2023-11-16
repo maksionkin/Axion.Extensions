@@ -5,9 +5,14 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.13.0" />
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(PlatformVersion)" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="$(PlatformVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="$(PlatformVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net8.0'">
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.1.1" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Axion.png">
