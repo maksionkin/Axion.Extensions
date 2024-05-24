@@ -15,7 +15,7 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
 
@@ -32,7 +32,7 @@ jobs:
       run: dotnet build -c Release
 
     - name: Setup Node.js environment
-      uses: actions/setup-node@v2.5.1
+      uses: actions/setup-node@v4
 
     - name: Install & run Azurite
       run: npm install -g azurite
@@ -54,7 +54,7 @@ jobs:
       run: dotnet test --no-build --verbosity normal -c Release
 
     - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v3.1.0
+      uses: actions/upload-artifact@v4
       with:
         name: nugets
         path: "**/*.*nupkg"
