@@ -3,4 +3,4 @@ paths:
 paths-ignore:
   - src/node_modules
   - '**/*.test.js'
-  - tests
+  - tests/**
