@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(PlatformVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Axion.Extensions.Configuration.Kusto\Axion.Extensions.Configuration.Kusto.csproj" />
+  </ItemGroup>
+
+</Project>

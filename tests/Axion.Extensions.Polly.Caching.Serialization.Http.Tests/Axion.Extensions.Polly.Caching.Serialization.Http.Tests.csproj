@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+   <ItemGroup>
+    <ProjectReference Include="..\..\src\Axion.Extensions.Polly.Caching.Serialization.Http\Axion.Extensions.Polly.Caching.Serialization.Http.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ComplexRespose.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

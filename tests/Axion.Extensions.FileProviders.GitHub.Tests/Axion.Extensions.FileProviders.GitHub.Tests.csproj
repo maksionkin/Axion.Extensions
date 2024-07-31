@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="$(PlatformVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Axion.Extensions.FileProviders.GitHub\Axion.Extensions.FileProviders.GitHub.csproj" />
+  </ItemGroup>
+
+</Project>
