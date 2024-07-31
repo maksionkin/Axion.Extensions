@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>A set of helpers for Dependency Injection.</Description>
+    <PackageTags>DependencyInjection;Dependency Injection;Delegate;IServiceProvider;ServiceProvider:IServiceCollection;Keyed Services</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="NewFolder\**" />
+    <EmbeddedResource Remove="NewFolder\**" />
+    <None Remove="NewFolder\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(PlatformVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+    <PackageReference Include="Nullability.Source" Version="2.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789.`))' == 'netstandard'">
+    <PackageReference Include="Nullability.Source" Version="2.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Axion.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="README.nuget.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Microsoft\Extensions\DependencyInjection\ServiceCollectionExtensions.Keyed.ServiceLifetime.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ServiceCollectionExtensions.Keyed.ServiceLifetime.cs</LastGenOutput>
+    </None>
+    <None Update="Microsoft\Extensions\DependencyInjection\ServiceCollectionExtensions.ServiceLifetime.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ServiceCollectionExtensions.ServiceLifetime.cs</LastGenOutput>
+    </None>
+    <None Update="System\ServiceProviderExtensions.Execute.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ServiceProviderExtensions.Execute.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Microsoft\Extensions\DependencyInjection\ServiceCollectionExtensions.Keyed.ServiceLifetime.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ServiceCollectionExtensions.Keyed.ServiceLifetime.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Microsoft\Extensions\DependencyInjection\ServiceCollectionExtensions.ServiceLifetime.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ServiceCollectionExtensions.ServiceLifetime.tt</DependentUpon>
+    </Compile>
+    <Compile Update="System\ServiceProviderExtensions.Execute.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ServiceProviderExtensions.Execute.tt</DependentUpon>
+    </Compile>
+  </ItemGroup></Project>

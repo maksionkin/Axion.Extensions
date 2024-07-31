@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(PlatformVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.6.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Axion.Extensions.Caching.Azure.Storage.Blobs\Axion.Extensions.Caching.Azure.Storage.Blobs.csproj" />
+    <ProjectReference Include="..\..\src\Axion.Extensions.Caching.Transformed\Axion.Extensions.Caching.Transformed.csproj" />
+  </ItemGroup>
+
+</Project>
