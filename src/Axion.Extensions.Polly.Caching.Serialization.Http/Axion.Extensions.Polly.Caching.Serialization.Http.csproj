@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>A plugin for the Polly Cache policy to serialize/deserialize System.Net.Http.HttpResponseMessage. Can be used with Microsoft.Extensions.Http.PolicyHttpMessageHandler.</Description>
+    <PackageTags>PolicyHttpMessageHandler;Caching;Polly;HttpResponseMessage;CachePolicy</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Polly" Version="7.2.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Axion.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="README.nuget.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>

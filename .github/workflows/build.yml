@@ -1,0 +1,60 @@
+name: .NET Build
+
+on:
+  push:
+    branches: [ "main","v*" ]
+
+  pull_request:
+    branches: [ "main", "v*" ]
+
+jobs:
+  build:
+    name: Build
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+
+    - name: Setup .NET 
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          7.0.x
+          6.0.x
+          8.0.x
+
+    - name: Build 
+      run: dotnet build -c Release
+
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v4
+
+    - name: Install & run Azurite
+      run: npm install -g azurite
+
+    - name: Run Azurite in Background
+      shell: bash
+      run: azurite --blobHost 127.0.0.1 &
+
+    - name: Git clone
+      run: |
+        mkdir $RUNNER_TEMP/gh
+        git clone https://github.com/maksionkin/Axion.Extensions $RUNNER_TEMP/gh
+        cd $RUNNER_TEMP/gh
+        (for a in $(git ls-files); do git log --pretty=format:"%cI%x09$a%n" -1 -- "$a"; done) > ../gh-files.txt
+
+    - name: Test
+      env:
+        GITHUBTOKEN: ${{ secrets.GITHUBTOKEN }}
+      run: dotnet test --no-build --verbosity normal -c Release
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: nugets
+        path: "**/*.*nupkg"
+   
