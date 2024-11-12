@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <PlatformVersion>9.0.0-rc.2.24473.5</PlatformVersion>
+    <PlatformVersion>9.0.0</PlatformVersion>
   </PropertyGroup>
 
   <PropertyGroup>
