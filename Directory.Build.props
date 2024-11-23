@@ -6,7 +6,7 @@
   <PropertyGroup>
     <Nullable>enable</Nullable>
     <EnableDefaultItems>true</EnableDefaultItems>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
     <Authors>Michael Aksionkin</Authors>
     <Copyright>Copyright (c) Michael Aksionkin</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -37,7 +37,7 @@
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <!-- Properties for .NET Framework -->
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-    <PackageReference Include="IndexRange" Version="1.0.2" />
+    <PackageReference Include="Microsoft.Bcl.Memory" Version="$(PlatformVersion)" />
     <PackageReference Include="IsExternalInit" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -54,7 +54,7 @@
   
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789.`))' == 'netstandard'">
     <!-- Properties for .net Stardard-->
-    <PackageReference Include="IndexRange" Version="1.0.2" />
+    <PackageReference Include="Microsoft.Bcl.Memory" Version="$(PlatformVersion)" />
     <PackageReference Include="IsExternalInit" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

@@ -14,13 +14,9 @@ namespace Axion.Extensions.Caching.Azure.Storage.Blobs;
 /// </summary>
 public class AzureBlobsCacheOptions : IOptions<AzureBlobsCacheOptions>
 {
-    Func<BlobContainerClient> getBlobContainerClient;
+    Func<BlobContainerClient>? getBlobContainerClient;
 
-    /// <summary>
-    /// Initializes a new instance of <see cref="AzureBlobsCacheOptions"/>.
-    /// </summary>
-    public AzureBlobsCacheOptions() =>
-        getBlobContainerClient = DefaultGetBlobContainerClient;
+    internal bool UsesDefaultGetBlobContainerClient => getBlobContainerClient == null;
 
     /// <summary>
     /// A prefix for blobs created. 
@@ -67,7 +63,7 @@ public class AzureBlobsCacheOptions : IOptions<AzureBlobsCacheOptions>
     /// </summary>
     public Func<BlobContainerClient> GetBlobContainerClient
     {
-        get => getBlobContainerClient;
+        get => getBlobContainerClient ?? DefaultGetBlobContainerClient;
         set
         {
             Guard.IsNotNull(value);

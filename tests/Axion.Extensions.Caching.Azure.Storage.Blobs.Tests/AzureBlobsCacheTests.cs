@@ -1,18 +1,30 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Axion.Extensions.Caching.Azure.Storage.Blobs.Tests;
 
 [TestClass]
 public class AzureBlobsCacheTests
 {
-    static AzureBlobsCache GetCache() =>
-        new(new AzureBlobsCacheOptions { ConnectionString = "UseDevelopmentStorage=true", ExpiredItemsDeletionInterval = TimeSpan.FromMinutes(2) });
+    static IDistributedCache GetCache()
+    {
+        var services = new ServiceCollection();
+        
+        services.AddAzureClients(clientBuilder => clientBuilder.AddBlobServiceClient("UseDevelopmentStorage=true"));
+
+        services.AddAzureBlobCache();
+
+        var provider = services.BuildServiceProvider();
+
+        return provider.GetRequiredService<IDistributedCache>();
+    }
 
     [TestMethod]
     public async Task ReturnsNullValue_ForNonExistingCacheItem()
     {
         // Arrange
-        using var cache = GetCache();
+        var cache = GetCache();
 
         // Act
         var value = await cache.GetAsync("NonExisting");
@@ -29,7 +41,7 @@ public class AzureBlobsCacheTests
         var key = new string('a', 13613);
         var expectedValue = "Hello, World!";
 
-        using var cache = GetCache();
+        var cache = GetCache();
 
         // Act
         await cache.SetStringAsync(
@@ -72,7 +84,7 @@ public class AzureBlobsCacheTests
         var slidingExpirationWindow = TimeSpan.FromSeconds(6);
 
         var key = Guid.NewGuid().ToString();
-        using var cache = GetCache();
+        var cache = GetCache();
 
         // Arrange
         var cacheItem = await cache.GetAsync(key);
@@ -98,7 +110,7 @@ public class AzureBlobsCacheTests
         var expectedValue = "Hello, World!";
 
         var key = Guid.NewGuid().ToString();
-        using var cache = GetCache();
+        var cache = GetCache();
 
         // Arrange
         var cacheItem = await cache.GetAsync(key);
@@ -136,7 +148,7 @@ public class AzureBlobsCacheTests
         var expectedValue = "Hello, World!";
 
         var key = Guid.NewGuid().ToString();
-        using var cache = GetCache();
+        var cache = GetCache();
 
         // Arrange
         var cacheItem = await cache.GetAsync(key);
@@ -170,7 +182,7 @@ public class AzureBlobsCacheTests
         var key = Guid.NewGuid().ToString();
         var keyWithDot = key + '.';
 
-        using var cache = GetCache();
+        var cache = GetCache();
 
         // Arrange
         await cache.SetStringAsync(
