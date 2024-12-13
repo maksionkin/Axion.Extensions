@@ -137,14 +137,9 @@ public class HttpResponseMessageHybridCacheSerializer : IHybridCacheSerializer<H
         {
             if (ReadDigit(out var major))
             {
-                if (ReadConstByte((byte)'.') && ReadDigit(out var minor))
-                {
-                    value = new(major, minor);
-                }
-                else
-                {
-                    value = new(major, 0);
-                }
+                value = ReadConstByte((byte)'.') && ReadDigit(out var minor)
+                    ? new(major, minor)
+                    : new(major, 0);
 
                 return true;
             }

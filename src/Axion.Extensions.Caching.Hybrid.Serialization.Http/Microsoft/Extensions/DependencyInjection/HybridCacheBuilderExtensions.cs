@@ -13,7 +13,9 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class HybridCacheBuilderExtensions
 {
 #pragma warning disable EXTEXP0018 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-
+    /// <summary>
+    /// Adds <see cref="HttpResponseMessageHybridCacheSerializer"/> to <see cref="IHybridCacheBuilder"/>.
+    /// </summary>
     /// <param name="builder">A <see cref="IHybridCacheBuilder"/>.</param>
     /// <returns>The <see cref="IHybridCacheBuilder"/> instance.</returns>
     public static IHybridCacheBuilder AddHttpResponseMessageSerializer(this IHybridCacheBuilder builder) =>

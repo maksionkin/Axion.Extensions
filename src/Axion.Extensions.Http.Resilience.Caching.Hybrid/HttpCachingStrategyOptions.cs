@@ -11,15 +11,6 @@ namespace Axion.Extensions.Http.Resilience;
 /// </summary>
 public class HttpCachingStrategyOptions : CachingStrategyOptions<HttpResponseMessage>
 {
-    //
-    // Summary:
-    //     Initializes a new instance of the Microsoft.Extensions.Http.Resilience.HttpRetryStrategyOptions
-    //     class.
-    //
-    // Remarks:
-    //     By default, the options are configured to handle only transient failures. Specifically,
-    //     this includes HTTP status codes 408, 429, 500 and above, as well as System.Net.Http.HttpRequestException
-    //     and Polly.Timeout.TimeoutRejectedException exceptions
     /// <summary>
     /// Initializes a new instance of the <see cref="HttpCachingStrategyOptions"/>.
     /// </summary>
