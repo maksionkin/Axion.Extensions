@@ -10,7 +10,7 @@ public class AzureBlobsCacheTests
     static IDistributedCache GetCache()
     {
         var services = new ServiceCollection();
-        
+
         services.AddAzureClients(clientBuilder => clientBuilder.AddBlobServiceClient("UseDevelopmentStorage=true"));
 
         services.AddAzureBlobCache();
@@ -87,7 +87,7 @@ public class AzureBlobsCacheTests
         var cache = GetCache();
 
         // Arrange
-        var cacheItem = await cache.GetAsync(key);
+        _ = await cache.GetAsync(key);
         await cache.SetStringAsync(
             key,
             "Hello, World!",
@@ -107,6 +107,13 @@ public class AzureBlobsCacheTests
     {
         var slidingExpirationWindow = TimeSpan.FromSeconds(6);
 
+        var half =
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        slidingExpirationWindow / 2;
+#else
+        TimeSpan.FromMilliseconds(slidingExpirationWindow.TotalMilliseconds / 2);
+#endif
+
         var expectedValue = "Hello, World!";
 
         var key = Guid.NewGuid().ToString();
@@ -119,16 +126,16 @@ public class AzureBlobsCacheTests
             expectedValue,
             new DistributedCacheEntryOptions().SetSlidingExpiration(slidingExpirationWindow));
 
-        await Task.Delay(slidingExpirationWindow / 2);
+        await Task.Delay(half);
 
         // Act
         var value = await cache.GetStringAsync(key);
 
-        await Task.Delay(slidingExpirationWindow / 2);
+        await Task.Delay(half);
 
         await cache.RefreshAsync(key);
 
-        await Task.Delay(slidingExpirationWindow / 2);
+        await Task.Delay(half);
 
         value = await cache.GetStringAsync(key);
 
@@ -145,6 +152,13 @@ public class AzureBlobsCacheTests
     {
         var slidingExpirationWindow = TimeSpan.FromSeconds(6);
 
+        var half =
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        slidingExpirationWindow / 2;
+#else
+TimeSpan.FromMilliseconds(slidingExpirationWindow.TotalMilliseconds / 2);
+#endif
+
         var expectedValue = "Hello, World!";
 
         var key = Guid.NewGuid().ToString();
@@ -156,18 +170,18 @@ public class AzureBlobsCacheTests
             key,
             expectedValue,
             new DistributedCacheEntryOptions().SetSlidingExpiration(slidingExpirationWindow)
-            .SetAbsoluteExpiration(DateTimeOffset.UtcNow + 1.5 * slidingExpirationWindow));
+            .SetAbsoluteExpiration(DateTimeOffset.UtcNow + slidingExpirationWindow + half));
 
-        await Task.Delay(slidingExpirationWindow / 2);
+        await Task.Delay(half);
 
         // Act
         var value = await cache.GetStringAsync(key);
 
-        await Task.Delay(slidingExpirationWindow / 2);
+        await Task.Delay(half);
 
         await cache.RefreshAsync(key);
 
-        await Task.Delay(slidingExpirationWindow / 2);
+        await Task.Delay(half);
 
         Assert.IsNull(await cache.GetAsync(key));
     }

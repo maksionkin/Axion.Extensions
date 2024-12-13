@@ -8,8 +8,8 @@ Read more [Distributed caching in ASP.NET Core](https://learn.microsoft.com/en-u
 
 [![NuGet version](https://badge.fury.io/nu/Axion.Extensions.Caching.Azure.Storage.Blobs.svg)](https://badge.fury.io/nu/Axion.Extensions.Caching.Azure.Storage.Blobs) 
 
-# Usage Example
-## [BlobServiceClient](https://learn.microsoft.com/en-us/dotnet/api/azure.storage.blobs.blobserviceclient) Registration
+## Usage Example
+### [BlobServiceClient](https://learn.microsoft.com/en-us/dotnet/api/azure.storage.blobs.blobserviceclient) Registration
 
 Register BlobServiceClient ex. [Dependency injection with the Azure SDK for .NET](https://learn.microsoft.com/en-us/dotnet/azure/sdk/dependency-injection)
 
@@ -22,12 +22,12 @@ services.AddAzureClients(clientBuilder =>
 });
 ```
 
-## Register AzureBlobCache
+### Register AzureBlobCache
 ```csharp
 services.AddAzureBlobCache();
 ```
 
-## Use [IDistributedCache](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.caching.distributed.idistributedcache) or [IBufferDistributedCache](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.caching.distributed.ibufferdistributedcache) 
+### Use [IDistributedCache](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.caching.distributed.idistributedcache) or [IBufferDistributedCache](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.caching.distributed.ibufferdistributedcache) 
 ```csharp
 public class HelloWorldController(IDistributedCache cache) : Controller
 {}

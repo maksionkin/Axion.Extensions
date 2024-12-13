@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
+    <TargetFrameworks>netstandard2.1;$(TargetFrameworks)</TargetFrameworks>
+    <Description>A plugin for Hybrid Cache to serialize/deserialize System.Net.Http.HttpResponseMessage.</Description>
+    <PackageTags>HybridCache;Caching;Hybrid Cache;HttpResponseMessage;IHybridCacheSerializer;Serializer</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.4.0-preview3" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="9.0.0-preview.9.24556.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Axion.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="README.nuget.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>

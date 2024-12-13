@@ -5,7 +5,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Axion.Extensions.FileProviders.GitHub\Axion.Extensions.FileProviders.GitHub.csproj" />
+    <ProjectReference Include="..\..\src\Axion.Extensions.FileProviders.GitHub\Axion.Extensions.FileProviders.GitHub.csproj" >
+      <HintPath>..\..\src\Axion.Extensions.FileProviders.GitHub\bin\$(Configuration)\$(LibraryTargetFramework)\Axion.Extensions.FileProviders.GitHub.dll</HintPath>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>
