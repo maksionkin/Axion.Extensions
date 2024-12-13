@@ -38,7 +38,7 @@ public class AzureBlobsCacheTests
     {
         // Arrange
         // Create a key with the maximum allowed key length. Here a key of length 898 bytes is created.
-        var key = new string('a', 13613);
+        var key = Guid.NewGuid() + new string('a', 13613);
         var expectedValue = "Hello, World!";
 
         var cache = GetCache();
