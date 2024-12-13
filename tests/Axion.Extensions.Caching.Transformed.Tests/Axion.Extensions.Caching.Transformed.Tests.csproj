@@ -1,13 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(PlatformVersion)" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.6.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(PlatformVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Axion.Extensions.Caching.Azure.Storage.Blobs\Axion.Extensions.Caching.Azure.Storage.Blobs.csproj" />
-    <ProjectReference Include="..\..\src\Axion.Extensions.Caching.Transformed\Axion.Extensions.Caching.Transformed.csproj" />
+    <ProjectReference Include="..\..\src\Axion.Extensions.Caching.Azure.Storage.Blobs\Axion.Extensions.Caching.Azure.Storage.Blobs.csproj">
+      <HintPath>..\..\src\Axion.Extensions.Caching.Azure.Storage.Blobs\bin\$(Configuration)\$(LibraryTargetFramework)\Axion.Extensions.Caching.Azure.Storage.Blobs.dll</HintPath>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Axion.Extensions.Caching.Transformed\Axion.Extensions.Caching.Transformed.csproj">
+      <HintPath>..\..\src\Axion.Extensions.Caching.Transformed\bin\$(Configuration)\$(LibraryTargetFramework)\Axion.Extensions.Caching.Transformed.dll</HintPath>
+    </ProjectReference>
   </ItemGroup>
-
 </Project>

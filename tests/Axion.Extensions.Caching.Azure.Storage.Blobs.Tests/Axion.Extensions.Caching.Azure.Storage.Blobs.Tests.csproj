@@ -4,7 +4,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(PlatformVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Axion.Extensions.Caching.Azure.Storage.Blobs\Axion.Extensions.Caching.Azure.Storage.Blobs.csproj" />
+    <ProjectReference Include="..\..\src\Axion.Extensions.Caching.Azure.Storage.Blobs\Axion.Extensions.Caching.Azure.Storage.Blobs.csproj">
+      <HintPath>..\..\src\Axion.Extensions.Caching.Azure.Storage.Blobs\bin\$(Configuration)\$(LibraryTargetFramework)\Axion.Extensions.Caching.Azure.Storage.Blobs.dll</HintPath>
+    </ProjectReference>
   </ItemGroup>
-
 </Project>

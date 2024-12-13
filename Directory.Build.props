@@ -52,7 +52,7 @@
     </PackageReference>
   </ItemGroup>
   
-  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789.`))' == 'netstandard'">
+  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789.`))' == 'netstandard' or '$(TargetFramework.TrimEnd(`0123456789.`))' == 'netcoreapp'">
     <!-- Properties for .net Stardard-->
     <PackageReference Include="Microsoft.Bcl.Memory" Version="$(PlatformVersion)" />
     <PackageReference Include="IsExternalInit" Version="1.0.2">

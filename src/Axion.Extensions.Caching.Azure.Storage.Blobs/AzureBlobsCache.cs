@@ -20,6 +20,7 @@ using CommunityToolkit.Diagnostics;
 using CommunityToolkit.HighPerformance;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
+using Microsoft.IO;
 
 namespace Axion.Extensions.Caching.Azure.Storage.Blobs;
 
@@ -29,6 +30,7 @@ namespace Axion.Extensions.Caching.Azure.Storage.Blobs;
 public class AzureBlobsCache : IBufferDistributedCache, IDisposable
 {
     static readonly int MaxKeyLength = 1024 - GetHash("").Length - 1; // -1 for  '-' character
+    static readonly RecyclableMemoryStreamManager RecyclableMemoryStreamManager = new();
 
     readonly IOptions<AzureBlobsCacheOptions> optionsAccessor;
     readonly CancellationTokenSource? source;
@@ -201,7 +203,7 @@ public class AzureBlobsCache : IBufferDistributedCache, IDisposable
     /// <inheritdoc/>
     public async Task<byte[]?> GetAsync(string key, CancellationToken token = default)
     {
-        using var stream = new MemoryStreamWthBufferWriter();
+        using var stream = RecyclableMemoryStreamManager.GetStream(key);
         if (await TryGetAsync(key, stream, token))
         {
             return stream.ToArray();
@@ -453,36 +455,6 @@ public class AzureBlobsCache : IBufferDistributedCache, IDisposable
         }
     }
 
-    class MemoryStreamWthBufferWriter : MemoryStream, IBufferWriter<byte>
-    {
-        public void Advance(int count)
-        {
-            Guard.IsGreaterThanOrEqualTo(count, 0);
-
-            Seek(count, SeekOrigin.Current);
-        }
-
-        public Memory<byte> GetMemory(int sizeHint = 0)
-        {
-            Guard.IsGreaterThanOrEqualTo(sizeHint, 0);
-
-            Capacity = (int)Math.Max(Capacity, sizeHint + Position);
-
-            return GetBuffer().AsMemory((int)Position);
-        }
-
-        public Span<byte> GetSpan(int sizeHint = 0)
-        {
-            Guard.IsGreaterThanOrEqualTo(sizeHint, 0);
-
-            Capacity = (int)Math.Max(Capacity, sizeHint + Position);
-
-            SetLength(Math.Max(Length, Capacity));
-
-            return GetBuffer().AsSpan((int)Position);
-        }
-    }
-
     class ReadOnlySequenceStream(ReadOnlySequence<byte> memory) : Stream
     {
         public override bool CanRead => true;
@@ -493,7 +465,7 @@ public class AzureBlobsCache : IBufferDistributedCache, IDisposable
 
         public override long Length => memory.Length;
 
-        public override long Position { get; set ; }
+        public override long Position { get; set; }
 
         public override void Flush()
         {
@@ -516,7 +488,7 @@ public class AzureBlobsCache : IBufferDistributedCache, IDisposable
 
                 segment.Span[..bytesToCopy].CopyTo(destination);
 
-                destination = destination.Slice(bytesToCopy);
+                destination = destination[bytesToCopy..];
 
                 bytesCopied += bytesToCopy;
 
@@ -535,9 +507,9 @@ public class AzureBlobsCache : IBufferDistributedCache, IDisposable
         {
             return Position = origin switch
             {
-                SeekOrigin.Begin => offset,
                 SeekOrigin.Current => Position + offset,
                 SeekOrigin.End => Length + offset,
+                _ => offset,
             };
         }
 
