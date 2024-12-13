@@ -51,7 +51,7 @@ jobs:
 
     - name: Test
       env:
-        GITHUBTOKEN: ${{ secrets.GITHUBTOKEN }}
+        GITHUBTOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: dotnet test --no-build --verbosity normal -c Release
 
     - name: Upload Build Artifacts
