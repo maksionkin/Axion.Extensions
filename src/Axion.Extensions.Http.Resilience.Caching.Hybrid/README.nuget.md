@@ -9,7 +9,7 @@ Caching Resilience mechanism for [HttpClient](https://learn.microsoft.com/en-us/
 ## Usage
 ### Dependency Injection
 ```csharp
-services.AddHybrdCache().AddHttpResponseMessageSerializer();
+services.AddHybrdCache().AddSerializer(HttpResponseMessageHybridCacheSerializer.Instance);
 
 services.AddHttpClient("name")
     .AddResilienceHandler(

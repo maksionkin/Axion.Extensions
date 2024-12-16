@@ -5,7 +5,7 @@ Collapse concurrent duplicate requests to a single execution Resilience mechanis
 ## Usage
 ### Dependency Injection
 ```csharp
-services.AddHybrdCache().AddHttpResponseMessageSerializer();
+services.AddHybrdCache().AddSerializer(HttpResponseMessageHybridCacheSerializer.Instance);
 
 services.AddHttpClient("name")
     .AddResilienceHandler(
