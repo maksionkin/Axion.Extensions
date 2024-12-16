@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
    <ItemGroup>
      <ProjectReference Include="..\..\src\Axion.Extensions.Polly.Caching.Serialization.Http\Axion.Extensions.Polly.Caching.Serialization.Http.csproj">
        <HintPath>..\..\src\Axion.Extensions.Polly.Caching.Serialization.Http\bin\$(Configuration)\$(LibraryTargetFramework)\Axion.Extensions.Polly.Caching.Serialization.Http.dll</HintPath>
@@ -10,9 +10,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ChunckedBad.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ComplexRespose.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="WithLength.txt">

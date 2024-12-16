@@ -11,5 +11,5 @@ Contains an implementaton of [IHybridCacheSerializer](https://learn.microsoft.co
 ## Usage
 
 ```csharp
-services.AddHybrdCache().AddHttpResponseMessageSerializer();
+services.AddHybrdCache().AddSerializer(HttpResponseMessageHybridCacheSerializer.Instance);
 ```
