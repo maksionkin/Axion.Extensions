@@ -32,8 +32,8 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
     /// <summary>
     /// Creates a new instance of <see cref="HttpResponseMessageHybridCacheSerializer"/>.
     /// </summary>
-    public HttpResponseMessageHybridCacheSerializer() : this(null)
-    {
+    public HttpResponseMessageHybridCacheSerializer() : this(null) 
+    { 
     }
 
     /// <inheritdoc/>>
@@ -155,10 +155,6 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
     /// </summary>
     public class Options
     {
-        ArrayPool<char> charArrayPool = ArrayPool<char>.Shared;
-        StringPool stringPool = StringPool.Shared;
-        int maxCharsOnStack = 32;
-
         /// <summary>
         /// Default <see cref="HttpResponseMessageHybridCacheSerializer"/> options.
         /// </summary>
@@ -169,41 +165,41 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
         /// </summary>
         public ArrayPool<char> CharArrayPool
         {
-            get => charArrayPool;
+            get;
             set
             {
                 Guard.IsNotNull(value);
 
-                charArrayPool = value;
+                field = value;
             }
-        }
+        } = ArrayPool<char>.Shared;
 
         /// <summary>
         /// Gets or sets the <see cref="StringPool"/> for strng allocations.
         /// </summary>
         public StringPool StringPool
         {
-            get => stringPool;
+            get;
             set
             {
                 Guard.IsNotNull(value);
 
-                stringPool = value;
+                field = value;
             }
-        }
+        } = StringPool.Shared;
 
         /// <summary>
         /// Gets or sets max char count to be stack allocated.
         /// </summary>
         public int MaxCharsOnStack
         {
-            get => maxCharsOnStack;
+            get; 
             set
             {
                 Guard.IsGreaterThanOrEqualTo(value, 0);
 
-                maxCharsOnStack = value;
+                field = value;
             }
-        }
+        } = 32;
     }
 }

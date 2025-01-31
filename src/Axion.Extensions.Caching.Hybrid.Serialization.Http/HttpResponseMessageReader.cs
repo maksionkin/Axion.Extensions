@@ -8,6 +8,7 @@ using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
 using CommunityToolkit.HighPerformance;
+using CommunityToolkit.HighPerformance.Buffers;
 
 namespace Axion.Extensions.Caching.Hybrid.Serialization.Http;
 
