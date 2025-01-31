@@ -32,8 +32,8 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
     /// <summary>
     /// Creates a new instance of <see cref="HttpResponseMessageHybridCacheSerializer"/>.
     /// </summary>
-    public HttpResponseMessageHybridCacheSerializer() : this(null) 
-    { 
+    public HttpResponseMessageHybridCacheSerializer() : this(null)
+    {
     }
 
     /// <inheritdoc/>>
@@ -161,42 +161,55 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
         public static readonly Options Default = new();
 
         /// <summary>
+        /// Creates a new instance of <see cref="Options"/>.
+        /// </summary>
+        public Options()
+        {
+            CharArrayPool = ArrayPool<char>.Shared;
+            StringPool = StringPool.Shared;
+            MaxCharsOnStack = 32;
+        }
+
+        /// <summary>
         /// Gets or sets the <see cref="ArrayPool{Char}"/> for array allocations.
         /// </summary>
         public ArrayPool<char> CharArrayPool
         {
-            get;
+            get => field;
             set
             {
                 Guard.IsNotNull(value);
+
                 field = value;
             }
-        } = ArrayPool<char>.Shared;
+        }
 
         /// <summary>
         /// Gets or sets the <see cref="StringPool"/> for strng allocations.
         /// </summary>
         public StringPool StringPool
         {
-            get;
+            get => field;
             set
             {
                 Guard.IsNotNull(value);
+
                 field = value;
             }
-        } = StringPool.Shared;
+        }
 
         /// <summary>
         /// Gets or sets max char count to be stack allocated.
         /// </summary>
-        public int MaxCharOnStack
+        public int MaxCharsOnStack
         {
-            get; 
+            get => field;
             set
             {
                 Guard.IsGreaterThanOrEqualTo(value, 0);
+
                 field = value;
             }
-        } = 32;
+        }
     }
 }

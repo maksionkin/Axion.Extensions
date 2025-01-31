@@ -8,7 +8,6 @@ using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
 using CommunityToolkit.HighPerformance;
-using CommunityToolkit.HighPerformance.Buffers;
 
 namespace Axion.Extensions.Caching.Hybrid.Serialization.Http;
 
@@ -133,7 +132,7 @@ ref struct HttpResponseMessageReader(ReadOnlySequence<byte> sequence, HttpRespon
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string? ReadString(byte delimiter = (byte)'\r')
     {
-        Span<char> charBuffer = stackalloc char[options.MaxCharOnStack];
+        Span<char> charBuffer = stackalloc char[options.MaxCharsOnStack];
         var charIndex = 0;
         var hitDilimiter = false;
 

@@ -47,7 +47,7 @@ public class SerializerTests
     [DataRow("WithoutLength.txt", 28, false, true, null)]
     public void TestResponseRead(string file, int seed, bool hasTrailing, bool roundTrip, int? stackSize)
     {
-        var instance = stackSize == null ? HttpResponseMessageHybridCacheSerializer.Instance : new(new HttpResponseMessageHybridCacheSerializer.Options() { MaxCharOnStack = stackSize.Value });
+        var instance = stackSize == null ? HttpResponseMessageHybridCacheSerializer.Instance : new(new HttpResponseMessageHybridCacheSerializer.Options() { MaxCharsOnStack = stackSize.Value });
 
         var response = instance.Deserialize(Load(file, seed));
 

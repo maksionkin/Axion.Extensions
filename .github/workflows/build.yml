@@ -6,7 +6,8 @@ on:
 
   pull_request:
     branches: [ "main", "v*" ]
-
+env:
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1 
 jobs:
   build:
     name: Build
