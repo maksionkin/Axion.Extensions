@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Azure;
+﻿using Azure;
+using Azure.Storage.Blobs;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,18 +9,32 @@ namespace Axion.Extensions.Caching.Azure.Storage.Blobs.Tests;
 [TestClass]
 public class AzureBlobsCacheTests
 {
-    static IDistributedCache GetCache()
+    static IServiceProvider GetProvider(TimeSpan span)
     {
         var services = new ServiceCollection();
 
         services.AddAzureClients(clientBuilder => clientBuilder.AddBlobServiceClient("UseDevelopmentStorage=true"));
 
-        services.AddAzureBlobCache();
+        services.AddAzureBlobCache(options =>
+        {
+            options.ContainerName = "test";
 
-        var provider = services.BuildServiceProvider();
+            if (span == default)
+            {
+                options.DisableBackgroundExpiredItemsDeletion = true;
+            }
+            else
+            {
+                options.DisableBackgroundExpiredItemsDeletion = false;
+                options.ExpiredItemsDeletionInterval = span;
+            }
+        });
 
-        return provider.GetRequiredService<IDistributedCache>();
+        return services.BuildServiceProvider();
     }
+
+    static IDistributedCache GetCache(TimeSpan span = default) =>
+        GetProvider(span).GetRequiredService<IDistributedCache>();
 
     [TestMethod]
     public async Task ReturnsNullValue_ForNonExistingCacheItem()
@@ -210,5 +226,41 @@ TimeSpan.FromMilliseconds(slidingExpirationWindow.TotalMilliseconds / 2);
         var value = await cache.GetStringAsync(keyWithDot);
 
         Assert.AreEqual(expectedValue, value);
+    }
+
+    [TestMethod]
+    public async Task SetWithSlidingExpiration_BlobRemoved()
+    {
+        var slidingExpirationWindow = TimeSpan.FromSeconds(6);
+
+        var half =
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+      slidingExpirationWindow / 2;
+#else
+TimeSpan.FromMilliseconds(slidingExpirationWindow.TotalMilliseconds / 2);
+#endif
+        var key = Guid.NewGuid().ToString();
+        var text = "Hello, World!";
+
+        var provider = GetProvider(half);
+        var cache = provider.GetRequiredService<IDistributedCache>();
+        var blobServiceClient = provider.GetRequiredService<BlobServiceClient>();
+
+        // Arrange
+        await cache.SetStringAsync(
+            key,
+            text,
+            new DistributedCacheEntryOptions().SetSlidingExpiration(half));
+
+        var value = await cache.GetStringAsync(key);
+
+        // Act
+        await Task.Delay(slidingExpirationWindow);
+
+        var blob = blobServiceClient.GetBlobContainerClient("test").GetBlobClient(key);
+
+        // Assert
+        Assert.AreEqual(text, value);
+        await Assert.ThrowsExceptionAsync<RequestFailedException>(async () => await blob.DownloadContentAsync());
     }
 }

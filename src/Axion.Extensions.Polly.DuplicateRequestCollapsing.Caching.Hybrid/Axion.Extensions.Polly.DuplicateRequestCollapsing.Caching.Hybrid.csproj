@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;$(TargetFrameworks)</TargetFrameworks>
-    <Description>Implementation of [Polly](https://github.com/App-vNext/Polly) collapse concurrent duplicate requests to a single execution [Strategy](https://www.pollydocs.org/strategies/index) that utilizes [HybridCache](https://learn.microsoft.com/en-us/aspnet/core/performance/caching/hybrid).</Description>
+    <Description>Implementation of Polly collapse concurrent duplicate requests to a single execution Strategy that utilizes HybridCache.</Description>
     <PackageTags>Cache;DistributedCache;Distributed Cache;Caching;IDistributedCache;HybridCache;Hybrid Cache;Cache Stampede Resilience;DuplilicateRequestCollapse;DuplilicateRequest;Duplilicate Concurrent Request;Resilience;Polly;Strategy</PackageTags>
   </PropertyGroup>
   <ItemGroup>

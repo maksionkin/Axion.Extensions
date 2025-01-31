@@ -52,7 +52,15 @@ jobs:
     - name: Test
       env:
         GITHUBTOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: dotnet test --no-build --verbosity normal -c Release
+        DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1 
+      run: dotnet test --no-build --verbosity normal -c Release  --logger trx --results-directory TestResults -f net9.0
+              
+    - name: Upload dotnet test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: dotnet-results
+        path: TestResults
+      if: ${{ always() }}
 
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4

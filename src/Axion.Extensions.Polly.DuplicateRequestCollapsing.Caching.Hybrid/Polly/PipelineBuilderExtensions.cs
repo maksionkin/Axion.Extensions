@@ -32,7 +32,7 @@ public static class PipelineBuilderExtensions
         {
             CacheKeyProvider = options.CacheKeyProvider,
             HybridCache = options.HybridCache,
-            HybridCacheSetEntryOptionsProvider = 
+            HybridCacheSetEntryOptionsProvider =
                 async (context, result) =>
                 {
                     var o = await options.HybridCacheSetEntryOptionsProvider(context, result);
