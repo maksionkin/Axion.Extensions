@@ -1,6 +1,5 @@
 ﻿using System.Net.Http;
 using Axion.Extensions.Caching.Hybrid.Serialization.Http;
-using Axion.Extensions.Http.Resilience;
 using Azure.Storage.Blobs;
 using Medallion.Threading;
 using Medallion.Threading.Azure;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Polly;
-using Polly.Registry;
 
 namespace Axion.Extensions.Http.Resilience.DuplicateRequestCollapsing.Caching.Hybrid.Tests;
 

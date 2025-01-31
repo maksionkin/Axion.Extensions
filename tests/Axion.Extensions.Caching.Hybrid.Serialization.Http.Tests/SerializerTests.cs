@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
+using CommunityToolkit.Diagnostics;
 using Microsoft.IO;
 
 namespace Axion.Extensions.Caching.Hybrid.Serialization.Http.Tests;
@@ -15,7 +16,7 @@ public class SerializerTests
 
     static readonly Encoding Utf8 = new UTF8Encoding(false);
 
-    static readonly int[] Fibonacci = [0, 1, 1, 2, 3, 5, 8, 13];
+    static readonly int[] Fibonacci = [0, 1, 1, 2, 3, 5, 8, 13, 21];
 
     static ReadOnlySequence<byte> Load(string file, int seed)
     {
@@ -36,34 +37,47 @@ public class SerializerTests
     }
 
     [DataTestMethod]
-    [DataRow("Chuncked.txt", 28, true, false)]
-    [DataRow("ChunckedBad.txt", 22, false, false)]
-    [DataRow("WithLength.txt", 13, true, false)]
-    [DataRow("WithoutLength.txt", 6, false, false)]
-    [DataRow("Chuncked.txt", 6, true, true)]
-    [DataRow("ChunckedBad.txt", 13, false, true)]
-    [DataRow("WithLength.txt", 22, true, true)]
-    [DataRow("WithoutLength.txt", 28, false, true)]
-    public void TestResponseRead(string file, int seed, bool hasTrailing, bool roundTrip)
+    [DataRow("Chuncked.txt", 28, true, false, 0)]
+    [DataRow("ChunckedBad.txt", 22, false, false, 32)]
+    [DataRow("WithLength.txt", 13, true, false, 512)]
+    [DataRow("WithoutLength.txt", 6, false, false, null)]
+    [DataRow("Chuncked.txt", 6, true, true, 0)]
+    [DataRow("ChunckedBad.txt", 13, false, true, 32)]
+    [DataRow("WithLength.txt", 22, true, true, 512)]
+    [DataRow("WithoutLength.txt", 28, false, true, null)]
+    public void TestResponseRead(string file, int seed, bool hasTrailing, bool roundTrip, int? stackSize)
     {
-        var response = HttpResponseMessageHybridCacheSerializer.Instance.Deserialize(Load(file, seed));
+        var instance = stackSize == null ? HttpResponseMessageHybridCacheSerializer.Instance : new(new HttpResponseMessageHybridCacheSerializer.Options() { MaxCharOnStack = stackSize.Value });
+
+        var response = instance.Deserialize(Load(file, seed));
 
         if (roundTrip)
         {
-            using var ms = RecyclableMemoryStreamManager.GetStream(file);
-            HttpResponseMessageHybridCacheSerializer.Instance.Serialize(response, ms);
+            var ms = new RandomChunckBufferWriter(new(seed));
+            instance.Serialize(response, ms);
 
-            response = HttpResponseMessageHybridCacheSerializer.Instance.Deserialize(new ReadOnlySequence<byte>(ms.ToArray()));
+            var s = ms.ToString();
+
+            response = instance.Deserialize(ms.GetSequence());
         }
 
         Assert.AreEqual((HttpStatusCode)234, response.StatusCode);
-        Assert.AreEqual("Some status", response.ReasonPhrase);
+        Assert.AreEqual("Some status👍", response.ReasonPhrase);
 
-        Assert.IsTrue(response.Headers.TryGetValues("X-MultiLine", out var values));
+        Assert.IsTrue(response.Headers.TryGetValues("X-a", out var values));
+        Assert.IsTrue(response.Headers.TryGetValues("X-b", out var values2));
+        Assert.AreSame(values.ElementAt(0), values2.ElementAt(0));
+
+        Assert.IsTrue(response.Headers.TryGetValues("X-MultiLine", out values));
         Assert.AreEqual(2, values.Count());
 
         Assert.AreEqual("line0", values.ElementAt(0));
         Assert.AreEqual("line1", values.ElementAt(1));
+
+        Assert.IsTrue(response.Headers.TryGetValues("x-987654321098765432109876543210987654321098765432109876543210987654321098765432109876543210", out values));
+        Assert.AreEqual(1, values.Count());
+
+        Assert.AreEqual("👍987654321098765432109876543210987654321098765432109876543210987654321098765432109876543210", values.ElementAt(0));
 
         var content = response.Content.ReadAsStringAsync().Result;
 
@@ -135,6 +149,8 @@ public class SerializerTests
         const string url = "https://example.com/";
         using var httpClient = new HttpClient();
 
+        httpClient.Timeout = TimeSpan.FromDays(1);
+
         using var request = new HttpRequestMessage(new(method ?? "get"), url) { Version = new(version ?? "1.1") };
         if (payload != null)
         {
@@ -156,6 +172,66 @@ public class SerializerTests
         Assert.AreEqual(response.Content.Headers.ToString(), deserialized.Content.Headers.ToString());
         Assert.AreEqual(response.Content.ReadAsStringAsync().Result, deserialized.Content.ReadAsStringAsync().Result);
     }
+
+    class RandomChunckBufferWriter(Random random) : IBufferWriter<byte>
+    {
+        int current;
+        readonly List<byte[]> chunks = [[]];
+
+        public void Advance(int count)
+        {
+            current += count;
+
+            if (chunks.Last().Length < current)
+            {
+                chunks.Add(new byte[current - chunks.Last().Length]);
+
+                current = 0;
+            }
+        }
+
+        public Memory<byte> GetMemory(int sizeHint = 0)
+        {
+            Get(sizeHint);
+
+            return new(chunks.Last(), current, chunks.Last().Length - current);
+        }
+
+        public Span<byte> GetSpan(int sizeHint = 0)
+        {
+            Get(sizeHint);
+
+            return new(chunks.Last(), current, chunks.Last().Length - current);
+        }
+
+        void Get(int sizeHint)
+        {
+            Guard.IsEqualTo(0, sizeHint);
+
+            if (current >= chunks.Last().Length)
+            {
+                var r = random.GetItem(Fibonacci);
+                var array = new byte[1 + r];
+
+                chunks.Add(array);
+
+                current = 0;
+            }
+        }
+
+        public ReadOnlySequence<byte> GetSequence()
+        {
+            var last = chunks.Last();
+
+            Array.Resize(ref last, current);
+            chunks[^1] = last;
+
+            return new(chunks.SelectMany(l => l).ToArray());
+        }
+
+        public override string ToString() =>
+            Utf8.GetString(GetSequence().ToArray());
+    }
 }
 
 static class RandomExtensions
@@ -163,4 +239,5 @@ static class RandomExtensions
     public static T GetItem<T>(this Random random, T[] values) =>
         values[random.Next(values.Length)];
 }
+
 

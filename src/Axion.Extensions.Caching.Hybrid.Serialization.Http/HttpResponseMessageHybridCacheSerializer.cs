@@ -3,15 +3,13 @@
 
 using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
-using System.Text;
+using CommunityToolkit.Diagnostics;
 using CommunityToolkit.HighPerformance;
+using CommunityToolkit.HighPerformance.Buffers;
 using Microsoft.Extensions.Caching.Hybrid;
 
 
@@ -20,422 +18,48 @@ namespace Axion.Extensions.Caching.Hybrid.Serialization.Http;
 /// <summary>
 /// A serializer for serializing items of type <see cref="HttpResponseMessage"/> for <see cref="HybridCache"/>
 /// </summary>
-public class HttpResponseMessageHybridCacheSerializer : IHybridCacheSerializer<HttpResponseMessage>
+public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridCacheSerializer.Options? options = null) : IHybridCacheSerializer<HttpResponseMessage>
 {
     static readonly Version DefaultVersion = new(0, 9);
 
-    internal static readonly Encoding Utf8 = new UTF8Encoding(false);
+    readonly Options options = options ?? Options.Default;
 
     /// <summary>
     /// Gets an instance of <see cref="HttpResponseMessageHybridCacheSerializer"/>
     /// </summary>
     public static readonly HttpResponseMessageHybridCacheSerializer Instance = new();
 
+    /// <summary>
+    /// Creates a new instance of <see cref="HttpResponseMessageHybridCacheSerializer"/>.
+    /// </summary>
+    public HttpResponseMessageHybridCacheSerializer() : this(null) 
+    { 
+    }
+
     /// <inheritdoc/>>
     public HttpResponseMessage Deserialize(ReadOnlySequence<byte> source)
     {
-        var currentPostion = source.Start;
-        var nextPostion = currentPostion;
-        var currentIndex = 0;
-        var current = ReadOnlyMemory<byte>.Empty;
+        var reader = new HttpResponseMessageReader(source, options);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool EnsureHasData()
+        if (reader.Read("HTTP/"u8)
+            && reader.Read(out Version? version)
+            && reader.ReadSpace()
+            && reader.Read(out HttpStatusCode status))
         {
-            while (currentIndex >= current.Length)
-            {
-                var saved = nextPostion;
-                if (source.TryGet(ref nextPostion, out current))
-                {
-                    currentIndex = 0;
-                    currentPostion = saved;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool ReadConst(ReadOnlySpan<byte> value)
-        {
-
-            while (EnsureHasData())
-            {
-                var d = Math.Min(current.Span.Length - currentIndex, value.Length);
-
-                if (current.Span.Slice(currentIndex, d).SequenceEqual(value[..d]))
-                {
-                    currentIndex += d;
-
-                    if (d == value.Length)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        value = value[d..];
-                    }
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            return false;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool ReadByte(out byte value)
-        {
-            if (EnsureHasData())
-            {
-                value = current.Span[currentIndex++];
-
-                return true;
-            }
-
-            value = default;
-
-            return false;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool ReadConstByte(byte value)
-        {
-            if (EnsureHasData() && current.Span[currentIndex] == value)
-            {
-                currentIndex++;
-
-                return true;
-            }
-
-            return false;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool ReadDigit(out int value)
-        {
-            if (ReadByte(out var d) && d >= '0' && d <= '9')
-            {
-                value = d - '0';
-
-                return true;
-            }
-
-            value = default;
-
-            return false;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool ReadVersion(out Version value)
-        {
-            if (ReadDigit(out var major))
-            {
-                value = ReadConstByte((byte)'.') && ReadDigit(out var minor)
-                    ? new(major, minor)
-                    : new(major, 0);
-
-                return true;
-            }
-
-            value = DefaultVersion;
-
-            return false;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool ReadSpaces()
-        {
-            var read = false;
-            while (EnsureHasData())
-            {
-                if (current.Span[currentIndex] == ' ')
-                {
-                    currentIndex++;
-                    read = true;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            return read;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool ReadLine() =>
-            ReadConst("\r\n"u8);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool ReadStatus(out HttpStatusCode value)
-        {
-            if (ReadDigit(out var d0) && ReadDigit(out var d1) && ReadDigit(out var d2))
-            {
-                value = (HttpStatusCode)(d0 * 100 + d1 * 10 + d2);
-
-                return true;
-            }
-
-            value = HttpStatusCode.OK;
-
-            return false;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        ReadOnlySequence<byte> Slice(int length) =>
-            source.Slice(currentPostion).Slice(currentIndex, length);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool ReadHex(out int value)
-        {
-            var read = false;
-            value = 0;
-
-            while (EnsureHasData())
-            {
-                var digit = current.Span[currentIndex];
-
-                int d;
-                if (digit >= '0' && digit <= '9')
-                {
-                    d = digit - '0';
-                }
-                else if (digit >= 'a' && digit <= 'f')
-                {
-                    d = digit - 'a' + 10;
-                }
-                else if (digit >= 'A' && digit <= 'F')
-                {
-                    d = digit - 'A' + 10;
-                }
-                else
-                {
-                    break;
-                }
-
-                value <<= 4;
-                value += d;
-
-                currentIndex++;
-
-                read = true;
-            }
-
-            return read;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool ReadChunckedBody(out ReadOnlySequence<byte> value)
-        {
-            var result = true;
-            var firstSegment = new SettableReadOnlySequenceSegment<byte>();
-            var currentSegment = firstSegment;
-
-            while (result)
-            {
-                if (ReadHex(out var size) && ReadLine())
-                {
-                    if (size == 0)
-                    {
-                        result &= ReadLine();
-
-                        break;
-                    }
-
-                    while (size > 0)
-                    {
-                        if (EnsureHasData())
-                        {
-                            var previousSegment = currentSegment;
-                            currentSegment = new SettableReadOnlySequenceSegment<byte>()
-                                .SetMemory(current.Slice(currentIndex, Math.Min(current.Length - currentIndex, size)))
-                                .SetRunningIndex(previousSegment.RunningIndex + previousSegment.Memory.Length);
-
-                            previousSegment?.SetNext(currentSegment);
-
-                            currentIndex += currentSegment.Memory.Length;
-                            size -= currentSegment.Memory.Length;
-                        }
-                        else
-                        {
-                            result = false;
-
-                            break;
-                        }
-                    }
-
-                    if (size == 0)
-                    {
-                        result = ReadLine();
-                    }
-                }
-                else
-                {
-                    result = false;
-                }
-            }
-
-            value = new ReadOnlySequence<byte>(firstSegment, 0, currentSegment, currentSegment.Memory.Length);
-
-            return result;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool ReadBody(long? length, out ReadOnlySequence<byte> value)
-        {
-            value = source.Slice(currentPostion).Slice(currentIndex);
-
-            if (length == null || length > value.Length)
-            {
-                return false;
-            }
-            else
-            {
-                source = value.Slice(length.Value);
-                currentPostion = source.Start;
-                currentIndex = 0;
-                nextPostion = currentPostion;
-
-                value = value.Slice(0, length.Value);
-
-                return source.TryGet(ref nextPostion, out current);
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool ReadString([NotNullWhen(true)] out string? value, byte delimiter = 0)
-        {
-            var position = currentPostion;
-            var next = nextPostion;
-            var memory = current;
-            var index = currentIndex;
-            var length = 0;
-
-            while (true)
-            {
-                var end = false;
-                while (index == memory.Length)
-                {
-                    position = next;
-                    if (source.TryGet(ref next, out memory))
-                    {
-                        index = 0;
-                    }
-                    else
-                    {
-                        end = true;
-
-                        break;
-                    }
-                }
-
-                if (!end)
-                {
-                    var i = memory.Span[index..].IndexOfAny(delimiter, (byte)'\r', (byte)'\n');
-                    if (i < 0)
-                    {
-                        length += memory.Length - index;
-                        index = memory.Length;
-                    }
-                    else
-                    {
-                        length += i;
-                        index += i;
-
-                        end = true;
-                    }
-                }
-
-                if (end)
-                {
-                    if (length == 0)
-                    {
-                        value = null;
-                        return false;
-                    }
-
-                    var bytes = Slice(length);
-
-#if NET5_0_OR_GREATER
-                    value = Utf8.GetString(bytes);
-#else
-                    var buffer = ArrayPool<byte>.Shared.Rent(length);
-
-                    try
-                    {
-                        bytes.CopyTo(buffer);
-
-                        value = Utf8.GetString(buffer, 0, length);
-                    }
-                    finally
-                    {
-                        ArrayPool<byte>.Shared.Return(buffer);
-                    }
-#endif
-
-                    currentIndex = index;
-                    current = memory;
-                    currentPostion = position;
-                    nextPostion = next;
-
-                    return true;
-                }
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        IEnumerable<(string Header, string? Value)> ReadHeaders()
-        {
-            do
-            {
-                if (!ReadString(out var header, (byte)':') || header == null)
-                {
-                    break;
-                }
-
-                var hasValue = ReadConstByte((byte)':');
-
-                string? value = null;
-                if (hasValue)
-                {
-                    ReadString(out value);
-
-                    value ??= "";
-                }
-           
-                yield return (header.Trim(), value?.Trim());
-            }
-            while (ReadLine());
-        }
-
-        if (ReadConst("HTTP/"u8)
-            && ReadVersion(out var version)
-            && ReadSpaces()
-            && ReadStatus(out var status))
-        {
-            ReadSpaces();
-
-            ReadString(out var reason);
+            reader.ReadSpace();
 
             var response = new HttpResponseMessage(status)
             {
                 Version = version,
-                ReasonPhrase = reason
+                ReasonPhrase = reader.ReadString(),
             };
 
             response.Content ??= new StreamContent(Stream.Null);
 
-            if (ReadLine())
+            if (reader.ReadLine())
             {
                 long? contentLength = null;
-                foreach (var (header, value) in ReadHeaders())
+                while (reader.ReadHeader(out var header, out var value))
                 {
                     if ("Content-Length".Equals(header, StringComparison.OrdinalIgnoreCase) && long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var size))
                     {
@@ -448,48 +72,26 @@ public class HttpResponseMessageHybridCacheSerializer : IHybridCacheSerializer<H
                     }
                 }
 
-                if (ReadLine())
+                if (reader.ReadLine())
                 {
-                    bool trailingHeaders;
-                    ReadOnlySequence<byte> body;
-                    if (response.Headers.TransferEncodingChunked == true)
+                    var content = new StreamContent(response.Headers.TransferEncodingChunked == true ? reader.ReadChuncked() : reader.ReadBody(contentLength));
+
+                    foreach (var header in response.Content.Headers)
                     {
-                        trailingHeaders = ReadChunckedBody(out body);
-                    }
-                    else if (contentLength == 0)
-                    {
-                        trailingHeaders = true;
-                        body = ReadOnlySequence<byte>.Empty;
-                    }
-                    else
-                    {
-                        trailingHeaders = ReadBody(contentLength, out body);
+                        content.Headers.TryAddWithoutValidation(header.Key, header.Value);
                     }
 
-                    if (body.Length > 0)
+                    response.Content = content;
+
+                    while (reader.ReadHeader(out var header, out var value))
                     {
-                        var content = new StreamContent(body.AsStream());
-
-                        foreach (var header in response.Content.Headers)
-                        {
-                            content.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                        }
-
-                        response.Content = content;
-                    }
-
-                    if (trailingHeaders)
-                    {
-                        foreach (var (header, value) in ReadHeaders())
-                        {
-                            response.
+                        response.
 #if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
                                 TrailingHeaders
 #else
-                                Headers
+                            Headers
 #endif
-                                .TryAddWithoutValidation(header, value);
-                        }
+                            .TryAddWithoutValidation(header, value);
                     }
                 }
             }
@@ -509,20 +111,24 @@ public class HttpResponseMessageHybridCacheSerializer : IHybridCacheSerializer<H
     /// <inheritdoc/>>
     public void Serialize(HttpResponseMessage value, IBufferWriter<byte> target)
     {
-        target.Write("HTTP/"u8);
+        var writer = new HttpResponseMessageWriter(target);
 
-        target.Write(value.Version);
-        target.Write(value.StatusCode);
+        writer.Write("HTTP"u8);
+
+        writer.Write(value.Version);
+        writer.Write(value.StatusCode);
 
         if (value.ReasonPhrase != null)
         {
-            target.Write(value.ReasonPhrase ?? "");
+            writer.Write((byte)' ');
+
+            writer.Write(value.ReasonPhrase.AsSpan());
         }
 
-        target.WriteLine();
-        target.Write(value.Headers);
-        target.Write(value.Content.Headers);
-        target.WriteLine();
+        writer.WriteLine();
+        writer.Write(value.Headers);
+        writer.Write(value.Content.Headers);
+        writer.WriteLine();
 
         value.Content.LoadIntoBufferAsync().Wait();
 
@@ -530,77 +136,67 @@ public class HttpResponseMessageHybridCacheSerializer : IHybridCacheSerializer<H
 
         if (value.Headers.TransferEncodingChunked == true)
         {
-            var span = target.SafeGetSpan();
-
-
-            var buffer = ArrayPool<byte>.Shared.Rent(16 * 1024);
-
-            try
-            {
-                while (true)
-                {
-                    var read = contentStream.Read(buffer, 0, buffer.Length);
-
-                    target.WriteHex(read);
-                    target.WriteLine();
-
-                    if (read == 0)
-                    {
-                        break;
-                    }
-
-                    target.Write(new ReadOnlySpan<byte>(buffer, 0, read));
-
-                    target.WriteLine();
-                }
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
-
-            target.WriteLine();
+            writer.WriteChuncked(contentStream);
         }
         else
         {
-#if NETCOREAPP2_1_OR_GREATER || NETSTANDARD2_1_OR_GREATER
-            while (true)
-            {
-                var span = target.SafeGetSpan();
-                var read = contentStream.Read(span);
-                if (read == 0)
-                {
-                    break;
-                }
-
-                target.Advance(read);
-            }
-#else
-            var buffer = ArrayPool<byte>.Shared.Rent(16 * 1024);
-
-            try
-            {
-                while (true)
-                {
-                    var read = contentStream.Read(buffer, 0, buffer.Length);
-
-                    if (read == 0)
-                    {
-                        break;
-                    }
-
-                    target.Write(new ReadOnlySpan<byte>(buffer, 0, read));
-                }
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
-#endif
+            writer.Write(contentStream);
         }
 
 #if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
-        target.Write(value.TrailingHeaders);
+        writer.Write(value.TrailingHeaders);
 #endif
+
+        writer.Flush();
+    }
+
+    /// <summary>
+    /// <see cref="HttpResponseMessageHybridCacheSerializer"/> options;
+    /// </summary>
+    public class Options
+    {
+        /// <summary>
+        /// Default <see cref="HttpResponseMessageHybridCacheSerializer"/> options.
+        /// </summary>
+        public static readonly Options Default = new();
+
+        /// <summary>
+        /// Gets or sets the <see cref="ArrayPool{Char}"/> for array allocations.
+        /// </summary>
+        public ArrayPool<char> CharArrayPool
+        {
+            get;
+            set
+            {
+                Guard.IsNotNull(value);
+                field = value;
+            }
+        } = ArrayPool<char>.Shared;
+
+        /// <summary>
+        /// Gets or sets the <see cref="StringPool"/> for strng allocations.
+        /// </summary>
+        public StringPool StringPool
+        {
+            get;
+            set
+            {
+                Guard.IsNotNull(value);
+                field = value;
+            }
+        } = StringPool.Shared;
+
+        /// <summary>
+        /// Gets or sets max char count to be stack allocated.
+        /// </summary>
+        public int MaxCharOnStack
+        {
+            get; 
+            set
+            {
+                Guard.IsGreaterThanOrEqualTo(value, 0);
+                field = value;
+            }
+        } = 32;
     }
 }

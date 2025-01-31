@@ -49,7 +49,8 @@ public class AzureBlobsCache : IBufferDistributedCache, IDisposable
         if (!optionsAccessor.Value.DisableBackgroundExpiredItemsDeletion)
         {
             source = new();
-            RemoveExpiredUntilCancelledAsync(source.Token);
+
+            Task.Factory.StartNew(() => RemoveExpiredUntilCancelledAsync(source.Token), TaskCreationOptions.LongRunning).ConfigureAwait(false);
         }
     }
 
@@ -359,7 +360,7 @@ public class AzureBlobsCache : IBufferDistributedCache, IDisposable
             {
                 try
                 {
-                    using var stream = new ReadOnlySequenceStream(value);
+                    using var stream = value.AsStream();
 
                     await blobClient.UploadAsync(stream,
                         new BlobUploadOptions() { Metadata = metadata.ToDictionary() },
@@ -452,75 +453,6 @@ public class AzureBlobsCache : IBufferDistributedCache, IDisposable
             }
 
             return metadata;
-        }
-    }
-
-    class ReadOnlySequenceStream(ReadOnlySequence<byte> memory) : Stream
-    {
-        public override bool CanRead => true;
-
-        public override bool CanSeek => true;
-
-        public override bool CanWrite => false;
-
-        public override long Length => memory.Length;
-
-        public override long Position { get; set; }
-
-        public override void Flush()
-        {
-        }
-
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            if (Position >= Length)
-            {
-                return 0;
-            }
-
-            var sequence = memory.Slice(Position);
-            var destination = buffer.AsSpan(offset, count);
-            var bytesCopied = 0;
-
-            foreach (var segment in sequence)
-            {
-                var bytesToCopy = Math.Min(segment.Length, destination.Length);
-
-                segment.Span[..bytesToCopy].CopyTo(destination);
-
-                destination = destination[bytesToCopy..];
-
-                bytesCopied += bytesToCopy;
-
-                Position += bytesToCopy;
-
-                if (destination.Length == 0)
-                {
-                    break;
-                }
-            }
-
-            return bytesCopied;
-        }
-
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            return Position = origin switch
-            {
-                SeekOrigin.Current => Position + offset,
-                SeekOrigin.End => Length + offset,
-                _ => offset,
-            };
-        }
-
-        public override void SetLength(long value)
-        {
-            throw new InvalidOperationException();
-        }
-
-        public override void Write(byte[] buffer, int offset, int count)
-        {
-            throw new InvalidOperationException();
         }
     }
 }
