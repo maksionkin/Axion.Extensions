@@ -6,8 +6,7 @@ on:
 
   pull_request:
     branches: [ "main", "v*" ]
-env:
-    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1 
+
 jobs:
   build:
     name: Build
@@ -53,6 +52,7 @@ jobs:
     - name: Test
       env:
         GITHUBTOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1 
       run: dotnet test --no-build --verbosity normal -c Release
 
     - name: Upload Build Artifacts

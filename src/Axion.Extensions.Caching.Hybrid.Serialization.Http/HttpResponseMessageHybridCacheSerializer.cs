@@ -155,32 +155,26 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
     /// </summary>
     public class Options
     {
+        ArrayPool<char> charArrayPool = ArrayPool<char>.Shared;
+        StringPool stringPool = StringPool.Shared;
+        int maxCharsOnStack = 32;
+
         /// <summary>
         /// Default <see cref="HttpResponseMessageHybridCacheSerializer"/> options.
         /// </summary>
         public static readonly Options Default = new();
 
         /// <summary>
-        /// Creates a new instance of <see cref="Options"/>.
-        /// </summary>
-        public Options()
-        {
-            CharArrayPool = ArrayPool<char>.Shared;
-            StringPool = StringPool.Shared;
-            MaxCharsOnStack = 32;
-        }
-
-        /// <summary>
         /// Gets or sets the <see cref="ArrayPool{Char}"/> for array allocations.
         /// </summary>
         public ArrayPool<char> CharArrayPool
         {
-            get => field;
+            get => charArrayPool;
             set
             {
                 Guard.IsNotNull(value);
 
-                field = value;
+                charArrayPool = value;
             }
         }
 
@@ -189,12 +183,12 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
         /// </summary>
         public StringPool StringPool
         {
-            get => field;
+            get => stringPool;
             set
             {
                 Guard.IsNotNull(value);
 
-                field = value;
+                stringPool = value;
             }
         }
 
@@ -203,12 +197,12 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
         /// </summary>
         public int MaxCharsOnStack
         {
-            get => field;
+            get => maxCharsOnStack;
             set
             {
                 Guard.IsGreaterThanOrEqualTo(value, 0);
 
-                field = value;
+                maxCharsOnStack = value;
             }
         }
     }
