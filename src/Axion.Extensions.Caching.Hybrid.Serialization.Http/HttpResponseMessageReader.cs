@@ -7,8 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
-using CommunityToolkit.HighPerformance;
-using CommunityToolkit.HighPerformance.Buffers;
 
 namespace Axion.Extensions.Caching.Hybrid.Serialization.Http;
 
@@ -262,6 +260,6 @@ ref struct HttpResponseMessageReader(ReadOnlySequence<byte> sequence, HttpRespon
 
         reader.Advance(sequence.Length);
 
-        return sequence.AsStream();
+        return CommunityToolkit.HighPerformance.ReadOnlySequenceExtensions.AsStream(sequence);
     }
 }

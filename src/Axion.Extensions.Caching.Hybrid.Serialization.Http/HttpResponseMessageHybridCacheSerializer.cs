@@ -111,7 +111,7 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
     /// <inheritdoc/>>
     public void Serialize(HttpResponseMessage value, IBufferWriter<byte> target)
     {
-        var writer = new HttpResponseMessageWriter(target);
+        var writer = new HttpResponseMessageWriter(target, options);
 
         writer.Write("HTTP"u8);
 
@@ -201,5 +201,19 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
                 field = value;
             }
         } = 32;
+
+        /// <summary>
+        /// Gets or sets the <see cref="ArrayPool{Byte}"/> for array allocations.
+        /// </summary>
+        public ArrayPool<byte> ByteArrayPool
+        {
+            get;
+            set
+            {
+                Guard.IsNotNull(value);
+
+                field = value;
+            }
+        } = ArrayPool<byte>.Shared;
     }
 }

@@ -8,12 +8,15 @@ using System.IO;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
-using CommunityToolkit.HighPerformance;
 
 namespace Axion.Extensions.Caching.Hybrid.Serialization.Http;
 
 [method: MethodImpl(MethodImplOptions.AggressiveInlining)]
-ref struct HttpResponseMessageWriter(IBufferWriter<byte> target)
+ref struct HttpResponseMessageWriter(
+    IBufferWriter<byte> target,
+#pragma warning disable CS9113
+    HttpResponseMessageHybridCacheSerializer.Options options)
+#pragma warning restore CS9113
 {
     Span<byte> buffer;
     int offset;
@@ -223,7 +226,7 @@ ref struct HttpResponseMessageWriter(IBufferWriter<byte> target)
         {
             EnsureBuffer();
 
-            var read = value.Read(buffer[offset..]);
+            var read = Read(value, buffer[offset..]);
             if (read == 0)
             {
                 break;
@@ -234,6 +237,32 @@ ref struct HttpResponseMessageWriter(IBufferWriter<byte> target)
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+    static
+#else
+    readonly
+#endif
+    int Read(Stream stream, scoped Span<byte> buffer)
+    {
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+        return stream.Read(buffer);
+#else
+        var pool = options.ByteArrayPool;
+        var array = pool.Rent(buffer.Length);
+        try
+        { 
+            var result = stream.Read(array, 0, buffer.Length);
+            array.AsSpan(0, result).CopyTo(buffer);
+
+            return result;
+        }
+        finally
+        {
+            pool.Return(array);
+        }
+#endif
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteChuncked(Stream value)
     {
         Span<byte> bytes = stackalloc byte[8];
@@ -243,7 +272,7 @@ ref struct HttpResponseMessageWriter(IBufferWriter<byte> target)
 
             if (buffer.Length - offset < 5)
             {
-                var read = value.Read(bytes);
+                var read = Read(value, bytes);
 
                 Write((byte)(read + '0')); // read cannot be more then 8 here
                 WriteLine();
@@ -258,7 +287,7 @@ ref struct HttpResponseMessageWriter(IBufferWriter<byte> target)
             else
             {
                 var chunckSizeLength = (buffer.Length - offset - 3).CountOfHexDigits();
-                var read = value.Read(buffer[(chunckSizeLength + offset + 2)..]);
+                var read = Read(value, buffer[(chunckSizeLength + offset + 2)..]);
 
                 var size = read.WriteHexTo(buffer.Slice(offset, chunckSizeLength));
                 buffer[size + offset] = (byte)'\r';
