@@ -42,7 +42,7 @@ public class GitHubFileProviderTests
             var line = textStream.ReadLine();
             if (!string.IsNullOrEmpty(line))
             {
-                var a = line.Split('\t', 2);
+                var a = line.Split(['\t'], 2);
 
                 var subpath = a[1];
                 var lastModified = DateTimeOffset.Parse(a[0]).ToUniversalTime();
@@ -104,7 +104,7 @@ public class GitHubFileProviderTests
                         var length = 0L;
                         while (true)
                         {
-                            var read = stream.Read(buffer);
+                            var read = stream.Read(buffer, 0, buffer.Length);
                             length += read;
 
                             if (read <= 0)

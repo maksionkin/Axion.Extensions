@@ -3,31 +3,31 @@ using System.Security.Cryptography;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Axion.Extensions.Caching.Transformed.Tests;
 
 [TestClass]
 public class TransformedCacheTests
 {
-    static IDistributedCache GetCache() =>
-        Host.CreateDefaultBuilder()
-            .ConfigureServices(services =>
-            {
-                services.AddAzureClients(builder => builder.AddBlobServiceClient("UseDevelopmentStorage=true"));
+    static IDistributedCache GetCache()
+    {
+        var services = new ServiceCollection();
 
-                services.AddAzureBlobCache(options =>
-                {
-                    options.ConnectionString = "UseDevelopmentStorage=true";
-                    options.ExpiredItemsDeletionInterval = TimeSpan.FromMinutes(2);
-                    options.DisableBackgroundExpiredItemsDeletion = true;
-                })
-                .AddTransformedCache(Aes.Create())
-                .AddTransformedCache<GZipStream>();
-            })
-            .Build()
-            .Services
-            .GetRequiredService<IDistributedCache>();
+        services.AddAzureClients(builder => builder.AddBlobServiceClient("UseDevelopmentStorage=true"));
+
+        services.AddAzureBlobCache(options =>
+        {
+            options.ConnectionString = "UseDevelopmentStorage=true";
+            options.ExpiredItemsDeletionInterval = TimeSpan.FromMinutes(2);
+            options.DisableBackgroundExpiredItemsDeletion = true;
+        })
+        .AddTransformedCache(Aes.Create())
+        .AddTransformedCache<GZipStream>();
+
+        var provder = services.BuildServiceProvider();
+
+        return provder.GetRequiredService<IDistributedCache>();
+    }
 
     [TestMethod]
     public async Task ReturnsNullValue_ForNonExistingCacheItem()
@@ -47,7 +47,7 @@ public class TransformedCacheTests
     {
         // Arrange
         // Create a key with the maximum allowed key length. Here a key of length 898 bytes is created.
-        var key = new string('a', 13613);
+        var key = Guid.NewGuid() + new string('a', 13613);
         var expectedValue = "Hello, World!";
 
         var cache = GetCache();
@@ -116,6 +116,13 @@ public class TransformedCacheTests
     {
         var slidingExpirationWindow = TimeSpan.FromSeconds(6);
 
+        var half =
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        slidingExpirationWindow / 2;
+#else
+        TimeSpan.FromMilliseconds(slidingExpirationWindow.TotalMilliseconds / 2);
+#endif
+
         var expectedValue = "Hello, World!";
 
         var key = Guid.NewGuid().ToString();
@@ -128,16 +135,16 @@ public class TransformedCacheTests
             expectedValue,
             new DistributedCacheEntryOptions().SetSlidingExpiration(slidingExpirationWindow));
 
-        await Task.Delay(slidingExpirationWindow / 2);
+        await Task.Delay(half);
 
         // Act
         var value = await cache.GetStringAsync(key);
 
-        await Task.Delay(slidingExpirationWindow / 2);
+        await Task.Delay(half);
 
         await cache.RefreshAsync(key);
 
-        await Task.Delay(slidingExpirationWindow / 2);
+        await Task.Delay(half);
 
         value = await cache.GetStringAsync(key);
 
@@ -154,6 +161,13 @@ public class TransformedCacheTests
     {
         var slidingExpirationWindow = TimeSpan.FromSeconds(6);
 
+        var half =
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        slidingExpirationWindow / 2;
+#else
+        TimeSpan.FromMilliseconds(slidingExpirationWindow.TotalMilliseconds / 2);
+#endif
+
         var expectedValue = "Hello, World!";
 
         var key = Guid.NewGuid().ToString();
@@ -165,18 +179,18 @@ public class TransformedCacheTests
             key,
             expectedValue,
             new DistributedCacheEntryOptions().SetSlidingExpiration(slidingExpirationWindow)
-            .SetAbsoluteExpiration(DateTimeOffset.UtcNow + 1.5 * slidingExpirationWindow));
+            .SetAbsoluteExpiration(DateTimeOffset.UtcNow + slidingExpirationWindow + half));
 
-        await Task.Delay(slidingExpirationWindow / 2);
+        await Task.Delay(half);
 
         // Act
         var value = await cache.GetStringAsync(key);
 
-        await Task.Delay(slidingExpirationWindow / 2);
+        await Task.Delay(half);
 
         await cache.RefreshAsync(key);
 
-        await Task.Delay(slidingExpirationWindow / 2);
+        await Task.Delay(half);
 
         Assert.IsNull(await cache.GetAsync(key));
     }

@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Polly" Version="7.2.4" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Axion.png">
@@ -12,5 +13,8 @@
       <PackagePath>\</PackagePath>
     </None>
     <None Include="README.nuget.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Axion.Extensions.Caching.Hybrid.Serialization.Http\Axion.Extensions.Caching.Hybrid.Serialization.Http.csproj" />
   </ItemGroup>
 </Project>

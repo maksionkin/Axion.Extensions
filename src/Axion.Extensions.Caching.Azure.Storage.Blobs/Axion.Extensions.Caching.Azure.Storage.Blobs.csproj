@@ -1,18 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Distributed cache implementation using Azure Storage Blobs.</Description>
-    <PackageTags>Cache;DistributedCache;Distributed Cache;Caching;IDistributedCache;Azure Storage;Blobs</PackageTags>
+    <PackageTags>Cache;DistributedCache;Distributed Cache;Caching;IDistributedCache;IBufferDistributedCache;Azure Storage;Blobs</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.13.0" />
+    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.4.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(PlatformVersion)" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="$(PlatformVersion)" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="$(PlatformVersion)" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' != 'net8.0'">
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Bcl.Memory" Version="$(PlatformVersion)" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Axion.png">
