@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
+    <TargetFrameworks>net9.0;net8.0;net462</TargetFrameworks>
+    <Description>Collapse concurrent duplicate requests to a single execution Resilience mechanism for HttpClient built on the Polly Caching Strategy that utilizes HybridCache.</Description>
+    <PackageTags>HttpClient;Cache;DistributedCache;Distributed Cache;Caching;IDistributedCache;HybridCache;Hybrid Cache;Cache Stampede Resilience;DuplilicateRequestCollapse;DuplilicateRequest;Duplilicate Concurrent Request;Resilience;Polly;Strategy</PackageTags>
+    <RootNamespace>Axion.Extensions.Http.Resilience</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="$(PlatformVersion)" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Axion.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="README.nuget.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Axion.Extensions.Http.Resilience.Caching.Hybrid\Axion.Extensions.Http.Resilience.Caching.Hybrid.csproj" />
+    <ProjectReference Include="..\Axion.Extensions.Polly.DuplicateRequestCollapsing.Caching.Hybrid\Axion.Extensions.Polly.DuplicateRequestCollapsing.Caching.Hybrid.csproj" />
+  </ItemGroup>
+</Project>

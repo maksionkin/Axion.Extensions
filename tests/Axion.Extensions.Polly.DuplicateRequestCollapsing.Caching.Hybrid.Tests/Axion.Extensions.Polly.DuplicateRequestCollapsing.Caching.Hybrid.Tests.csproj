@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(PlatformVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.6.3" />
+    <PackageReference Include="DistributedLock.Azure" Version="1.0.1" />
+    <PackageReference Include="Polly.Extensions" Version="8.5.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="9.1.0-preview.1.25064.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Axion.Extensions.Caching.Azure.Storage.Blobs\Axion.Extensions.Caching.Azure.Storage.Blobs.csproj">
+      <HintPath>..\..\src\Axion.Extensions.Caching.Azure.Storage.Blobs\bin\$(Configuration)\$(LibraryTargetFramework)\Axion.Extensions.Caching.Azure.Storage.Blobs.dll</HintPath>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Axion.Extensions.Polly.DuplicateRequestCollapsing.Caching.Hybrid\Axion.Extensions.Polly.DuplicateRequestCollapsing.Caching.Hybrid.csproj" >
+      <HintPath>..\..\src\Axion.Extensions.Polly.DuplicateRequestCollapsing.Caching.Hybrid\bin\$(Configuration)\$(LibraryTargetFramework)\Axion.Extensions.Polly.DuplicateRequestCollapsing.Caching.Hybrid.dll</HintPath>
+    </ProjectReference>
+  </ItemGroup>
+
+</Project>

@@ -3,6 +3,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(PlatformVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Axion.Extensions.DependencyInjection\Axion.Extensions.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\src\Axion.Extensions.DependencyInjection\Axion.Extensions.DependencyInjection.csproj" >
+      <HintPath>..\..\src\Axion.Extensions.DependencyInjection\bin\$(Configuration)\$(LibraryTargetFramework)\Axion.Extensions.DependencyInjection.dll</HintPath>
+    </ProjectReference>
   </ItemGroup>
 </Project>

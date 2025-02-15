@@ -1,0 +1,19 @@
+HTTP/3.4 234 Some status👍
+x-a: x-a
+x-b: x-a
+x-multiline: line0
+Transfer-Encoding: chunked
+TE: x-Trailing
+x-987654321098765432109876543210987654321098765432109876543210987654321098765432109876543210: 👍987654321098765432109876543210987654321098765432109876543210987654321098765432109876543210
+X-MultiLine: line1
+Content-Type: text/plain
+
+23
+12hgefghdsghjvhs+dvjfffffffffffffff
+1
+a
+3
+123
+0
+
+x-Trailing: trailing

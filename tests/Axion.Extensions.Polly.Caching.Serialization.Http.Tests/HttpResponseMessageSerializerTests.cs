@@ -1,6 +1,10 @@
 ﻿// Copyright (c) Michael Aksionkin. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Net;
+using System.Net.Http;
+using System.Reflection;
+using System.Runtime.Versioning;
 using System.Text;
 
 namespace Axion.Extensions.Polly.Caching.Serialization.Http.Tests;
@@ -8,11 +12,28 @@ namespace Axion.Extensions.Polly.Caching.Serialization.Http.Tests;
 [TestClass]
 public class HttpResponseMessageSerializerTests
 {
-    static void Run(string url, Version? version = null, HttpMethod? method = null, byte[]? payload = null)
+    static readonly Encoding Utf8 = new UTF8Encoding(false);
+
+    [DataTestMethod]
+    [DataRow(null, null, null)]
+    [DataRow(null, "Head", null)]
+    [DataRow(null, "Options", null)]
+    [DataRow("1.0", null, null)]
+    [DataRow("1.0", "Head", null)]
+    [DataRow("1.0", "Options", null)]
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+    [DataRow("2.0", null, null)]
+    [DataRow("2.0", "Head", null)]
+    [DataRow("2.0", "Options", null)]
+#endif
+    [DataRow(null, "Trace", new byte[] { 1, 2, 3, 4, 5, 6 })]
+    public void Run(string? version = null, string? method = null, byte[]? payload = null)
     {
+        const string url = "https://example.com/";
+
         using var httpClient = new HttpClient();
 
-        using var request = new HttpRequestMessage(method ?? HttpMethod.Get, url) { Version = version ?? new Version(1, 1) };
+        using var request = new HttpRequestMessage(new(method ?? "get"), url) { Version = new(version ?? "1.1") };
         if (payload != null)
         {
             request.Content = new ByteArrayContent(payload);
@@ -34,45 +55,58 @@ public class HttpResponseMessageSerializerTests
         Assert.AreEqual(response.Content.ReadAsStringAsync().Result, deserialized.Content.ReadAsStringAsync().Result);
     }
 
-    [TestMethod]
-    public void TestWikipedia()
+    [DataTestMethod]
+    [DataRow("Chuncked.txt", true, false)]
+    [DataRow("ChunckedBad.txt", false, false)]
+    [DataRow("WithLength.txt", true, false)]
+    [DataRow("WithoutLength.txt", false, false)]
+    [DataRow("Chuncked.txt", true, true)]
+    [DataRow("ChunckedBad.txt", false, true)]
+    [DataRow("WithLength.txt", true, true)]
+    [DataRow("WithoutLength.txt", false, true)]
+    public void TestComplexResponse(string file, bool hasTrailing, bool roundTrip)
     {
-        Run("https://www.wikipedia.org/");
-        Run("https://www.wikipedia.org/", method: HttpMethod.Head);
-        Run("https://www.wikipedia.org/", method: HttpMethod.Options);
-        Run("https://www.wikipedia.org/", new(1, 0));
-        Run("https://www.wikipedia.org/", new(2, 0));
+        var bytes = Utf8.GetBytes(string.Join("\r\n", File.ReadAllLines(file)));
 
-        Run("https://www.wikipedia.org/", new(2, 0), HttpMethod.Options);
-
-        Run("https://www.wikipedia.org/", new(2, 0), HttpMethod.Trace, Encoding.UTF8.GetBytes("TEST"));
-    }
-    [TestMethod]
-    public void TestComplexResponse()
-    {
-        using var ms = new MemoryStream();
-        using (var sw = new StreamWriter(ms) { NewLine = "\r\n" })
+        var response = HttpResponseMessageSerializer.Instance.Deserialize(bytes);
+        if (roundTrip)
         {
-            foreach (var line in File.ReadAllLines("ComplexRespose.txt"))
-            {
-                sw.WriteLine(line);
-            }
+            response = HttpResponseMessageSerializer.Instance.Deserialize(HttpResponseMessageSerializer.Instance.Serialize(response));
         }
 
-        var bytes = ms.ToArray();
-
-        using var response = HttpResponseMessageSerializer.Instance.Deserialize(bytes);
+        Assert.AreEqual((HttpStatusCode)234, response.StatusCode);
+        Assert.AreEqual("Some status", response.ReasonPhrase);
 
         Assert.IsTrue(response.Headers.TryGetValues("X-MultiLine", out var values));
-        Assert.AreEqual(values.Count(), 2);
+        Assert.AreEqual(2, values.Count());
 
-        Assert.AreEqual(values.ElementAt(0), "line0");
-        Assert.AreEqual(values.ElementAt(1), "line1");
+        Assert.AreEqual("line0", values.ElementAt(0));
+        Assert.AreEqual("line1", values.ElementAt(1));
 
-        Assert.IsTrue(response.TrailingHeaders.TryGetValues("x-trailing", out values));
-        Assert.AreEqual(values.Count(), 1);
-        Assert.AreEqual(values.ElementAt(0), "trailing");
+        var content = response.Content.ReadAsStringAsync().Result;
 
-        Assert.AreEqual(response.Content.ReadAsStringAsync().Result, "12hgefghdsghjvhs+dvjfffffffffffffffa123");
+        Assert.AreEqual("12hgefghdsghjvhs+dvjfffffffffffffffa123", content);
+
+        if (hasTrailing)
+        {
+            var trailingHeaders = response.Headers;
+
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+            trailingHeaders = response.TrailingHeaders;
+#endif
+
+
+            var frameworkName = new FrameworkName(typeof(HttpResponseMessageSerializer).Assembly.GetCustomAttribute<TargetFrameworkAttribute>()!.FrameworkName);
+            if (frameworkName.Identifier.Equals(".NETStandard", StringComparison.OrdinalIgnoreCase) && frameworkName.Version < new Version(2, 1)
+                || frameworkName.Identifier.Equals(".NETCoreApp", StringComparison.OrdinalIgnoreCase) && frameworkName.Version < new Version(3, 0))
+            {
+                trailingHeaders = response.Headers;
+            }
+
+            Assert.IsTrue(trailingHeaders.TryGetValues("x-trailing", out values));
+
+            Assert.AreEqual(values.Count(), 1);
+            Assert.AreEqual(values.ElementAt(0), "trailing");
+        }
     }
 }

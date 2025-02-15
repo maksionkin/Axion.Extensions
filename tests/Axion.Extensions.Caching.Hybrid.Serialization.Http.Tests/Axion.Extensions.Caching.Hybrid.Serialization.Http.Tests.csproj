@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(PlatformVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.6.3" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+
+    <ProjectReference Include="..\..\src\Axion.Extensions.Caching.Hybrid.Serialization.Http\Axion.Extensions.Caching.Hybrid.Serialization.Http.csproj">
+      <HintPath>..\..\src\Axion.Extensions.Caching.Hybrid.Serialization.Http\bin\$(Configuration)\$(LibraryTargetFramework)\Axion.Extensions.Caching.Hybrid.Serialization.Http.dll</HintPath>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="*.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

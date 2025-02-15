@@ -3,6 +3,7 @@ x-multiline: line0
 Transfer-Encoding: chunked
 TE: x-Trailing
 X-MultiLine: line1
+Content-Type: text/plain
 
 23
 12hgefghdsghjvhs+dvjfffffffffffffff
@@ -10,5 +11,3 @@ X-MultiLine: line1
 a
 3
 123
-0
-x-Trailing: trailing

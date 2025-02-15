@@ -1,0 +1,5 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Remove="..\Axion.Extensions.TestUtilities\Axion.Extensions.TestUtilities.csproj" />
+  </ItemGroup>
+</Project>
