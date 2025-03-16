@@ -47,9 +47,7 @@ public class DuplicateRequestCollapserTests
 
         httpClientBuilder.AddHttpMessageHandler<DelayedHttpHandler>();
 
-#pragma warning disable EXTEXP0018 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-        services.AddHybridCache(op => { }).AddSerializer(HttpResponseMessageHybridCacheSerializer.Instance);
-#pragma warning restore EXTEXP0018 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+        services.AddHybridCache().AddHttpResponseMessageSerializer();
 
         return services.BuildServiceProvider();
     }

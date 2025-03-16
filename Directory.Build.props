@@ -1,6 +1,8 @@
 <Project>
   <PropertyGroup>
-    <PlatformVersion>9.0.0</PlatformVersion>
+    <PlatformVersion>9.0.3</PlatformVersion>
+    <HybridCachePlatformVersion>9.3.0</HybridCachePlatformVersion>
+    <ResiliencePlatformVersion>9.3.0</ResiliencePlatformVersion>
   </PropertyGroup>
 
   <PropertyGroup>

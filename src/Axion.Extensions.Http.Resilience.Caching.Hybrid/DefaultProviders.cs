@@ -69,10 +69,14 @@ static class DefaultProviders
         return new ValueTask<string>(key.ToString());
     }
 
-    public static ValueTask<HybridCacheEntryFlags?> HybridCacheGetFlagsProvider(ResilienceContext context) =>
-        new(cacheableMethods.Contains(context.GetRequestMessage()?.Method)
+    public static ValueTask<HybridCacheEntryFlags?> HybridCacheGetFlagsProvider(ResilienceContext context)
+    {
+        var method = context.GetRequestMessage()?.Method;
+
+        return new(method == null || cacheableMethods.Contains(method)
             ? null
             : HybridCacheEntryFlags.DisableLocalCacheRead | HybridCacheEntryFlags.DisableLocalCacheRead);
+    }
 
     public static ValueTask<HybridCacheEntryOptions?> HybridCacheSetEntryOptionsProvider(ResilienceContext _, HttpResponseMessage result) =>
         new(new HybridCacheEntryOptions()
