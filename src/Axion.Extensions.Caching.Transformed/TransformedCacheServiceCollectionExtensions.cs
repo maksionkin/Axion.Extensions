@@ -13,6 +13,7 @@ using Axion.Extensions.Caching.Transformed;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Caching.Distributed;
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
@@ -88,7 +89,7 @@ public static class TransformedCacheServiceCollectionExtensions
         {
             var stream = Expression.Parameter(typeof(Stream));
 
-            var ctor = compressionStreamType.GetConstructor(new[] { stream.Type, typeof(CompressionMode) });
+            var ctor = compressionStreamType.GetConstructor([stream.Type, typeof(CompressionMode)]);
             if (ctor == null)
             {
                 return default;
@@ -98,7 +99,7 @@ public static class TransformedCacheServiceCollectionExtensions
 
             var compressionLevel = Expression.Parameter(typeof(CompressionLevel));
 
-            var compressCtor = compressionStreamType.GetConstructor(new[] { stream.Type, compressionLevel.Type });
+            var compressCtor = compressionStreamType.GetConstructor([stream.Type, compressionLevel.Type]);
 
             var compress = Expression.Lambda<Func<Stream, CompressionLevel, Stream>>(
                 (compressCtor == null
