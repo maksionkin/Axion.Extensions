@@ -70,7 +70,7 @@ static class DefaultProviders
     }
 
     public static ValueTask<HybridCacheEntryFlags?> HybridCacheGetFlagsProvider(ResilienceContext context) =>
-        new(cacheableMethods.Contains(context.GetRequestMessage()?.Method)
+        new(cacheableMethods.Contains(context.GetRequestMessage()?.Method!)
             ? null
             : HybridCacheEntryFlags.DisableLocalCacheRead | HybridCacheEntryFlags.DisableLocalCacheRead);
 
