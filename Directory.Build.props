@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <PlatformVersion>10.0.0-preview.3.25171.5</PlatformVersion>
+    <PlatformVersion>10.0.0-preview.4.25258.110</PlatformVersion>
     <HybridCachePlatformVersion>9.3.0</HybridCachePlatformVersion>
     <ResiliencePlatformVersion>9.3.0</ResiliencePlatformVersion>
   </PropertyGroup>
@@ -38,7 +38,7 @@
   
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <!-- Properties for .NET Framework -->
-    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.6.1" />
     <PackageReference Include="Microsoft.Bcl.Memory" Version="$(PlatformVersion)" />
     <PackageReference Include="IsExternalInit" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>
