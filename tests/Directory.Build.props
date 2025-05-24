@@ -5,7 +5,7 @@
     <WinNetFx>net462</WinNetFx>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFrameworks>net9.0;net8.0;netcoreapp3.1;$(WinNetFx)</TargetFrameworks>
+    <TargetFrameworks>net9.0;net8.0;$(WinNetFx)</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
   </PropertyGroup>

@@ -3,9 +3,11 @@
 
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Axion.Extensions.Polly.Caching.Serialization.Http.Tests;
 
@@ -109,4 +111,37 @@ public class HttpResponseMessageSerializerTests
             Assert.AreEqual(values.ElementAt(0), "trailing");
         }
     }
+    
+    [TestMethod]
+    public async Task Deserialize_Response_Supports_Pipeline()
+    {
+        var serializer = HttpResponseMessageSerializer.Instance;
+        var jsonSerializer = Newtonsoft.Json.JsonSerializer.Create(new Newtonsoft.Json.JsonSerializerSettings());
+        var stringWriter = new StringWriter();
+        var originalContent = new DataRecord("Test content for pipeline");
+        jsonSerializer.Serialize(stringWriter, originalContent);
+        var jsonContent = stringWriter.ToString();
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
+#if NET
+        response.Content = new StringContent(jsonContent, Encoding.UTF8, MediaTypeHeaderValue.Parse("text/plain"));
+#else
+        response.Content = new StringContent(jsonContent, Encoding.UTF8, "text/plain");
+#endif
+
+        // Simulate pipeline: first handler reads the content.
+        var bytes = serializer.Serialize(response);
+        Assert.IsTrue(bytes.Length > 0);
+
+        // Simulate next handler in pipeline: read content again.
+        using var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+        using var streamReader = new StreamReader(responseStream);
+        using var jsonTextReader = new JsonTextReader(streamReader);
+        var typedBody = jsonSerializer.Deserialize<DataRecord>(jsonTextReader);
+        
+        Assert.IsNotNull(typedBody, "Message could not be read a second time in a simulated pipeline.");
+        Assert.AreEqual(originalContent, typedBody!);
+    }
+
+    private record DataRecord(string Value);
+
 }
