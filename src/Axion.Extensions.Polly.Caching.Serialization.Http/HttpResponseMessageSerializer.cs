@@ -333,39 +333,39 @@ public class HttpResponseMessageSerializer : ICacheItemSerializer<HttpResponseMe
 
         objectToSerialize.Content.LoadIntoBufferAsync().Wait();
 
-        using (var contentStream = objectToSerialize.Content.ReadAsStreamAsync().Result)
+        var contentStream = objectToSerialize.Content.ReadAsStreamAsync().Result;
+        if (objectToSerialize.Headers.TransferEncodingChunked == true)
         {
-            if (objectToSerialize.Headers.TransferEncodingChunked == true)
+            var buffer = new byte[16 * 1024];
+            while (true)
             {
-                var buffer = new byte[16 * 1024];
-                while (true)
+                var read = contentStream.Read(buffer, 0, buffer.Length);
+                if (read > 0)
                 {
-                    var read = contentStream.Read(buffer, 0, buffer.Length);
-                    if (read > 0)
-                    {
-                        WriteLine(read.ToString("X", CultureInfo.InvariantCulture));
+                    WriteLine(read.ToString("X", CultureInfo.InvariantCulture));
 
-                        stream.Write(buffer, 0, read);
+                    stream.Write(buffer, 0, read);
 
-                        WriteLine();
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    WriteLine();
                 }
+                else
+                {
+                    break;
+                }
+            }
 
-                WriteLine("0");
-            }
-            else
-            {
-                contentStream.CopyTo(stream);
-            }
+            WriteLine("0");
+        }
+        else
+        {
+            contentStream.CopyTo(stream);
         }
 
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATE || NET5_0_OR_GREATER
         Write(objectToSerialize.TrailingHeaders);
 #endif
+
+        contentStream.Seek(0, SeekOrigin.Begin);
 
         return stream.ToArray();
     }
