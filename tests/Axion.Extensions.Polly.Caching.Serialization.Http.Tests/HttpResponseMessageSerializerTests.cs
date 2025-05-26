@@ -1,7 +1,10 @@
 ﻿// Copyright (c) Michael Aksionkin. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Net;
+using System.Net.Mime;
 using System.Text;
+using System.Text.Json;
 
 namespace Axion.Extensions.Polly.Caching.Serialization.Http.Tests;
 
@@ -75,4 +78,30 @@ public class HttpResponseMessageSerializerTests
 
         Assert.AreEqual(response.Content.ReadAsStringAsync().Result, "12hgefghdsghjvhs+dvjfffffffffffffffa123");
     }
+
+    [TestMethod]
+    public async Task Deserialize_Response_Supports_Pipeline()
+    {
+        var serializer = HttpResponseMessageSerializer.Instance;
+
+        var originalContent = new DataRecord("Test content for pipeline");
+
+        using var response = new HttpResponseMessage(HttpStatusCode.OK);
+
+        response.Content = new StringContent(JsonSerializer.Serialize(originalContent), Encoding.UTF8, MediaTypeNames.Text.Plain);
+
+        // Simulate pipeline: first handler reads the content.
+        var bytes = serializer.Serialize(response);
+        Assert.IsTrue(bytes.Length > 0);
+
+        // Simulate next handler in pipeline: read content again.
+        using var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+        using var streamReader = new StreamReader(responseStream);
+        var typedBody = JsonSerializer.Deserialize<DataRecord>(streamReader.ReadToEnd());
+
+        Assert.IsNotNull(typedBody, "Message could not be read a second time in a simulated pipeline.");
+        Assert.AreEqual(originalContent, typedBody!);
+    }
+
+    record DataRecord(string Value);
 }
