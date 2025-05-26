@@ -116,12 +116,12 @@ public class HttpResponseMessageSerializerTests
     public async Task Deserialize_Response_Supports_Pipeline()
     {
         var serializer = HttpResponseMessageSerializer.Instance;
-        var jsonSerializer = Newtonsoft.Json.JsonSerializer.Create(new Newtonsoft.Json.JsonSerializerSettings());
-        var stringWriter = new StringWriter();
+        var jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings());
+        using var stringWriter = new StringWriter();
         var originalContent = new DataRecord("Test content for pipeline");
         jsonSerializer.Serialize(stringWriter, originalContent);
         var jsonContent = stringWriter.ToString();
-        var response = new HttpResponseMessage(HttpStatusCode.OK);
+        using var response = new HttpResponseMessage(HttpStatusCode.OK);
 #if NET
         response.Content = new StringContent(jsonContent, Encoding.UTF8, MediaTypeHeaderValue.Parse("text/plain"));
 #else
