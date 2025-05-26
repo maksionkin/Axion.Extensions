@@ -1,8 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
    <ItemGroup>
-     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-   </ItemGroup>
-   <ItemGroup>
      <ProjectReference Include="..\..\src\Axion.Extensions.Polly.Caching.Serialization.Http\Axion.Extensions.Polly.Caching.Serialization.Http.csproj">
        <HintPath>..\..\src\Axion.Extensions.Polly.Caching.Serialization.Http\bin\$(Configuration)\$(LibraryTargetFramework)\Axion.Extensions.Polly.Caching.Serialization.Http.dll</HintPath>
      </ProjectReference>

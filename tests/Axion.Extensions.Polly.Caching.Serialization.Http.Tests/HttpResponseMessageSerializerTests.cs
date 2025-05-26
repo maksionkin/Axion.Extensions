@@ -4,10 +4,11 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Axion.Extensions.Polly.Caching.Serialization.Http.Tests;
 
@@ -116,17 +117,12 @@ public class HttpResponseMessageSerializerTests
     public async Task Deserialize_Response_Supports_Pipeline()
     {
         var serializer = HttpResponseMessageSerializer.Instance;
-        var jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings());
-        using var stringWriter = new StringWriter();
+
         var originalContent = new DataRecord("Test content for pipeline");
-        jsonSerializer.Serialize(stringWriter, originalContent);
-        var jsonContent = stringWriter.ToString();
+
         using var response = new HttpResponseMessage(HttpStatusCode.OK);
-#if NET
-        response.Content = new StringContent(jsonContent, Encoding.UTF8, MediaTypeHeaderValue.Parse("text/plain"));
-#else
-        response.Content = new StringContent(jsonContent, Encoding.UTF8, "text/plain");
-#endif
+
+        response.Content = new StringContent(JsonSerializer.Serialize(originalContent), Encoding.UTF8, MediaTypeNames.Text.Plain);
 
         // Simulate pipeline: first handler reads the content.
         var bytes = serializer.Serialize(response);
@@ -135,13 +131,11 @@ public class HttpResponseMessageSerializerTests
         // Simulate next handler in pipeline: read content again.
         using var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
         using var streamReader = new StreamReader(responseStream);
-        using var jsonTextReader = new JsonTextReader(streamReader);
-        var typedBody = jsonSerializer.Deserialize<DataRecord>(jsonTextReader);
+        var typedBody = JsonSerializer.Deserialize<DataRecord>(streamReader.ReadToEnd());
         
         Assert.IsNotNull(typedBody, "Message could not be read a second time in a simulated pipeline.");
         Assert.AreEqual(originalContent, typedBody!);
     }
 
-    private record DataRecord(string Value);
-
+    record DataRecord(string Value);
 }

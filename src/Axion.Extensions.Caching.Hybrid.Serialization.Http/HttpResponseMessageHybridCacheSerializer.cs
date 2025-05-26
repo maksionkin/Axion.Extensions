@@ -146,8 +146,10 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
 #if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
         writer.Write(value.TrailingHeaders);
 #endif
-        contentStream.Position = 0;
         writer.Flush();
+
+        // HttpContent reuses the same stream
+        contentStream.Seek(0, SeekOrigin.Begin);
     }
 
     /// <summary>
