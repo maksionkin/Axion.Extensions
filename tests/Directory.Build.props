@@ -9,19 +9,19 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(TargetFramework)' != 'net6.0' and '$(TargetFramework)' != 'netcoreapp3.1'">
     <LibraryTargetFramework>$(TargetFramework)</LibraryTargetFramework>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <LibraryTargetFramework>netstandard2.1</LibraryTargetFramework>
   </PropertyGroup>
-   
+
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <LibraryTargetFramework>netstandard2.0</LibraryTargetFramework>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
