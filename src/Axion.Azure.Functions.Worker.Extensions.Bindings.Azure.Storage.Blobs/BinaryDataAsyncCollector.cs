@@ -44,13 +44,6 @@ class BinaryDataAsyncCollector(Stream stream) : IAsyncCollector<BinaryData>, IDi
 
     public async ValueTask DisposeAsync()
     {
-        if (stream is IAsyncDisposable disposable)
-        {
-            await disposable.DisposeAsync();
-        }
-        else
-        {
-            Dispose(disposing: true);
-        }
+        await ((IAsyncDisposable)stream).DisposeAsync();
     }
 }
