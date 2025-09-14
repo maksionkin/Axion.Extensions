@@ -116,14 +116,9 @@ public sealed class QueueAttribute(string queueName)
 
                 configuration.Bind(queueConfiguration);
 
-                if (queueConfiguration.QueueServiceUri is null)
-                {
-                    queueServiceClient = (QueueServiceClient)azureComponentFactory.CreateClient(typeof(QueueServiceClient), configuration, null, clientOptions);
-                }
-                else
-                {
-                    queueServiceClient = new QueueServiceClient(queueConfiguration.QueueServiceUri, clientOptions);
-                }
+                queueServiceClient = queueConfiguration.QueueServiceUri is null
+                    ? (QueueServiceClient)azureComponentFactory.CreateClient(typeof(QueueServiceClient), configuration, null, clientOptions)
+                    : new QueueServiceClient(queueConfiguration.QueueServiceUri, clientOptions);
             }
         }
 
