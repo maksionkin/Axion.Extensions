@@ -3,7 +3,6 @@
 
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Reflection;
 using System.Runtime.Versioning;
@@ -112,7 +111,7 @@ public class HttpResponseMessageSerializerTests
             Assert.AreEqual(values.ElementAt(0), "trailing");
         }
     }
-    
+
     [TestMethod]
     public async Task Deserialize_Response_Supports_Pipeline()
     {
@@ -132,7 +131,7 @@ public class HttpResponseMessageSerializerTests
         using var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
         using var streamReader = new StreamReader(responseStream);
         var typedBody = JsonSerializer.Deserialize<DataRecord>(streamReader.ReadToEnd());
-        
+
         Assert.IsNotNull(typedBody, "Message could not be read a second time in a simulated pipeline.");
         Assert.AreEqual(originalContent, typedBody!);
     }

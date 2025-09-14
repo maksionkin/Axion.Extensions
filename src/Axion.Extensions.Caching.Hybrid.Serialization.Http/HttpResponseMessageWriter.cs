@@ -250,7 +250,7 @@ ref struct HttpResponseMessageWriter(
         var pool = options.ByteArrayPool;
         var array = pool.Rent(buffer.Length);
         try
-        { 
+        {
             var result = stream.Read(array, 0, buffer.Length);
             array.AsSpan(0, result).CopyTo(buffer);
 
