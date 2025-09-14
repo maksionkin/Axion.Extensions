@@ -13,12 +13,6 @@ Read more [Distributed caching in ASP.NET Core](https://learn.microsoft.com/en-u
 Read more [Distributed caching in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/performance/caching/distributed).
 
 
-## [Axion.Extensions.Configuration.Kusto](https://github.com/maksionkin/Axion.Extensions/tree/main/src/Axion.Extensions.Configuration.Kusto) [![NuGet version](https://badge.fury.io/nu/Axion.Extensions.Configuration.Kusto.svg)](https://badge.fury.io/nu/Axion.Extensions.Configuration.Kusto) 
-
-[Configuration provider](https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration-providers) implementation based on Kusto query result.
-
-Read more [Configuration in .NET](https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration).
-
 ## [Axion.Extensions.FileProviders.GitHub](https://github.com/maksionkin/Axion.Extensions/tree/main/src/Axion.Extensions.FileProviders.GitHub) [![NuGet version](https://badge.fury.io/nu/Axion.Extensions.FileProviders.GitHub.svg)](https://badge.fury.io/nu/Axion.Extensions.FileProviders.GitHub) 
 
 [File Provider](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.fileproviders.ifileprovider) implementation of [GitHub](https://github.com) or GitHub Enterprise repository.
