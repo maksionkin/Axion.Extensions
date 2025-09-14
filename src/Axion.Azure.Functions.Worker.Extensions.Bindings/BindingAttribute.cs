@@ -55,7 +55,7 @@ public abstract class BindingAttribute(ImmutableArray<Type> supportedTypes) : At
         {
             return await BindAsync(serviceProvider, type, cancellationToken).ConfigureAwait(false);
         }
-        else if (supportedTypes.FirstOrDefault(type.IsAssignableFrom) is Type baseType) // Check for derived types
+        else if (supportedTypes.FirstOrDefault(type.IsAssignableFrom) is Type) // Check for derived types
         {
             return await BindAsync(serviceProvider, type, cancellationToken).ConfigureAwait(false);
 
