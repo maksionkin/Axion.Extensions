@@ -71,7 +71,7 @@ public sealed class QueueAttribute(string queueName)
         var messageEncoding = QueueMessageEncoding.Base64;
         if (hostFolder != null)
         {
-            var hostFile = Path.Combine(hostFolder, HostJsonFileName);
+            var hostFile = Path.Join(hostFolder, HostJsonFileName);
 
             if (File.Exists(hostFile)
                 && JsonSerializer.Deserialize<HostJson>(File.ReadAllText(hostFile), JsonSerializerOptions)
