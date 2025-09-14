@@ -38,6 +38,7 @@ public abstract class BindingAttribute(ImmutableArray<Type> supportedTypes) : At
                 .Select(t => t.Type)
                 .ToImmutableArray()));
     }
+
     /// <summary>
     /// Binds to the specified type.
     /// </summary>
@@ -93,27 +94,24 @@ public abstract class BindingAttribute(ImmutableArray<Type> supportedTypes) : At
                 {
                     foreach (var definitionType in convert.Types.Except([definition]).Prepend(definition))
                     {
-                        foreach (var supportedType in supportedTypes)
+                        foreach (var supportedType in supportedTypes.Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == definitionType))
                         {
-                            if (supportedType.IsGenericType && supportedType.GetGenericTypeDefinition() == definitionType)
+                            var typeArgument = type.GetGenericArguments()[0];
+                            var supportedTypeArgument = supportedType.GetGenericArguments()[0];
+
+                            var (from, to) = convert.ConversionDirection
+                                ? (typeArgument, supportedTypeArgument)
+                                : (supportedTypeArgument, typeArgument);
+
+                            var convertHelper = GetConverterHelper(from, to);
+                            if (convertHelper != null)
                             {
-                                var typeArgument = type.GetGenericArguments()[0];
-                                var supportedTypeArgument = supportedType.GetGenericArguments()[0];
+                                var target = await BindAsync(serviceProvider, supportedType, cancellationToken).ConfigureAwait(false);
 
-                                var (from, to) = convert.ConversionDirection
-                                    ? (typeArgument, supportedTypeArgument)
-                                    : (supportedTypeArgument, typeArgument);
-
-                                var convertHelper = GetConverterHelper(from, to);
-                                if (convertHelper != null)
-                                {
-                                    var target = await BindAsync(serviceProvider, supportedType, cancellationToken).ConfigureAwait(false);
-
-                                    return ActivatorUtilities.CreateInstance(
-                                        serviceProvider,
-                                        convert.ConvertedType.MakeGenericType(typeArgument, supportedTypeArgument),
-                                        target);
-                                }
+                                return ActivatorUtilities.CreateInstance(
+                                    serviceProvider,
+                                    convert.ConvertedType.MakeGenericType(typeArgument, supportedTypeArgument),
+                                    target);
                             }
                         }
                     }
