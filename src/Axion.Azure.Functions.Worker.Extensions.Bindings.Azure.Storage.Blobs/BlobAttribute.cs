@@ -129,14 +129,9 @@ public sealed class BlobAttribute(string blobPath)
 
                 configuration.Bind(queueConfiguration);
 
-                if (queueConfiguration.BlobServiceUri is null)
-                {
-                    blobServiceClient = (BlobServiceClient)azureComponentFactory.CreateClient(typeof(BlobServiceClient), configuration, null, clientOptions);
-                }
-                else
-                {
-                    blobServiceClient = new BlobServiceClient(queueConfiguration.BlobServiceUri, clientOptions);
-                }
+                blobServiceClient = queueConfiguration.BlobServiceUri is null
+                    ? (BlobServiceClient)azureComponentFactory.CreateClient(typeof(BlobServiceClient), configuration, null, clientOptions)
+                    : new BlobServiceClient(queueConfiguration.BlobServiceUri, clientOptions);
             }
         }
 
