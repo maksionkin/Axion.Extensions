@@ -1,5 +1,4 @@
 ﻿using System.Net.Http;
-using Axion.Extensions.Caching.Hybrid.Serialization.Http;
 using Azure.Storage.Blobs;
 using Medallion.Threading;
 using Medallion.Threading.Azure;

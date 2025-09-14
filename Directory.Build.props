@@ -3,6 +3,7 @@
     <PlatformVersion>9.0.5</PlatformVersion>
     <HybridCachePlatformVersion>9.5.0</HybridCachePlatformVersion>
     <ResiliencePlatformVersion>9.5.0</ResiliencePlatformVersion>
+    <AzureFunctionsPlatformVersion>2.0.0</AzureFunctionsPlatformVersion>
   </PropertyGroup>
 
   <PropertyGroup>

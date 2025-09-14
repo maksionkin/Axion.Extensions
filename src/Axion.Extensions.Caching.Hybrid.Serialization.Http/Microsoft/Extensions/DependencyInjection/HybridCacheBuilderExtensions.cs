@@ -19,7 +19,7 @@ public static class HybridCacheBuilderExtensions
     /// <param name="options">The options for the <see cref="HttpResponseMessageHybridCacheSerializer"/>.</param>
     /// <returns>The <see cref="IHybridCacheBuilder"/> instance.</returns>
     public static IHybridCacheBuilder AddHttpResponseMessageSerializer(this IHybridCacheBuilder builder, HttpResponseMessageHybridCacheSerializer.Options? options = null) =>
-        builder.AddSerializer(options == null ? HttpResponseMessageHybridCacheSerializer.Instance : new (options));
+        builder.AddSerializer(options == null ? HttpResponseMessageHybridCacheSerializer.Instance : new(options));
 
 
 }

@@ -32,8 +32,8 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
     /// <summary>
     /// Creates a new instance of <see cref="HttpResponseMessageHybridCacheSerializer"/>.
     /// </summary>
-    public HttpResponseMessageHybridCacheSerializer() : this(null) 
-    { 
+    public HttpResponseMessageHybridCacheSerializer() : this(null)
+    {
     }
 
     /// <inheritdoc/>>
@@ -195,7 +195,7 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
         /// </summary>
         public int MaxCharsOnStack
         {
-            get; 
+            get;
             set
             {
                 Guard.IsGreaterThanOrEqualTo(value, 0);

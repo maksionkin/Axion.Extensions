@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.8.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(PlatformVersion)" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Axion.Azure.Functions.Worker.Extensions.Bindings\Axion.Azure.Functions.Worker.Extensions.Binding.csproj">
+      <HintPath>..\..\src\Axion.Azure.Functions.Worker.Extensions.Bindings\bin\$(Configuration)\$(LibraryTargetFramework)\Axion.Azure.Functions.Worker.Extensions.Bindings.dll</HintPath>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
