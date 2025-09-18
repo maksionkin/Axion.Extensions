@@ -192,14 +192,9 @@ public sealed class BlobAttribute(string blobPath)
             else
             {
                 var streams = blobClients.SelectAwait(async client => await client.GetParentBlobContainerClient().GetAppendBlobClient(client.Name).OpenWriteAsync(false, cancellationToken: cancellationToken).ConfigureAwait(false));
-                if (type == typeof(IAsyncEnumerable<Stream>))
-                {
-                    return streams;
-                }
-                else
-                {
-                    return streams.Select(s => (TextWriter)new StreamWriter(s));
-                }
+                return type == typeof(IAsyncEnumerable<Stream>)
+                    ? streams
+                    : streams.Select(s => (TextWriter)new StreamWriter(s));
             }
         }
         else
