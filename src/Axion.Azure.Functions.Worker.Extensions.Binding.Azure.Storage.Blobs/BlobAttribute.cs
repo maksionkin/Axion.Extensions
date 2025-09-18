@@ -180,14 +180,9 @@ public sealed class BlobAttribute(string blobPath)
             {
                 var streams = blobClients.SelectAwait(async client => (await client.DownloadStreamingAsync(cancellationToken: cancellationToken).ConfigureAwait(false)).Value.Content);
 
-                if (type == typeof(IAsyncEnumerable<Stream>))
-                {
-                    return streams;
-                }
-                else
-                {
-                    return streams.Select(s => (TextReader)new StreamReader(s));
-                }
+                return type == typeof(IAsyncEnumerable<Stream>)
+                    ? streams
+                    : streams.Select(s => (TextReader)new StreamReader(s));
             }
             else
             {
