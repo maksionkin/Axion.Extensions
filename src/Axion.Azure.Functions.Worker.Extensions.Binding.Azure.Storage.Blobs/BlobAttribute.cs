@@ -209,14 +209,7 @@ public sealed class BlobAttribute(string blobPath)
             {
                 var stream = (await blobClient.DownloadStreamingAsync(cancellationToken: cancellationToken).ConfigureAwait(false)).Value.Content;
 
-                if (type == typeof(Stream))
-                {
-                    return stream;
-                }
-                else
-                {
-                    return new StreamReader(stream);
-                }
+                return type == typeof(Stream) ? stream : new StreamReader(stream);
             }
             else
             {
