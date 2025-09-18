@@ -55,7 +55,7 @@ public abstract class BindingAttribute(ImmutableArray<Type> supportedTypes) : At
         {
             return await BindAsync(serviceProvider, type, cancellationToken).ConfigureAwait(false);
         }
-        else if (supportedTypes.FirstOrDefault(type.IsAssignableFrom) is Type) // Check for derived types
+        else if (supportedTypes.FirstOrDefault(type.IsAssignableFrom) is not null) // Check for derived types
         {
             return await BindAsync(serviceProvider, type, cancellationToken).ConfigureAwait(false);
 
@@ -81,9 +81,16 @@ public abstract class BindingAttribute(ImmutableArray<Type> supportedTypes) : At
 
                 if (convertHelper != null)
                 {
-                    var target = await BindAsync(serviceProvider, supportedType, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var target = await BindAsync(serviceProvider, supportedType, cancellationToken).ConfigureAwait(false);
 
-                    return await convertHelper.ConvertAsync(target, cancellationToken).ConfigureAwait(false);
+                        return await convertHelper.ConvertAsync(target, cancellationToken).ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // Ignore conversion errors
+                    }
                 }
             }
 
@@ -106,12 +113,19 @@ public abstract class BindingAttribute(ImmutableArray<Type> supportedTypes) : At
                             var convertHelper = GetConverterHelper(from, to);
                             if (convertHelper != null)
                             {
-                                var target = await BindAsync(serviceProvider, supportedType, cancellationToken).ConfigureAwait(false);
+                                try
+                                {
+                                    var target = await BindAsync(serviceProvider, supportedType, cancellationToken).ConfigureAwait(false);
 
-                                return ActivatorUtilities.CreateInstance(
-                                    serviceProvider,
-                                    convert.ConvertedType.MakeGenericType(typeArgument, supportedTypeArgument),
-                                    target);
+                                    return ActivatorUtilities.CreateInstance(
+                                        serviceProvider,
+                                        convert.ConvertedType.MakeGenericType(typeArgument, supportedTypeArgument),
+                                        target);
+                                }
+                                catch
+                                {
+                                    // Ignore conversion errors
+                                }
                             }
                         }
                     }

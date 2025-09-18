@@ -1,10 +1,10 @@
-﻿## Axion.Azure.Functions.Worker.Extensions.OutputBindings
+﻿## Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Blobs
 
-Support for output bindings and IBinder interface in Azure Functions .NET isolated worker as they appear in WebJobs.
+Support for [bindings](https://github.com/maksionkin/Axion.Extensions/tree/main/src/Axion.Azure.Functions.Worker.Extensions.Binding) [![NuGet version](https://badge.fury.io/nu/Axion.Azure.Functions.Worker.Extensions.Binding.svg)](https://badge.fury.io/nu/Axion.Azure.Functions.Worker.Extensions.Binding) of Azure Storage Blobs in Azure Functions .NET isolated worker as they appear in WebJob.
 
 ### Register binding services
 ```csharp
-services.AddWorkerOutputBinding();
+services.AddWorkerBinding();
 ```
 
 ### Using IBinder interface via Dependency Injection

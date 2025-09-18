@@ -1,13 +1,12 @@
-﻿using System.Collections.Immutable;
-using System.Reflection;
+﻿using System.Reflection;
 using Azure.Storage.Queues;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace Axion.Azure.Functions.Worker.Extensions.Bindings.Azure.Storage.Queues.Tests;
+namespace Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Queues.Tests;
 
 [TestClass]
 public class AzureStotageQueueTests
@@ -16,6 +15,11 @@ public class AzureStotageQueueTests
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection([new("AzureWebJobsStorage", "UseDevelopmentStorage=true")]);
         var services = new ServiceCollection();
+
+        if (Assembly.GetEntryAssembly() == null)
+        {
+            services.AddSingleton<IFunctionsWorkerApplicationBuilder>(new FunctionsWorkerApplicationBuilder(services));
+        }
 
         services.AddFunctionsWorkerCore();
         services.AddWorkerBinding();
@@ -30,9 +34,9 @@ public class AzureStotageQueueTests
 
     [TestMethod]
     public async Task CheckAsyncCollector()
-    {         
+    {
         // Arrange
-        var provider = GetProvider(); 
+        var provider = GetProvider();
         var queueClient = new QueueClient("UseDevelopmentStorage=true", "my-queue-1", new QueueClientOptions() { MessageEncoding = QueueMessageEncoding.Base64 });
         await queueClient.DeleteIfExistsAsync();
 
@@ -40,7 +44,7 @@ public class AzureStotageQueueTests
 
         // Act
         var service1 = provider.GetRequiredService<Service1>();
-        
+
         // Assert
         await service1.RunAsync(data);
         Assert.IsTrue(await queueClient.ExistsAsync());
@@ -64,7 +68,7 @@ public class AzureStotageQueueTests
         service2.Run(data);
         Assert.IsTrue(await queueClient.ExistsAsync());
         var message = (await queueClient.ReceiveMessagesAsync(1)).Value.FirstOrDefault()?.Body;
-        
+
         Assert.AreEqual($"{{\"Content\":\"{data}\"}}", message?.ToString());
     }
 
@@ -100,5 +104,14 @@ public class AzureStotageQueueTests
     class Poco
     {
         public required string Content { get; set; }
+    }
+    class FunctionsWorkerApplicationBuilder(IServiceCollection services) : IFunctionsWorkerApplicationBuilder
+    {
+        public IServiceCollection Services => services;
+
+        public IFunctionsWorkerApplicationBuilder Use(Func<FunctionExecutionDelegate, FunctionExecutionDelegate> middleware)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
