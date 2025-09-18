@@ -64,9 +64,6 @@ public static class BindingServiceCollectionExtensions
         services.AddAsyncConverter(async (Stream input, CancellationToken cancellationToken) => (await BinaryData.FromStreamAsync(input, cancellationToken)).ToMemory());
         services.AddAsyncConverter(async (Stream input, CancellationToken cancellationToken) => (await BinaryData.FromStreamAsync(input, cancellationToken)).ToString());
 
-        services.AddConverter((Stream input) => (TextReader)new StreamReader(input));
-        services.AddConverter((Stream input) => (TextWriter)new StreamWriter(input));
-
         services.AddConverter((Guid input) => input.ToString());
         services.AddConverter((string input) => Guid.ParseExact(input, "G"));
 
