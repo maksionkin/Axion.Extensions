@@ -1,10 +1,10 @@
-﻿## Axion.Azure.Functions.Worker.Extensions.OutputBindings
+﻿## Axion.Azure.Functions.Worker.Extensions.Binding
 
 Support for output bindings and IBinder interface in Azure Functions .NET isolated worker as they appear in WebJobs.
 
 ### Register binding services
 ```csharp
-services.AddWorkerOutputBinding();
+services.AddWorkerBinding();
 ```
 
 ### Use IBinder interface via Dependency Injection

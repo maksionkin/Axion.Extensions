@@ -4,7 +4,7 @@ Support for [bindings](https://github.com/maksionkin/Axion.Extensions/tree/main/
 
 ### Register binding services
 ```csharp
-services.AddWorkerOutputBinding();
+services.AddWorkerBinding();
 ```
 
 ### Use IBinder interface via Dependency Injection

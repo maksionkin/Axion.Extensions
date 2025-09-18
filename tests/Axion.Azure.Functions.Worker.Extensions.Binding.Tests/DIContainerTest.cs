@@ -1,7 +1,10 @@
-﻿using Microsoft.Azure.WebJobs;
+﻿using System.Reflection;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Middleware;
+using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Axion.Azure.Functions.Worker.Extensions.OutputBindings.Tests;
+namespace Axion.Azure.Functions.Worker.Extensions.Binding.Tests;
 
 [TestClass]
 public class DIContainerTest
@@ -65,6 +68,11 @@ public class DIContainerTest
     {
         var services = new ServiceCollection();
 
+        if (Assembly.GetEntryAssembly() == null)
+        {
+            services.AddSingleton<IFunctionsWorkerApplicationBuilder>(new FunctionsWorkerApplicationBuilder(services));
+        }
+
         services.AddFunctionsWorkerCore();
         services.AddWorkerBinding();
 
@@ -88,6 +96,16 @@ public class DIContainerTest
         protected override ValueTask<object> BindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken)
         {
             return new(i);
+        }
+    }
+
+    class FunctionsWorkerApplicationBuilder(IServiceCollection services) : IFunctionsWorkerApplicationBuilder
+    {
+        public IServiceCollection Services => services;
+
+        public IFunctionsWorkerApplicationBuilder Use(Func<FunctionExecutionDelegate, FunctionExecutionDelegate> middleware)
+        {
+            throw new NotImplementedException();
         }
     }
 }

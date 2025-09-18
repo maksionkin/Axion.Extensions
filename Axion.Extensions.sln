@@ -77,21 +77,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Axion.Extensions.Http.Resil
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Axion.Extensions.Http.Resilience.DuplicateRequestCollapsing.Caching.Hybrid.Tests", "tests\Axion.Extensions.Http.Resilience.DuplicateRequestCollapsing.Caching.Hybrid.Tests\Axion.Extensions.Http.Resilience.DuplicateRequestCollapsing.Caching.Hybrid.Tests.csproj", "{7C2A27DB-826F-44FF-983F-22095EC21DDB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Axion.Azure.Functions.Worker.Extensions.Binding", "src\Axion.Azure.Functions.Worker.Extensions.Bindings\Axion.Azure.Functions.Worker.Extensions.Binding.csproj", "{2F867BAE-39B8-F4D8-DD92-D443360EDE72}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Axion.Azure.Functions.Worker.Extensions.Binding", "src\Axion.Azure.Functions.Worker.Extensions.Binding\Axion.Azure.Functions.Worker.Extensions.Binding.csproj", "{2F867BAE-39B8-F4D8-DD92-D443360EDE72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Queues", "src\Axion.Azure.Functions.Worker.Extensions.Bindings.Azure.Storage.Queues\Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Queues.csproj", "{CB20F054-0968-2576-B54F-A7FD76CE6D44}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Queues", "src\Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Queues\Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Queues.csproj", "{CB20F054-0968-2576-B54F-A7FD76CE6D44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Axion.Azure.Functions.Worker.Extensions.Bindings.Azure.Storage.Queues.Tests", "tests\Axion.Azure.Functions.Worker.Extensions.Bindings.Azure.Storage.Queues.Tests\Axion.Azure.Functions.Worker.Extensions.Bindings.Azure.Storage.Queues.Tests.csproj", "{12083A67-CA8E-4816-DBDE-BB9B042D6C43}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Queues.Tests", "tests\Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Queues.Tests\Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Queues.Tests.csproj", "{12083A67-CA8E-4816-DBDE-BB9B042D6C43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Blobs", "src\Axion.Azure.Functions.Worker.Extensions.Bindings.Azure.Storage.Blobs\Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Blobs.csproj", "{B7CD476F-FFC7-4623-AC7F-2721830184F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Blobs", "src\Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Blobs\Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Blobs.csproj", "{B7CD476F-FFC7-4623-AC7F-2721830184F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Axion.Azure.Functions.Worker.Extensions.Bindings.Tests", "tests\Axion.Azure.Functions.Worker.Extensions.Bindings.Tests\Axion.Azure.Functions.Worker.Extensions.Bindings.Tests.csproj", "{F54FD6B9-6DF9-FBF1-0A20-D2D28A51BF07}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Axion.Azure.Functions.Worker.Extensions.Binding.Tests", "tests\Axion.Azure.Functions.Worker.Extensions.Binding.Tests\Axion.Azure.Functions.Worker.Extensions.Binding.Tests.csproj", "{F54FD6B9-6DF9-FBF1-0A20-D2D28A51BF07}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Shared", "Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Shared", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
 		src\Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Shared\AzureComponentFactoryExtensions.cs = src\Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Shared\AzureComponentFactoryExtensions.cs
 		src\Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Shared\ServiceProviderExtensions.cs = src\Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Shared\ServiceProviderExtensions.cs
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Blobs.Tests", "tests\Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Blobs.Tests\Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Blobs.Tests.csproj", "{1D1742D5-3382-7FA6-256C-7598CE69420D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -191,6 +193,10 @@ Global
 		{F54FD6B9-6DF9-FBF1-0A20-D2D28A51BF07}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F54FD6B9-6DF9-FBF1-0A20-D2D28A51BF07}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F54FD6B9-6DF9-FBF1-0A20-D2D28A51BF07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D1742D5-3382-7FA6-256C-7598CE69420D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D1742D5-3382-7FA6-256C-7598CE69420D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D1742D5-3382-7FA6-256C-7598CE69420D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D1742D5-3382-7FA6-256C-7598CE69420D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -223,6 +229,7 @@ Global
 		{B7CD476F-FFC7-4623-AC7F-2721830184F0} = {BF827C08-FF9A-49DE-B022-44D6F5986A43}
 		{F54FD6B9-6DF9-FBF1-0A20-D2D28A51BF07} = {7D10A7EC-1FC2-4955-BA68-C36CEEACB6EA}
 		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {BF827C08-FF9A-49DE-B022-44D6F5986A43}
+		{1D1742D5-3382-7FA6-256C-7598CE69420D} = {7D10A7EC-1FC2-4955-BA68-C36CEEACB6EA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D49421C8-BCAB-41BA-B981-4B5EDF125C41}
