@@ -22,7 +22,7 @@ public static class BindingStorageBlobServiceCollectionExtensions
     /// </summary>
     /// <param name="services"> The <see cref="IServiceCollection"/> to add the output binding services to.</param>
     /// <returns>The <see cref="IServiceCollection"/> with the output binding services added.</returns>
-    public static IServiceCollection AddWorkerBinding(this IServiceCollection services)
+    public static IServiceCollection AddAzureBlobsConverters(this IServiceCollection services)
     {
         Guard.IsNotNull(services);
 

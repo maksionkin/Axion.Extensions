@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Support for bindings of Azure Storage Queues in Azure Functions .NET isolated worker as they appear in WebJobs</Description>
-    <PackageTags>IAsyncCollector;ICollector;IBinder;Queue;QueueAttribute</PackageTags>
+    <Description>Support for bindings of Azure Storage Blobs in Azure Functions .NET isolated worker as they appear in WebJobs.</Description>
+    <PackageTags>IAsyncCollector;ICollector;IBinder;Blob;BlobAttribute</PackageTags>
     <RootNamespace>Axion.Azure.Functions.Worker</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Storage.Queues" Version="12.13.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.13.0" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.8.0" />
   </ItemGroup>
   <ItemGroup>
@@ -17,7 +17,7 @@
     <Compile Include="..\Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Shared\*.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Axion.Azure.Functions.Worker.Extensions.Bindings\Axion.Azure.Functions.Worker.Extensions.Binding.csproj" />
+    <ProjectReference Include="..\Axion.Azure.Functions.Worker.Extensions.Binding\Axion.Azure.Functions.Worker.Extensions.Binding.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
