@@ -41,6 +41,7 @@ jobs:
         # config-file: ./.github/codeql/codeql-config.yml
         languages: ${{ matrix.language }}
         queries: +security-extended,security-and-quality,security-experimental
+        source-root: ./src
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
