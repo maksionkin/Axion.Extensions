@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Axion.Azure.Functions.Worker;
 using Axion.Azure.Functions.Worker.Converters;
+using Axion.Azure.Functions.Worker.Converters.Providers;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Invocation;
@@ -35,7 +36,14 @@ public static class BindingServiceCollectionExtensions
     {
         Guard.IsNotNull(services);
 
-        services.AddSingleton(typeof(IAsyncConverter<,>), typeof(AsyncConverter<,>));
+        services.AddSingleton<IAsyncConverterProvider, SameTypeConverterProvider>();
+        services.AddSingleton<IAsyncConverterProvider, AsyncConverterProvider>();
+        services.AddSingleton<IAsyncConverterProvider, SyncConverterProvider>();
+        services.AddSingleton<IAsyncConverterProvider, SubTypeConverterProvider>();
+        services.AddSingleton<IAsyncConverterProvider, CollectorConverterProvider>();
+        services.AddSingleton<IAsyncConverterProvider, EnumerationConverterProvider>();
+        services.AddSingleton<IAsyncConverterProvider, ObjectToBaseTypeConverterProvider>();
+        services.AddSingleton<IAsyncConverterProvider, BaseTypeToObjectConverterProvider>();
 
         services.RegisterSimpleTypesConverters();
 
@@ -95,8 +103,6 @@ public static class BindingServiceCollectionExtensions
         services.AddSingleton<ITypeBinder>(provider => provider.GetRequiredService<IParameterBinder>());
         services.AddSingleton<IBinder>(provider => provider.GetRequiredService<IParameterBinder>());
 
-        services.AddTransient(typeof(ICollector<>), typeof(Collector<>));
-
         void ReplaceService<TService, TImplementation>()
             where TService : class
             where TImplementation : class, TService
@@ -129,8 +135,13 @@ public static class BindingServiceCollectionExtensions
     /// <param name="services"> The <see cref="IServiceCollection"/> to add the output binding services to.</param>
     /// <param name="convert">The delegate used to perform the conversion.</param>
     /// <returns>The <see cref="IServiceCollection"/> with the output binding services added.</returns>
-    public static IServiceCollection AddConverter<TInput, TOutput>(this IServiceCollection services, Func<TInput, TOutput> convert) =>
-        services.AddSingleton<IConverter<TInput, TOutput>>(new DelegateConverter<TInput, TOutput>(convert));
+    public static IServiceCollection AddConverter<TInput, TOutput>(this IServiceCollection services, Func<TInput, TOutput> convert)
+    {
+        Guard.IsNotNull(services);
+        Guard.IsNotNull(convert);
+
+        return services.AddSingleton<IConverter<TInput, TOutput>>(new DelegateConverter<TInput, TOutput>(convert));
+    }
 
     /// <summary>
     /// Adds an <see cref="IAsyncConverter{TInput, TOutput}"/> to the service collection that uses the specified delegate to perform conversions between the input and output types.
@@ -140,6 +151,11 @@ public static class BindingServiceCollectionExtensions
     /// <param name="services"> The <see cref="IServiceCollection"/> to add the output binding services to.</param>
     /// <param name="convert">The delegate used to perform the conversion.</param>
     /// <returns>The <see cref="IServiceCollection"/> with the output binding services added.</returns>
-    public static IServiceCollection AddAsyncConverter<TInput, TOutput>(this IServiceCollection services, Func<TInput, CancellationToken, ValueTask<TOutput>> convert) =>
-        services.AddSingleton<IAsyncConverter<TInput, TOutput>>(new DelegateAsyncConverter<TInput, TOutput>(convert));
+    public static IServiceCollection AddAsyncConverter<TInput, TOutput>(this IServiceCollection services, Func<TInput, CancellationToken, ValueTask<TOutput>> convert)
+    {
+        Guard.IsNotNull(services);
+        Guard.IsNotNull(convert);
+
+        return services.AddSingleton<IAsyncConverter<TInput, TOutput>>(new DelegateAsyncConverter<TInput, TOutput>(convert));
+    }
 }

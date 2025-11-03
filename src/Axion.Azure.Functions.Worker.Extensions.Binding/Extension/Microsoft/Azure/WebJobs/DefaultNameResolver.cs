@@ -3,7 +3,9 @@
 
 using Microsoft.Extensions.Configuration;
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Microsoft.Azure.WebJobs
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 {
     /// <summary>
     /// An implementation of <see cref="INameResolver"/> that resolves tokens by looking into <see cref="IConfiguration"/>.

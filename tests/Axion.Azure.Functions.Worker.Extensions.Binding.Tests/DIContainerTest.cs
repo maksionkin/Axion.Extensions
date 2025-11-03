@@ -20,15 +20,15 @@ public class DIContainerTest
 
         Assert.IsNotNull(provider.GetService<IFunctionContextAccessor>());
 
-        Assert.IsNotNull(provider.GetService<IAsyncConverter<string, BinaryData>>());
+        Assert.IsNotNull(provider.GetAsyncConverter<string, BinaryData>());
 
-        Assert.AreEqual("test", (await provider.GetRequiredService<IAsyncConverter<string, BinaryData>>().ConvertAsync("test", default)).ToString());
+        Assert.AreEqual("test", (await provider.GetAsyncConverter<string, BinaryData>()!.ConvertAsync("test", default)).ToString());
 
         var guid = Guid.NewGuid();
-        Assert.AreEqual(guid.ToString(), await provider.GetRequiredService<IAsyncConverter<Guid, string>>().ConvertAsync(guid, default));
+        Assert.AreEqual(guid.ToString(), await provider.GetAsyncConverter<Guid, string>()!.ConvertAsync(guid, default));
 
-        var converter = provider.GetRequiredService<IAsyncConverter<TestData, string>>();
-        var j = await converter.ConvertAsync(new TestData("a", 1), default);
+        var converter = provider.GetAsyncConverter<TestData, string>();
+        var j = await converter!.ConvertAsync(new TestData("a", 1), default);
 
         Assert.AreEqual("{\"Name\":\"a\",\"Age\":1}", j);
     }

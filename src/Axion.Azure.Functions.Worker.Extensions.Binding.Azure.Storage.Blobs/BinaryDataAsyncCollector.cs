@@ -18,7 +18,7 @@ class BinaryDataAsyncCollector(AppendBlobClient blobClient) : IAsyncCollector<Bi
     {
         Guard.IsNotNull(item);
 
-        while(true)
+        while (true)
         {
             try
             {
