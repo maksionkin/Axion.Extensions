@@ -15,24 +15,21 @@ namespace Microsoft.Azure.WebJobs;
 /// </summary>
 public static class CollectorExtensions
 {
+    /// <summary>
+    /// Wraps the provided <see cref="ICollector{T}"/> in an <see cref="IAsyncCollector{T}"/>
+    /// adapter that forwards synchronous <see cref="ICollector{T}.Add(T)"/> calls to
+    /// <see cref="IAsyncCollector{T}.AddAsync(T, CancellationToken)"/>.
+    /// </summary>
     /// <param name="collector">The synchronous collector to adapt. Cannot be <see langword="null"/>.</param>
-    extension<T>(ICollector<T> collector)
+    /// <returns>
+    /// An <see cref="IAsyncCollector{T}"/> that delegates additions to the supplied synchronous collector.
+    /// </returns>
+    /// <exception cref="System.ArgumentNullException">Thrown when <paramref name="collector"/> is <see langword="null"/>.</exception>
+    public static IAsyncCollector<T> ToAsyncCollector<T>(this ICollector<T> collector)
     {
-        /// <summary>
-        /// Wraps the provided <see cref="ICollector{T}"/> in an <see cref="IAsyncCollector{T}"/>
-        /// adapter that forwards synchronous <see cref="ICollector{T}.Add(T)"/> calls to
-        /// <see cref="IAsyncCollector{T}.AddAsync(T, CancellationToken)"/>.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="IAsyncCollector{T}"/> that delegates additions to the supplied synchronous collector.
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when <paramref name="collector"/> is <see langword="null"/>.</exception>
-            public IAsyncCollector<T> ToAsyncCollector()
-        {
-            Guard.IsNotNull(collector);
+        Guard.IsNotNull(collector);
 
-            return new SynchronousToAsynchronousCollector<T>(collector);
-        }
+        return new SynchronousToAsynchronousCollector<T>(collector);
     }
 
     class SynchronousToAsynchronousCollector<T>(ICollector<T> collector)
