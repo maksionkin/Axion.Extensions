@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Michael Aksionkin. All rights reserved.
 // Licensed under the MIT License
 
-using System;
+using System.Linq;
 using System.Text.Json;
 using Axion.Azure.Functions.Worker.Converters.Providers;
 using Azure.Core.Serialization;
@@ -10,7 +10,6 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using System.Linq;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace System;
@@ -74,9 +73,9 @@ public static class ServiceProviderExtensions
     /// <param name="serviceProvider">The <see cref="IServiceProvider"/>.</param>
     /// <param name="input">The runtime <see cref="Type"/> to convert from.</param>
     /// <param name="output">The runtime <see cref="Type"/> to convert to.</param>
-    /// <param name="filter">
+    /// <param name="skipFilter">
     /// An optional predicate used to filter candidate providers. If supplied, providers for which the predicate
-    /// returns <see langword="false"/> will be skipped. If <see langword="null"/>, all providers are considered.
+    /// returns <see langword="true"/> will be skipped. If <see langword="null"/>, all providers are considered.
     /// </param>
     /// <returns>
     /// A closed-generic converter object that implements <see cref="IAsyncConverter{TInput,TOutput}"/> for the
@@ -85,14 +84,14 @@ public static class ServiceProviderExtensions
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="serviceProvider"/>, <paramref name="input"/>, or <paramref name="output"/> is <see langword="null"/>.
     /// </exception>
-    public static object? GetAsyncConverter(this IServiceProvider serviceProvider, Type input, Type output, Func<IAsyncConverterProvider, bool>? filter = null)
+    public static object? GetAsyncConverter(this IServiceProvider serviceProvider, Type input, Type output, Func<IAsyncConverterProvider, bool>? skipFilter = null)
     {
         Guard.IsNotNull(serviceProvider);
         Guard.IsNotNull(input);
         Guard.IsNotNull(output);
 
         var outputType = typeof(IAsyncConverter<,>).MakeGenericType(input, output);
-        foreach (var provider in serviceProvider.GetServices<IAsyncConverterProvider>().Where(p => filter?.Invoke(p) != false))
+        foreach (var provider in serviceProvider.GetServices<IAsyncConverterProvider>().Where(p => skipFilter?.Invoke(p) != true))
         {
             if (provider.GetAsyncConverter(input, output) is object asyncConverter
                 && outputType.IsInstanceOfType(asyncConverter))

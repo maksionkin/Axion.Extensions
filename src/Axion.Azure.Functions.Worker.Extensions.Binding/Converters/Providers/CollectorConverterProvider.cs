@@ -33,7 +33,7 @@ class CollectorConverterProvider(IServiceProvider serviceProvider) : IAsyncConve
                 var inputItemType = input.GetGenericArguments()[0];
                 var outputItemType = output.GetGenericArguments()[0];
 
-                var converter = serviceProvider.GetAsyncConverter(outputItemType, inputItemType, provider => !GetType().IsInstanceOfType(provider));
+                var converter = serviceProvider.GetAsyncConverter(outputItemType, inputItemType, GetType().IsInstanceOfType);
 
                 if (converter != null)
                 {

@@ -35,7 +35,7 @@ class EnumerationConverterProvider(IServiceProvider serviceProvider) : IAsyncCon
 
         if (GetItemType(input) is Type inputItemType && GetItemType(output) is Type outputItemType)
         {
-            var converter = serviceProvider.GetAsyncConverter(inputItemType, outputItemType, provider => !GetType().IsInstanceOfType(provider));
+            var converter = serviceProvider.GetAsyncConverter(inputItemType, outputItemType, GetType().IsInstanceOfType);
             if (converter != null)
             {
                 var converterType = typeof(EnumerationConverter<,>).MakeGenericType(inputItemType, outputItemType);
