@@ -91,13 +91,12 @@ public static class ServiceProviderExtensions
         Guard.IsNotNull(output);
 
         var outputType = typeof(IAsyncConverter<,>).MakeGenericType(input, output);
-        foreach (var provider in serviceProvider.GetServices<IAsyncConverterProvider>().Where(p => skipFilter?.Invoke(p) != true))
+        foreach (var item in serviceProvider.GetServices<IAsyncConverterProvider>()
+            .Where(p => skipFilter?.Invoke(p) != true)
+            .Select(p => new { Provider = p, AsyncConverter = p.GetAsyncConverter(input, output) })
+            .Where(x => x.AsyncConverter is object && outputType.IsInstanceOfType(x.AsyncConverter)))
         {
-            if (provider.GetAsyncConverter(input, output) is object asyncConverter
-                && outputType.IsInstanceOfType(asyncConverter))
-            {
-                return asyncConverter;
-            }
+            return item.AsyncConverter;
         }
 
         return null;
