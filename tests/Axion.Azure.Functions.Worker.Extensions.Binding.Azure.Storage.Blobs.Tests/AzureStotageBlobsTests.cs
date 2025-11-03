@@ -16,7 +16,7 @@ public class AzureStotageBlobsTests
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection([new("AzureWebJobsStorage", "UseDevelopmentStorage=true")]);
         var services = new ServiceCollection();
-        
+
         if (Assembly.GetEntryAssembly() == null)
         {
             services.AddSingleton<IFunctionsWorkerApplicationBuilder>(new FunctionsWorkerApplicationBuilder(services));
@@ -67,7 +67,7 @@ public class AzureStotageBlobsTests
 
             collector ??= await binder.BindAsync<IAsyncCollector<Poco>>(CancellationToken.None);
 
-            await collector.AddAsync(new() { Content = data});
+            await collector.AddAsync(new() { Content = data });
         }
 
         public async Task<BlobClient> GetBlobClientAsync() =>
@@ -77,7 +77,7 @@ public class AzureStotageBlobsTests
     [Blob("container/my-blob")]
     class Poco
     {
-        public  int Content { get; set; }
+        public int Content { get; set; }
     }
     class FunctionsWorkerApplicationBuilder(IServiceCollection services) : IFunctionsWorkerApplicationBuilder
     {
