@@ -312,7 +312,5 @@ ref struct HttpResponseMessageWriter(
 
             WriteLine();
         }
-
-        WriteLine();
     }
 }
