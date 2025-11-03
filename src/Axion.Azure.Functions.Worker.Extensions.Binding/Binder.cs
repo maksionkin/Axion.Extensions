@@ -20,7 +20,7 @@ class Binder(IServiceProvider serviceProvider, IFunctionContextAccessor? functio
     public async ValueTask<T> BindAsync<T>(CancellationToken cancellationToken = default)
     {
         var type = typeof(T);
-        if (type.IsGenericType && BindingAttribute.GenericTypes.ContainsKey(type.GetGenericTypeDefinition()))
+        if (type.IsGenericType)
         {
             type = type.GenericTypeArguments[0];
         }
