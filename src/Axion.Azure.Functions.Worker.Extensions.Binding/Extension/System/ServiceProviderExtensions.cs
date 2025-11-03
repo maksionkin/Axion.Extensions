@@ -10,6 +10,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System.Linq;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace System;
@@ -91,10 +92,9 @@ public static class ServiceProviderExtensions
         Guard.IsNotNull(output);
 
         var outputType = typeof(IAsyncConverter<,>).MakeGenericType(input, output);
-        foreach (var provider in serviceProvider.GetServices<IAsyncConverterProvider>())
+        foreach (var provider in serviceProvider.GetServices<IAsyncConverterProvider>().Where(p => filter?.Invoke(p) != false))
         {
-            if (filter?.Invoke(provider) != false
-                && provider.GetAsyncConverter(input, output) is object asyncConverter
+            if (provider.GetAsyncConverter(input, output) is object asyncConverter
                 && outputType.IsInstanceOfType(asyncConverter))
             {
                 return asyncConverter;
