@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         language: [ 'csharp' ]
-        build-mode: [ 'manual' ]
+        build-mode: [ 'autobuild' ]
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby' ]
         # Use only 'java' to analyze code written in Java, Kotlin or both
         # Use only 'javascript' to analyze code written in JavaScript, TypeScript or both
@@ -36,12 +36,11 @@ jobs:
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4
+      uses: github/codeql-action/init@v3
       with:
-        # config-file: ./.github/codeql/codeql-config.yml
+        config-file: ./.github/codeql/codeql-config.yml
         languages: ${{ matrix.language }}
         queries: +security-extended,security-and-quality,security-experimental
-        source-root: ./src
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -65,7 +64,6 @@ jobs:
       run: dotnet build -c Release
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4
+      uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
-
