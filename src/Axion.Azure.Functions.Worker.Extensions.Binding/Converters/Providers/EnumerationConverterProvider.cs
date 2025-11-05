@@ -57,39 +57,39 @@ class EnumerationConverterProvider(IServiceProvider serviceProvider) : IAsyncCon
         IAsyncConverter<TInputItem[], IEnumerable<TOutputItem>>
 
     {
-        public IAsyncEnumerable<TOutputItem> Convert(IAsyncEnumerable<TInputItem>? input, CancellationToken cancellationToken)
+        public IAsyncEnumerable<TOutputItem> Convert(IAsyncEnumerable<TInputItem>? input)
         {
             ArgumentNullException.ThrowIfNull(input);
 
-            return input.Select(async (TInputItem item, CancellationToken token) => await itemConverter.ConvertAsync(item, token).ConfigureAwait(false));
+            return input.Select(async (item, token) => await itemConverter.ConvertAsync(item, token).ConfigureAwait(false));
         }
 
         public Task<IAsyncEnumerable<TOutputItem>> ConvertAsync(TInputItem[] input, CancellationToken cancellationToken) =>
-            Task.FromResult(Convert(input.ToAsyncEnumerable(), cancellationToken));
+            Task.FromResult(Convert(input.ToAsyncEnumerable()));
 
         Task<IAsyncEnumerable<TOutputItem>> IAsyncConverter<IAsyncEnumerable<TInputItem>, IAsyncEnumerable<TOutputItem>>.ConvertAsync(IAsyncEnumerable<TInputItem> input, CancellationToken cancellationToken) =>
-            Task.FromResult(Convert(input, cancellationToken));
+            Task.FromResult(Convert(input));
 
         Task<IEnumerable<TOutputItem>> IAsyncConverter<IAsyncEnumerable<TInputItem>, IEnumerable<TOutputItem>>.ConvertAsync(IAsyncEnumerable<TInputItem> input, CancellationToken cancellationToken) =>
-            Task.FromResult(Convert(input, cancellationToken).ToBlockingEnumerable(cancellationToken));
+            Task.FromResult(Convert(input).ToBlockingEnumerable(cancellationToken));
 
         Task<IAsyncEnumerable<TOutputItem>> IAsyncConverter<IEnumerable<TInputItem>, IAsyncEnumerable<TOutputItem>>.ConvertAsync(IEnumerable<TInputItem> input, CancellationToken cancellationToken) =>
-            Task.FromResult(Convert(input?.ToAsyncEnumerable(), cancellationToken));
+            Task.FromResult(Convert(input?.ToAsyncEnumerable()));
 
         Task<IEnumerable<TOutputItem>> IAsyncConverter<IEnumerable<TInputItem>, IEnumerable<TOutputItem>>.ConvertAsync(IEnumerable<TInputItem> input, CancellationToken cancellationToken) =>
-            Task.FromResult(Convert(input?.ToAsyncEnumerable(), cancellationToken).ToBlockingEnumerable(cancellationToken));
+            Task.FromResult(Convert(input?.ToAsyncEnumerable()).ToBlockingEnumerable(cancellationToken));
 
         async Task<TOutputItem[]> IAsyncConverter<TInputItem[], TOutputItem[]>.ConvertAsync(TInputItem[] input, CancellationToken cancellationToken) =>
-            await Convert(input?.ToAsyncEnumerable(), cancellationToken).ToArrayAsync(cancellationToken).ConfigureAwait(false);
+            await Convert(input?.ToAsyncEnumerable()).ToArrayAsync(cancellationToken).ConfigureAwait(false);
 
         async Task<TOutputItem[]> IAsyncConverter<IAsyncEnumerable<TInputItem>, TOutputItem[]>.ConvertAsync(IAsyncEnumerable<TInputItem> input, CancellationToken cancellationToken) =>
-            await Convert(input, cancellationToken).ToArrayAsync(cancellationToken).ConfigureAwait(false);
+            await Convert(input).ToArrayAsync(cancellationToken).ConfigureAwait(false);
 
 
         async Task<TOutputItem[]> IAsyncConverter<IEnumerable<TInputItem>, TOutputItem[]>.ConvertAsync(IEnumerable<TInputItem> input, CancellationToken cancellationToken) =>
-            await Convert(input?.ToAsyncEnumerable(), cancellationToken).ToArrayAsync(cancellationToken).ConfigureAwait(false);
+            await Convert(input?.ToAsyncEnumerable()).ToArrayAsync(cancellationToken).ConfigureAwait(false);
 
         Task<IEnumerable<TOutputItem>> IAsyncConverter<TInputItem[], IEnumerable<TOutputItem>>.ConvertAsync(TInputItem[] input, CancellationToken cancellationToken) =>
-            Task.FromResult(Convert(input?.ToAsyncEnumerable(), cancellationToken).ToBlockingEnumerable(cancellationToken));
+            Task.FromResult(Convert(input?.ToAsyncEnumerable()).ToBlockingEnumerable(cancellationToken));
     }
 }

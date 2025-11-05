@@ -86,14 +86,14 @@ public class DIContainerTest
 
     class TestAttribute(int i) : BindingAttribute([typeof(int)])
     {
-        protected override ValueTask<object> BindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken)
+        protected override ValueTask<object?> BindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken)
         {
             return new(i);
         }
     }
     class TestEnumerableAttribute(params IEnumerable<int> i) : BindingAttribute([typeof(IEnumerable<int>)])
     {
-        protected override ValueTask<object> BindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken)
+        protected override ValueTask<object?> BindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken)
         {
             return new(i);
         }

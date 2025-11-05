@@ -246,7 +246,7 @@ public class GitHubFileProvider : IFileProvider
 
     class GitHubDirectoryContents(GitHubFileProvider.GitHubProperties properties, IEnumerable<RepositoryContent> contents) : IDirectoryContents
     {
-        readonly IEnumerable<GitHubFileInfo> fileInfos = contents.Select(content => new GitHubFileInfo(properties, content)).ToList();
+        readonly IEnumerable<GitHubFileInfo> fileInfos = [.. contents.Select(content => new GitHubFileInfo(properties, content))];
 
         public bool Exists =>
             true;
