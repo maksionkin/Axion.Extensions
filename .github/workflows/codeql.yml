@@ -36,7 +36,7 @@ jobs:
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@v4
       with:
         config-file: ./.github/codeql/codeql-config.yml
         languages: ${{ matrix.language }}
@@ -48,9 +48,15 @@ jobs:
         dotnet-version: |
           6.0.x
           8.0.x
-          9.0.306
+          9.0.x
         #dotnet-quality: 'preview'
 
+    - name: Setup preview .NET 
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          10.0.x
+        dotnet-quality: 'preview'
 
     - name: Restore dependencies
       run: dotnet restore
@@ -59,7 +65,7 @@ jobs:
       run: dotnet build -c Release
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@v4
       with:
         category: "/language:${{matrix.language}}"
 
