@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Michael Aksionkin. All rights reserved.
 // Licensed under the MIT License
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Azure.WebJobs;
 
 namespace Axion.Azure.Functions.Worker;
@@ -15,7 +15,7 @@ class StringAsyncCollector(QueueClient queueClient, bool createIfNotExist) : IAs
 {
     public async Task AddAsync(string item, CancellationToken cancellationToken = default)
     {
-        Guard.IsNotNull(item);
+        ArgumentNullException.ThrowIfNull(item);
 
         while (true)
         {

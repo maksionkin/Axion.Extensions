@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Axion.Azure.Functions.Worker;
 using Axion.Azure.Functions.Worker.Converters;
 using Axion.Azure.Functions.Worker.Converters.Providers;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Invocation;
 using Microsoft.Azure.WebJobs;
@@ -34,7 +33,7 @@ public static class BindingServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/> with the output binding services added.</returns>
     public static IServiceCollection AddWorkerBinding(this IServiceCollection services)
     {
-        Guard.IsNotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddSingleton<IAsyncConverterProvider, SameTypeConverterProvider>();
         services.AddSingleton<IAsyncConverterProvider, AsyncConverterProvider>();
@@ -137,8 +136,8 @@ public static class BindingServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/> with the output binding services added.</returns>
     public static IServiceCollection AddConverter<TInput, TOutput>(this IServiceCollection services, Func<TInput, TOutput> convert)
     {
-        Guard.IsNotNull(services);
-        Guard.IsNotNull(convert);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(convert);
 
         return services.AddSingleton<IConverter<TInput, TOutput>>(new DelegateConverter<TInput, TOutput>(convert));
     }
@@ -153,8 +152,8 @@ public static class BindingServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/> with the output binding services added.</returns>
     public static IServiceCollection AddAsyncConverter<TInput, TOutput>(this IServiceCollection services, Func<TInput, CancellationToken, ValueTask<TOutput>> convert)
     {
-        Guard.IsNotNull(services);
-        Guard.IsNotNull(convert);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(convert);
 
         return services.AddSingleton<IAsyncConverter<TInput, TOutput>>(new DelegateAsyncConverter<TInput, TOutput>(convert));
     }

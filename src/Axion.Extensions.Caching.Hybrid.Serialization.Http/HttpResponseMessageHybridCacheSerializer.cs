@@ -7,7 +7,6 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using CommunityToolkit.Diagnostics;
 using CommunityToolkit.HighPerformance;
 using CommunityToolkit.HighPerformance.Buffers;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -170,7 +169,7 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
             get;
             set
             {
-                Guard.IsNotNull(value);
+                ArgumentNullException.ThrowIfNull(value);
 
                 field = value;
             }
@@ -184,7 +183,7 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
             get;
             set
             {
-                Guard.IsNotNull(value);
+                ArgumentNullException.ThrowIfNull(value);
 
                 field = value;
             }
@@ -198,7 +197,7 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
             get;
             set
             {
-                Guard.IsGreaterThanOrEqualTo(value, 0);
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, 0);
 
                 field = value;
             }
@@ -212,7 +211,7 @@ public class HttpResponseMessageHybridCacheSerializer(HttpResponseMessageHybridC
             get;
             set
             {
-                Guard.IsNotNull(value);
+                ArgumentNullException.ThrowIfNull(value);
 
                 field = value;
             }

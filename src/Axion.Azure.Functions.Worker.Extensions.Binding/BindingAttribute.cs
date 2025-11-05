@@ -22,7 +22,7 @@ public abstract class BindingAttribute(ImmutableArray<Type> supportedTypes) : At
     /// <paramref name="type">The <see cref="Type"/> to bind to.</paramref>
     /// <paramref name="cancellationToken">The <see cref="CancellationToken"/>.</paramref>
     /// <returns>The bound value.</returns>
-    protected abstract ValueTask<object> BindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken);
+    protected abstract ValueTask<object?> BindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken);
 
     internal async ValueTask<object?> TryBindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken)
     {
@@ -42,7 +42,10 @@ public abstract class BindingAttribute(ImmutableArray<Type> supportedTypes) : At
                 var helper = (IConverterHelper)Activator.CreateInstance(helperType, converter)!;
                 var boundValue = await BindAsync(serviceProvider, supportedType, cancellationToken).ConfigureAwait(false);
 
-                return await helper.ConvertAsync(boundValue, cancellationToken).ConfigureAwait(false);
+                if (boundValue != null)
+                {
+                    return await helper.ConvertAsync(boundValue, cancellationToken).ConfigureAwait(false);
+                }
             }
         }
 

@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using CommunityToolkit.Diagnostics;
 using CommunityToolkit.HighPerformance;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
@@ -41,7 +40,7 @@ public class AzureBlobsCache : IBufferDistributedCache, IDisposable
     /// <param name="optionsAccessor">The configuration options.</param>
     public AzureBlobsCache(IOptions<AzureBlobsCacheOptions> optionsAccessor)
     {
-        Guard.IsNotNull(optionsAccessor);
+        ArgumentNullException.ThrowIfNull(optionsAccessor);
 
         this.optionsAccessor = optionsAccessor;
 
@@ -121,7 +120,7 @@ public class AzureBlobsCache : IBufferDistributedCache, IDisposable
     /// <returns>A <see cref="BlobClient"/>.</returns>
     public BlobClient GetBlobClient(string key)
     {
-        Guard.IsNotNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNullOrEmpty(key);
 
         var containerClient = optionsAccessor.Value.GetBlobContainerClient();
 
@@ -275,7 +274,7 @@ public class AzureBlobsCache : IBufferDistributedCache, IDisposable
     /// <inheritdoc/>
     public async Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token = default)
     {
-        Guard.IsNotNull(value);
+        ArgumentNullException.ThrowIfNull(value);
 
         await SetAsync(key, new ReadOnlySequence<byte>(value), options, token);
     }
@@ -307,8 +306,14 @@ public class AzureBlobsCache : IBufferDistributedCache, IDisposable
     }
 
     /// <inheritdoc/>
-    public bool TryGet(string key, IBufferWriter<byte> destination) =>
-        TryGetAsync(key, destination, default).AsTask().GetAwaiter().GetResult();
+    public bool TryGet(string key, IBufferWriter<byte> destination)
+    {
+        var task = TryGetAsync(key, destination, default);
+        
+        return task.IsCompletedSuccessfully 
+            ? task.Result
+            : task.AsTask().GetAwaiter().GetResult();
+    }
 
     /// <inheritdoc/>
     public async ValueTask<bool> TryGetAsync(string key, IBufferWriter<byte> destination, CancellationToken token = default)
@@ -337,13 +342,20 @@ public class AzureBlobsCache : IBufferDistributedCache, IDisposable
     }
 
     /// <inheritdoc/>
-    public void Set(string key, ReadOnlySequence<byte> value, DistributedCacheEntryOptions options) =>
-        SetAsync(key, value, options).AsTask().GetAwaiter().GetResult();
+    public void Set(string key, ReadOnlySequence<byte> value, DistributedCacheEntryOptions options)
+    {
+        var task = SetAsync(key, value, options);
+
+        if (!task.IsCompletedSuccessfully)
+        {
+            task.AsTask().GetAwaiter().GetResult();
+        }
+    }
 
     /// <inheritdoc/>
     public async ValueTask SetAsync(string key, ReadOnlySequence<byte> value, DistributedCacheEntryOptions options, CancellationToken token = default)
     {
-        Guard.IsNotNull(options);
+        ArgumentNullException.ThrowIfNull(options);
 
         var metadata = new CacheEntryMetadata(
             options.AbsoluteExpiration

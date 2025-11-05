@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Octokit;
@@ -75,7 +74,7 @@ public class GitHubFileProviderOptions : IOptions<GitHubFileProviderOptions>
         get => getGitHubClient;
         set
         {
-            Guard.IsNotNull(value);
+            ArgumentNullException.ThrowIfNull(value);
 
             getGitHubClient = value;
         }

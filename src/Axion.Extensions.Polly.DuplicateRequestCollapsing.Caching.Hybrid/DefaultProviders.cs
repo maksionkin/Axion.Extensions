@@ -10,5 +10,5 @@ namespace Axion.Extensions.Polly.DuplicateRequestCollapsing.Caching.Hybrid;
 static class DefaultProviders
 {
     public static ValueTask<TimeSpan?> LockTimeoutProvider(ResilienceContext _) =>
-        new ValueTask<TimeSpan?>((TimeSpan?)null);
+        new((TimeSpan?)null);
 }

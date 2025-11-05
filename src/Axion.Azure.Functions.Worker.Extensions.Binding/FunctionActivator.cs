@@ -3,7 +3,6 @@
 
 using System;
 using System.Threading.Tasks;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,8 +12,8 @@ class FunctionActivator(IFunctionActivator inner, IFunctionContextAccessor funct
 {
     public object? CreateInstance(Type instanceType, FunctionContext context)
     {
-        Guard.IsNotNull(instanceType);
-        Guard.IsNotNull(context);
+        ArgumentNullException.ThrowIfNull(instanceType);
+        ArgumentNullException.ThrowIfNull(context);
 
         functionContextAccessor.FunctionContext = context;
 
@@ -29,7 +28,7 @@ class FunctionActivator(IFunctionActivator inner, IFunctionContextAccessor funct
         readonly IKeyedServiceProvider? keyedServiceProvider = inner as IKeyedServiceProvider;
         public object? GetKeyedService(Type serviceType, object? serviceKey)
         {
-            Guard.IsNotNull(serviceType);
+            ArgumentNullException.ThrowIfNull(serviceType);
 
             var (key, isString) = Get(serviceKey);
 
@@ -38,7 +37,7 @@ class FunctionActivator(IFunctionActivator inner, IFunctionContextAccessor funct
 
         public object GetRequiredKeyedService(Type serviceType, object? serviceKey)
         {
-            Guard.IsNotNull(serviceType);
+            ArgumentNullException.ThrowIfNull(serviceType);
 
             var (key, isString) = Get(serviceKey);
 
@@ -52,7 +51,7 @@ class FunctionActivator(IFunctionActivator inner, IFunctionContextAccessor funct
 
         public object? GetService(Type serviceType)
         {
-            Guard.IsNotNull(serviceType);
+            ArgumentNullException.ThrowIfNull(serviceType);
 
             if (inner.GetService(serviceType) is object result)
             {
@@ -64,7 +63,7 @@ class FunctionActivator(IFunctionActivator inner, IFunctionContextAccessor funct
 
         public object GetRequiredService(Type serviceType)
         {
-            Guard.IsNotNull(serviceType);
+            ArgumentNullException.ThrowIfNull(serviceType);
 
             if (inner.GetService(serviceType) is object result)
             {

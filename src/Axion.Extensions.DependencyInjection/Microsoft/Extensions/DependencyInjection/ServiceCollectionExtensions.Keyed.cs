@@ -5,7 +5,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
-using CommunityToolkit.Diagnostics;
 
 using static Axion.Extensions.DependencyInjection.ExpressionHelpers;
 
@@ -17,8 +16,8 @@ partial class ServiceCollectionExtensions
 
     static IServiceCollection AddKeyed(this IServiceCollection services, object? serviceKey, Delegate implementationFactory, Func<IServiceCollection, Type, object?, Func<IServiceProvider, object?, object>, IServiceCollection> add, Type? serviceType)
     {
-        Guard.IsNotNull(services);
-        Guard.IsNotNull(implementationFactory);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(implementationFactory);
 
         var (factory, implementationType) = cachedKeyed.GetOrAdd(implementationFactory.GetMethodInfo(), CreateKeyed);
 
