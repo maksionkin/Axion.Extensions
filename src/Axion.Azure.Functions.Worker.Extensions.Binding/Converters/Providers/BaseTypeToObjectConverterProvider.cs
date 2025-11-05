@@ -7,7 +7,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core.Serialization;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Azure.WebJobs;
 
 namespace Axion.Azure.Functions.Worker.Converters.Providers;
@@ -25,8 +24,8 @@ class BaseTypeToObjectConverterProvider(IServiceProvider serviceProvider) : IAsy
 
     public object? GetAsyncConverter(Type input, Type output)
     {
-        Guard.IsNotNull(input);
-        Guard.IsNotNull(output);
+        ArgumentNullException.ThrowIfNull(input);
+        ArgumentNullException.ThrowIfNull(output);
 
         if (BaseTypes.Contains(input))
         {
@@ -47,37 +46,33 @@ class BaseTypeToObjectConverterProvider(IServiceProvider serviceProvider) : IAsy
     {
         public async Task<T> ConvertAsync(Stream input, CancellationToken cancellationToken)
         {
-            Guard.IsNotNull(input);
+            ArgumentNullException.ThrowIfNull(input);
 
             return (T)(await objectSerializer.DeserializeAsync(input, typeof(T), cancellationToken))!;
         }
 
         public async Task<T> ConvertAsync(BinaryData input, CancellationToken cancellationToken)
         {
-            Guard.IsNotNull(input);
+            ArgumentNullException.ThrowIfNull(input);
 
             return await ConvertAsync(input.ToStream(), cancellationToken);
         }
 
         public async Task<T> ConvertAsync(byte[] input, CancellationToken cancellationToken)
         {
-            Guard.IsNotNull(input);
+            ArgumentNullException.ThrowIfNull(input);
 
             return await ConvertAsync(BinaryData.FromBytes(input), cancellationToken);
         }
 
         public async Task<T> ConvertAsync(string input, CancellationToken cancellationToken)
         {
-            Guard.IsNotNull(input);
+            ArgumentNullException.ThrowIfNull(input);
 
             return await ConvertAsync(BinaryData.FromString(input), cancellationToken);
         }
 
-        public async Task<T> ConvertAsync(ReadOnlyMemory<byte> input, CancellationToken cancellationToken)
-        {
-            Guard.IsNotNull(input);
-
-            return await ConvertAsync(BinaryData.FromBytes(input), cancellationToken);
-        }
+        public async Task<T> ConvertAsync(ReadOnlyMemory<byte> input, CancellationToken cancellationToken) =>
+            await ConvertAsync(BinaryData.FromBytes(input), cancellationToken);
     }
 }

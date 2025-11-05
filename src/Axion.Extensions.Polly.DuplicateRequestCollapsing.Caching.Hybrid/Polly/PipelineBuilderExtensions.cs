@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Michael Aksionkin. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Axion.Extensions.Polly.Caching.Hybrid;
 using Axion.Extensions.Polly.DuplicateRequestCollapsing.Caching.Hybrid;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Caching.Hybrid;
 
 #pragma warning disable IDE0130	// Namespace  does not match folder structure
@@ -25,8 +25,8 @@ public static class PipelineBuilderExtensions
         this ResiliencePipelineBuilder<TResult> builder,
         DuplicateRequestCollapsingResilienceStrategyOptions<TResult> options)
     {
-        Guard.IsNotNull(builder);
-        Guard.IsNotNull(options);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(options);
 
         var cacheOptions = new CachingStrategyOptions<TResult>()
         {

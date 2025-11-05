@@ -60,7 +60,7 @@ public class DIContainerTest
 
         Assert.IsTrue((await binder.BindAsync<IEnumerable<int>>(new TestEnumerableAttribute(6, 13))).SequenceEqual([6, 13]));
 
-        Assert.IsTrue(await (await binder.BindAsync<IAsyncEnumerable<string>>(new TestEnumerableAttribute(6, 13))).SequenceEqualAsync(new[] { "6", "13" }.ToAsyncEnumerable()));
+        Assert.IsTrue((await binder.BindAsync<IAsyncEnumerable<string>>(new TestEnumerableAttribute(6, 13))).ToBlockingEnumerable().SequenceEqual(["6", "13"]));
 
         await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await binder.BindAsync<Guid>(new TestAttribute(1)));
     }
@@ -86,14 +86,14 @@ public class DIContainerTest
 
     class TestAttribute(int i) : BindingAttribute([typeof(int)])
     {
-        protected override ValueTask<object> BindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken)
+        protected override ValueTask<object?> BindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken)
         {
             return new(i);
         }
     }
     class TestEnumerableAttribute(params IEnumerable<int> i) : BindingAttribute([typeof(IEnumerable<int>)])
     {
-        protected override ValueTask<object> BindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken)
+        protected override ValueTask<object?> BindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken)
         {
             return new(i);
         }

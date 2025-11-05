@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.Json;
 using Axion.Azure.Functions.Worker.Converters.Providers;
 using Azure.Core.Serialization;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +36,7 @@ public static class ServiceProviderExtensions
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="serviceProvider"/> is <see langword="null"/>.</exception>
     public static ObjectSerializer GetObjectSerializer(this IServiceProvider serviceProvider)
     {
-        Guard.IsNotNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
 
         var serializer = serviceProvider.GetService<IOptionsMonitor<WorkerOptions>>()?.CurrentValue.Serializer;
         if (serializer == null)
@@ -86,9 +85,9 @@ public static class ServiceProviderExtensions
     /// </exception>
     public static object? GetAsyncConverter(this IServiceProvider serviceProvider, Type input, Type output, Func<IAsyncConverterProvider, bool>? skipFilter = null)
     {
-        Guard.IsNotNull(serviceProvider);
-        Guard.IsNotNull(input);
-        Guard.IsNotNull(output);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(input);
+        ArgumentNullException.ThrowIfNull(output);
 
         var converterType = typeof(IAsyncConverter<,>).MakeGenericType(input, output);
 

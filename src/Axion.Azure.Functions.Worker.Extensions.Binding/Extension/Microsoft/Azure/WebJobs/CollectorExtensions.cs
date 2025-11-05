@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Michael Aksionkin. All rights reserved.
 // Licensed under the MIT License
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using CommunityToolkit.Diagnostics;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Microsoft.Azure.WebJobs;
@@ -27,7 +27,7 @@ public static class CollectorExtensions
     /// <exception cref="System.ArgumentNullException">Thrown when <paramref name="collector"/> is <see langword="null"/>.</exception>
     public static IAsyncCollector<T> ToAsyncCollector<T>(this ICollector<T> collector)
     {
-        Guard.IsNotNull(collector);
+        ArgumentNullException.ThrowIfNull(collector);
 
         return new SynchronousToAsynchronousCollector<T>(collector);
     }

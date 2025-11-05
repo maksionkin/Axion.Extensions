@@ -60,7 +60,7 @@ public class AzureStotageBlobsTests
 
     class Service1(ITypeBinder binder)
     {
-        IAsyncCollector<Poco> collector;
+        IAsyncCollector<Poco>? collector;
 
         public async Task RunAsync(int data)
         {
