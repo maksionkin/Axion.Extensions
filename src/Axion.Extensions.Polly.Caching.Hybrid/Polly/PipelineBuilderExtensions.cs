@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Michael Aksionkin. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Axion.Extensions.Polly.Caching.Hybrid;
-using CommunityToolkit.Diagnostics;
 
 
 #pragma warning disable IDE0130	// Namespace  does not match folder structure
@@ -24,8 +24,8 @@ public static class PipelineBuilderExtensions
         this ResiliencePipelineBuilder<TResult> builder,
         CachingStrategyOptions<TResult> options)
     {
-        Guard.IsNotNull(builder);
-        Guard.IsNotNull(options);
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(options);
 
         return builder.AddStrategy(
             context => new CachingResilienceStrategy<TResult>(options, context.Telemetry),

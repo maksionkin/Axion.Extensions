@@ -4,7 +4,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Azure.WebJobs;
 
 namespace Axion.Azure.Functions.Worker.Converters.Providers;
@@ -13,8 +12,8 @@ class SubTypeConverterProvider : IAsyncConverterProvider
 {
     public object? GetAsyncConverter(Type input, Type output)
     {
-        Guard.IsNotNull(input);
-        Guard.IsNotNull(output);
+        ArgumentNullException.ThrowIfNull(input);
+        ArgumentNullException.ThrowIfNull(output);
 
         return output.IsAssignableFrom(input)
             ? Activator.CreateInstance(typeof(SubTypeAsyncConverter<,>).MakeGenericType(input, output))

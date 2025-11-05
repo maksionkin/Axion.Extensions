@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Michael Aksionkin. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Caching.Hybrid;
 using Polly;
 
@@ -14,7 +14,7 @@ static class DefaultProviders
 {
     public static ValueTask<string> CacheKeyProvider(ResilienceContext context)
     {
-        Guard.IsNotNull(context.OperationKey);
+        ArgumentNullException.ThrowIfNull(context.OperationKey);
 
         return new ValueTask<string>(context.OperationKey);
     }

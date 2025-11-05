@@ -5,7 +5,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
-using CommunityToolkit.Diagnostics;
 using static Axion.Extensions.DependencyInjection.ExpressionHelpers;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -19,8 +18,8 @@ public static partial class ServiceCollectionExtensions
 
     static IServiceCollection Add(this IServiceCollection services, Delegate implementationFactory, Func<IServiceCollection, Type, Func<IServiceProvider, object>, IServiceCollection> add, Type? serviceType)
     {
-        Guard.IsNotNull(services);
-        Guard.IsNotNull(implementationFactory);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(implementationFactory);
 
         var (factory, implementationType) = cached.GetOrAdd(implementationFactory.GetMethodInfo(), Create);
 

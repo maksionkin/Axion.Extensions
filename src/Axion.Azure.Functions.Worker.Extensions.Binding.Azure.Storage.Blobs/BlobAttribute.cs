@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -14,7 +13,6 @@ using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
@@ -86,10 +84,10 @@ public sealed class BlobAttribute(string blobPath)
     public bool CreateContainerIfNotExists { get; set; } = true;
 
     /// <inheritdoc />
-    protected override async ValueTask<object> BindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken)
+    protected override async ValueTask<object?> BindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken)
     {
-        Guard.IsNotNull(serviceProvider);
-        Guard.IsNotNull(type);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(type);
 
         var nameResolver = serviceProvider.GetService<INameResolver>();
         var (blobPath, connection) = nameResolver == null
@@ -178,7 +176,7 @@ public sealed class BlobAttribute(string blobPath)
 
             if (type == typeof(IAsyncEnumerable<TextReader>) || FileAccess == System.IO.FileAccess.Read)
             {
-                var streams = blobClients.Select(async (BlobClient client, CancellationToken token) => (await client.DownloadStreamingAsync(cancellationToken: token).ConfigureAwait(false)).Value.Content);
+                var streams = blobClients.Select(async (client, token) => (await client.DownloadStreamingAsync(cancellationToken: token).ConfigureAwait(false)).Value.Content);
 
                 return type == typeof(IAsyncEnumerable<Stream>)
                     ? streams
@@ -186,7 +184,7 @@ public sealed class BlobAttribute(string blobPath)
             }
             else
             {
-                var streams = blobClients.Select(async (BlobClient client, CancellationToken token) => await client.GetParentBlobContainerClient().GetAppendBlobClient(client.Name).OpenWriteAsync(false, cancellationToken: token).ConfigureAwait(false));
+                var streams = blobClients.Select(async (client, token) => await client.GetParentBlobContainerClient().GetAppendBlobClient(client.Name).OpenWriteAsync(false, cancellationToken: token).ConfigureAwait(false));
                 return type == typeof(IAsyncEnumerable<Stream>)
                     ? streams
                     : streams.Select(s => (TextWriter)new StreamWriter(s));
@@ -239,7 +237,7 @@ public sealed class BlobAttribute(string blobPath)
             }
         }
 
-        throw new InvalidOperationException($"Cannot bind to {type.FullName} using {GetType().FullName}.");
+        return null;
     }
 
     class BlobConfiguration

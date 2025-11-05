@@ -5,7 +5,6 @@ using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reflection;
-using CommunityToolkit.Diagnostics;
 using static Axion.Extensions.DependencyInjection.ExpressionHelpers;
 
 namespace System;
@@ -27,8 +26,8 @@ public static partial class ServiceProviderExtensions
     /// <returns>A value that returns <paramref name="delegate"/>.</returns>
     public static TResult Execute<TResult>(this IServiceProvider serviceProvider, Delegate @delegate)
     {
-        Guard.IsNotNull(serviceProvider);
-        Guard.IsNotNull(@delegate);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(@delegate);
 
         var method = @delegate.GetMethodInfo();
 
@@ -56,8 +55,8 @@ public static partial class ServiceProviderExtensions
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public static void Execute(this IServiceProvider serviceProvider, Delegate @delegate)
     {
-        Guard.IsNotNull(serviceProvider);
-        Guard.IsNotNull(@delegate);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(@delegate);
 
         var factory = cachedActions.GetOrAdd(@delegate.GetMethodInfo(), Create<Action<object?, IServiceProvider>>);
 

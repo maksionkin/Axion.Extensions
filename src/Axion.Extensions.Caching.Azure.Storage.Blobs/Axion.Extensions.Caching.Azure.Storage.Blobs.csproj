@@ -9,8 +9,6 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(PlatformVersion)" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="$(PlatformVersion)" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <PackageReference Include="Microsoft.Bcl.Memory" Version="$(PlatformVersion)" />
   </ItemGroup>
   <ItemGroup>

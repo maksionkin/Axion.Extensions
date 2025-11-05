@@ -5,7 +5,6 @@ using System;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Azure.WebJobs;
 
 namespace Axion.Azure.Functions.Worker.Converters.Providers;
@@ -20,8 +19,8 @@ class CollectorConverterProvider(IServiceProvider serviceProvider) : IAsyncConve
 
     public object? GetAsyncConverter(Type input, Type output)
     {
-        Guard.IsNotNull(input);
-        Guard.IsNotNull(output);
+        ArgumentNullException.ThrowIfNull(input);
+        ArgumentNullException.ThrowIfNull(output);
 
         if (input.IsGenericType && output.IsGenericType)
         {
@@ -55,7 +54,7 @@ class CollectorConverterProvider(IServiceProvider serviceProvider) : IAsyncConve
     {
         public AsyncCollectorWrapper<TInputItem, TOutputItem> Convert(IAsyncCollector<TInputItem> input)
         {
-            Guard.IsNotNull(input);
+            ArgumentNullException.ThrowIfNull(input);
 
             return new AsyncCollectorWrapper<TInputItem, TOutputItem>(input, itemConverter);
         }
@@ -87,7 +86,11 @@ class CollectorConverterProvider(IServiceProvider serviceProvider) : IAsyncConve
                 await inner.FlushAsync(CancellationToken.None);
             }
 
-            AddAndFlushAsync().AsTask().GetAwaiter().GetResult();
+            var task = AddAndFlushAsync();
+            if (!task.IsCompletedSuccessfully)
+            {
+                task.AsTask().GetAwaiter().GetResult();
+            }
         }
 
         public async Task AddAsync(TOutputItem item, CancellationToken cancellationToken = default)

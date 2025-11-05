@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -28,7 +27,7 @@ public class GitHubFileProvider : IFileProvider
     /// <param name="optionsAccessor">The configuration options.</param>
     public GitHubFileProvider(IOptions<GitHubFileProviderOptions> optionsAccessor)
     {
-        Guard.IsNotNull(optionsAccessor);
+        ArgumentNullException.ThrowIfNull(optionsAccessor);
 
         this.optionsAccessor = optionsAccessor;
     }
@@ -245,11 +244,9 @@ public class GitHubFileProvider : IFileProvider
            HtmlUrl;
     }
 
-    class GitHubDirectoryContents : IDirectoryContents
+    class GitHubDirectoryContents(GitHubFileProvider.GitHubProperties properties, IEnumerable<RepositoryContent> contents) : IDirectoryContents
     {
-        readonly IEnumerable<GitHubFileInfo> fileInfos;
-        public GitHubDirectoryContents(GitHubProperties properties, IEnumerable<RepositoryContent> contents) =>
-            fileInfos = contents.Select(content => new GitHubFileInfo(properties, content)).ToList();
+        readonly IEnumerable<GitHubFileInfo> fileInfos = [.. contents.Select(content => new GitHubFileInfo(properties, content))];
 
         public bool Exists =>
             true;

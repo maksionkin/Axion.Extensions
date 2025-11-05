@@ -4,13 +4,11 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Axion.Azure.Functions.Worker;
 using Azure.Storage.Queues;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
@@ -60,10 +58,10 @@ public sealed class QueueAttribute(string queueName)
     public bool CreateIfNotExists { get; set; } = true;
 
     /// <inheritdoc />
-    protected override async ValueTask<object> BindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken)
+    protected override async ValueTask<object?> BindAsync(IServiceProvider serviceProvider, Type type, CancellationToken cancellationToken)
     {
-        Guard.IsNotNull(serviceProvider);
-        Guard.IsNotNull(type);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(type);
 
         var hostFolder = serviceProvider.GetRequiredService<IConfiguration>().GetSection(FunctionsApplicationDirectoryKey)?.Value
             ?? Environment.GetEnvironmentVariable(FunctionsApplicationDirectoryKey);
@@ -136,10 +134,8 @@ public sealed class QueueAttribute(string queueName)
         {
             return new StringAsyncCollector(queueClient, CreateIfNotExists);
         }
-        else
-        {
-            throw new InvalidOperationException($"Cannot bind to {type.FullName} using {GetType().FullName}.");
-        }
+
+        return null;
     }
 
     record HostJson(HostJsonExtensions? Extensions);
