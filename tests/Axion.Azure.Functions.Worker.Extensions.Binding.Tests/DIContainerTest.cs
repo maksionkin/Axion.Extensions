@@ -60,7 +60,7 @@ public class DIContainerTest
 
         Assert.IsTrue((await binder.BindAsync<IEnumerable<int>>(new TestEnumerableAttribute(6, 13))).SequenceEqual([6, 13]));
 
-        Assert.IsTrue(await (await binder.BindAsync<IAsyncEnumerable<string>>(new TestEnumerableAttribute(6, 13))).SequenceEqualAsync(new[] { "6", "13" }.ToAsyncEnumerable()));
+        Assert.IsTrue((await binder.BindAsync<IAsyncEnumerable<string>>(new TestEnumerableAttribute(6, 13))).ToBlockingEnumerable().SequenceEqual(["6", "13"]));
 
         await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await binder.BindAsync<Guid>(new TestAttribute(1)));
     }

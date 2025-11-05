@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel;
 using Azure.Storage.Blobs;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Options;
 
 namespace Axion.Extensions.Caching.Azure.Storage.Blobs;
@@ -52,8 +51,8 @@ public class AzureBlobsCacheOptions : IOptions<AzureBlobsCacheOptions>
 
     BlobContainerClient DefaultGetBlobContainerClient()
     {
-        Guard.IsNotNullOrWhiteSpace(ConnectionString);
-        Guard.IsNotNullOrWhiteSpace(ContainerName);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(ConnectionString);
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(ContainerName);
 
         return new(ConnectionString, ContainerName);
     }
@@ -66,7 +65,7 @@ public class AzureBlobsCacheOptions : IOptions<AzureBlobsCacheOptions>
         get => getBlobContainerClient ?? DefaultGetBlobContainerClient;
         set
         {
-            Guard.IsNotNull(value);
+            ArgumentNullException.ThrowIfNull(value);
 
             getBlobContainerClient = value;
         }

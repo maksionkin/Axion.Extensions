@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Michael Aksionkin. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Net.Http;
 using Axion.Extensions.Caching.Hybrid.Serialization.Http;
-using CommunityToolkit.Diagnostics;
 using Microsoft.IO;
 using Polly.Caching;
 
@@ -24,7 +24,7 @@ public class HttpResponseMessageSerializer : ICacheItemSerializer<HttpResponseMe
     /// <inheritdoc/>
     public HttpResponseMessage Deserialize(byte[] objectToDeserialize)
     {
-        Guard.IsNotNull(objectToDeserialize);
+        ArgumentNullException.ThrowIfNull(objectToDeserialize);
 
         return HttpResponseMessageHybridCacheSerializer.Instance.Deserialize(new(objectToDeserialize));
     }
@@ -32,7 +32,7 @@ public class HttpResponseMessageSerializer : ICacheItemSerializer<HttpResponseMe
     /// <inheritdoc/>
     public byte[] Serialize(HttpResponseMessage objectToSerialize)
     {
-        Guard.IsNotNull(objectToSerialize);
+        ArgumentNullException.ThrowIfNull(objectToSerialize);
 
         using var ms = RecyclableMemoryStreamManager.GetStream();
         HttpResponseMessageHybridCacheSerializer.Instance.Serialize(objectToSerialize, ms);

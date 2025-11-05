@@ -4,10 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Azure.WebJobs;
 
 namespace Axion.Azure.Functions.Worker.Converters.Providers;
@@ -22,14 +20,14 @@ class EnumerationConverterProvider(IServiceProvider serviceProvider) : IAsyncCon
 
     public object? GetAsyncConverter(Type input, Type output)
     {
-        Guard.IsNotNull(input);
-        Guard.IsNotNull(output);
+        ArgumentNullException.ThrowIfNull(input);
+        ArgumentNullException.ThrowIfNull(output);
 
         static Type? GetItemType(Type type) =>
             type switch
             {
                 { IsGenericType: true } when BaseTypes.Contains(type.GetGenericTypeDefinition()) => type.GetGenericArguments()[0],
-                { IsArray: true } => type.GetElementType(),
+                { IsArray: true } when type.GetArrayRank() == 1 => type.GetElementType(),
                 _ => null,
             };
 
@@ -61,9 +59,9 @@ class EnumerationConverterProvider(IServiceProvider serviceProvider) : IAsyncCon
     {
         public IAsyncEnumerable<TOutputItem> Convert(IAsyncEnumerable<TInputItem>? input, CancellationToken cancellationToken)
         {
-            Guard.IsNotNull(input);
+            ArgumentNullException.ThrowIfNull(input);
 
-            return input.SelectAwait(async item => await itemConverter.ConvertAsync(item, cancellationToken).ConfigureAwait(false));
+            return input.Select(async (TInputItem item, CancellationToken token) => await itemConverter.ConvertAsync(item, token).ConfigureAwait(false));
         }
 
         public Task<IAsyncEnumerable<TOutputItem>> ConvertAsync(TInputItem[] input, CancellationToken cancellationToken) =>
@@ -73,13 +71,13 @@ class EnumerationConverterProvider(IServiceProvider serviceProvider) : IAsyncCon
             Task.FromResult(Convert(input, cancellationToken));
 
         Task<IEnumerable<TOutputItem>> IAsyncConverter<IAsyncEnumerable<TInputItem>, IEnumerable<TOutputItem>>.ConvertAsync(IAsyncEnumerable<TInputItem> input, CancellationToken cancellationToken) =>
-            Task.FromResult(Convert(input, cancellationToken).ToEnumerable());
+            Task.FromResult(Convert(input, cancellationToken).ToBlockingEnumerable(cancellationToken));
 
         Task<IAsyncEnumerable<TOutputItem>> IAsyncConverter<IEnumerable<TInputItem>, IAsyncEnumerable<TOutputItem>>.ConvertAsync(IEnumerable<TInputItem> input, CancellationToken cancellationToken) =>
             Task.FromResult(Convert(input?.ToAsyncEnumerable(), cancellationToken));
 
         Task<IEnumerable<TOutputItem>> IAsyncConverter<IEnumerable<TInputItem>, IEnumerable<TOutputItem>>.ConvertAsync(IEnumerable<TInputItem> input, CancellationToken cancellationToken) =>
-            Task.FromResult(Convert(input?.ToAsyncEnumerable(), cancellationToken).ToEnumerable());
+            Task.FromResult(Convert(input?.ToAsyncEnumerable(), cancellationToken).ToBlockingEnumerable(cancellationToken));
 
         async Task<TOutputItem[]> IAsyncConverter<TInputItem[], TOutputItem[]>.ConvertAsync(TInputItem[] input, CancellationToken cancellationToken) =>
             await Convert(input?.ToAsyncEnumerable(), cancellationToken).ToArrayAsync(cancellationToken).ConfigureAwait(false);
@@ -92,6 +90,6 @@ class EnumerationConverterProvider(IServiceProvider serviceProvider) : IAsyncCon
             await Convert(input?.ToAsyncEnumerable(), cancellationToken).ToArrayAsync(cancellationToken).ConfigureAwait(false);
 
         Task<IEnumerable<TOutputItem>> IAsyncConverter<TInputItem[], IEnumerable<TOutputItem>>.ConvertAsync(TInputItem[] input, CancellationToken cancellationToken) =>
-            Task.FromResult(Convert(input?.ToAsyncEnumerable(), cancellationToken).ToEnumerable());
+            Task.FromResult(Convert(input?.ToAsyncEnumerable(), cancellationToken).ToBlockingEnumerable(cancellationToken));
     }
 }

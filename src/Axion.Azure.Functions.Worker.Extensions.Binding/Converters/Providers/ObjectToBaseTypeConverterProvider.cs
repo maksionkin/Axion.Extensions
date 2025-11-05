@@ -7,7 +7,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core.Serialization;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Azure.WebJobs;
 
 namespace Axion.Azure.Functions.Worker.Converters.Providers;
@@ -25,8 +24,8 @@ class ObjectToBaseTypeConverterProvider(IServiceProvider serviceProvider) : IAsy
 
     public object? GetAsyncConverter(Type input, Type output)
     {
-        Guard.IsNotNull(input);
-        Guard.IsNotNull(output);
+        ArgumentNullException.ThrowIfNull(input);
+        ArgumentNullException.ThrowIfNull(output);
 
         if (BaseTypes.Contains(output))
         {

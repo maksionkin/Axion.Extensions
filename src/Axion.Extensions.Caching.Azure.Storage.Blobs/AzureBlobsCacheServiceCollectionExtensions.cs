@@ -4,7 +4,6 @@
 using System;
 using Axion.Extensions.Caching.Azure.Storage.Blobs;
 using Azure.Storage.Blobs;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 
@@ -47,8 +46,8 @@ public static class AzureBlobsCacheServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
     public static IServiceCollection AddAzureBlobCache(this IServiceCollection services, Action<AzureBlobsCacheOptions, IServiceProvider> setupAction)
     {
-        Guard.IsNotNull(services);
-        Guard.IsNotNull(setupAction);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(setupAction);
 
         return services.AddOptions()
             .AddSingleton<IBufferDistributedCache, AzureBlobsCache>()

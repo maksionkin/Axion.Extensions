@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Michael Aksionkin. All rights reserved.
 // Licensed under the MIT License
 
+using System;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Specialized;
-using CommunityToolkit.Diagnostics;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Microsoft.Extensions.DependencyInjection;
@@ -24,7 +24,7 @@ public static class BindingStorageBlobServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/> with the output binding services added.</returns>
     public static IServiceCollection AddAzureBlobsConverters(this IServiceCollection services)
     {
-        Guard.IsNotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddConverter((BlobClient value) => value.GetParentBlobContainerClient().GetPageBlobClient(value.Name));
         services.AddConverter((BlobClient value) => value.GetParentBlobContainerClient().GetAppendBlobClient(value.Name));

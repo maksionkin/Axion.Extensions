@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
-using CommunityToolkit.Diagnostics;
 using Microsoft.IO;
 
 namespace Axion.Extensions.Caching.Hybrid.Serialization.Http.Tests;
@@ -206,7 +205,7 @@ public class SerializerTests
 
         void Get(int sizeHint)
         {
-            Guard.IsEqualTo(0, sizeHint);
+            Assert.AreEqual(0, sizeHint);
 
             if (current >= chunks.Last().Length)
             {

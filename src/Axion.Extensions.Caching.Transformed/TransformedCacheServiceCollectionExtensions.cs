@@ -10,7 +10,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Cryptography;
 using Axion.Extensions.Caching.Transformed;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -34,9 +33,9 @@ public static class TransformedCacheServiceCollectionExtensions
     /// <exception cref="InvalidOperationException">When no <see cref="IDistributedCache"/> was added to <paramref name="services"/>.</exception>
     public static IServiceCollection AddTransformedCache(this IServiceCollection services, Func<byte[], byte[]> encode, Func<byte[], byte[]> decode, Func<string, string>? convertCacheKey = null)
     {
-        Guard.IsNotNull(services);
-        Guard.IsNotNull(encode);
-        Guard.IsNotNull(decode);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(encode);
+        ArgumentNullException.ThrowIfNull(decode);
 
         var descriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IDistributedCache))
             ?? throw new InvalidOperationException("No instance of IDistributedCache found.");
@@ -77,7 +76,7 @@ public static class TransformedCacheServiceCollectionExtensions
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public static (Func<byte[], byte[]> Encode, Func<byte[], byte[]> Decode) GetTransformMethods(Type compressionStreamType, CompressionLevel compressionLevel = default)
     {
-        Guard.IsNotNull(compressionStreamType);
+        ArgumentNullException.ThrowIfNull(compressionStreamType);
 
         if (!typeof(Stream).IsAssignableFrom(compressionStreamType))
         {
@@ -168,7 +167,7 @@ public static class TransformedCacheServiceCollectionExtensions
     public static IServiceCollection AddTransformedCache<TCompressionStream>(this IServiceCollection services, CompressionLevel compressionLevel = default, Func<string, string>? convertCacheKey = null)
         where TCompressionStream : Stream
     {
-        Guard.IsNotNull(services);
+        ArgumentNullException.ThrowIfNull(services);
 
         var (encode, decode) = GetTransformMethods(typeof(TCompressionStream), compressionLevel);
 
@@ -183,7 +182,7 @@ public static class TransformedCacheServiceCollectionExtensions
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public static Func<byte[], byte[]> GetTransformMethod(Func<ICryptoTransform> transformFactory)
     {
-        Guard.IsNotNull(transformFactory);
+        ArgumentNullException.ThrowIfNull(transformFactory);
 
         return bytes =>
             {
@@ -207,9 +206,9 @@ public static class TransformedCacheServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
     public static IServiceCollection AddTransformedCache(this IServiceCollection services, Func<ICryptoTransform> encryptTransformFactory, Func<ICryptoTransform> decryptTransformFactory, Func<string, string>? convertCacheKey = null)
     {
-        Guard.IsNotNull(services);
-        Guard.IsNotNull(encryptTransformFactory);
-        Guard.IsNotNull(decryptTransformFactory);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(encryptTransformFactory);
+        ArgumentNullException.ThrowIfNull(decryptTransformFactory);
 
         return services.AddTransformedCache(GetTransformMethod(encryptTransformFactory), GetTransformMethod(decryptTransformFactory), convertCacheKey);
     }
@@ -223,8 +222,8 @@ public static class TransformedCacheServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
     public static IServiceCollection AddTransformedCache(this IServiceCollection services, SymmetricAlgorithm algorithm, Func<string, string>? convertCacheKey = null)
     {
-        Guard.IsNotNull(services);
-        Guard.IsNotNull(algorithm);
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(algorithm);
 
         return services.AddTransformedCache(algorithm.CreateEncryptor, algorithm.CreateDecryptor, convertCacheKey);
     }

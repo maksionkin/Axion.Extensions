@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 
@@ -33,7 +32,7 @@ public class TransformedCacheOptions : IOptions<TransformedCacheOptions>
         get => convertCacheKey;
         set
         {
-            Guard.IsNotNull(value);
+            ArgumentNullException.ThrowIfNull(value);
 
             convertCacheKey = value;
         }

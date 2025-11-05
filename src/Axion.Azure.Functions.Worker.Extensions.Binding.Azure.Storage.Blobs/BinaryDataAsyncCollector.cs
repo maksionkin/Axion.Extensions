@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Blobs.Specialized;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Azure.WebJobs;
 
 namespace Axion.Azure.Functions.Worker;
@@ -16,7 +15,7 @@ class BinaryDataAsyncCollector(AppendBlobClient blobClient) : IAsyncCollector<Bi
 {
     public async Task AddAsync(BinaryData item, CancellationToken cancellationToken = default)
     {
-        Guard.IsNotNull(item);
+        ArgumentNullException.ThrowIfNull(item);
 
         while (true)
         {
