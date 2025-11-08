@@ -253,7 +253,7 @@ ref struct HttpResponseMessageReader(ReadOnlySequence<byte> sequence, HttpRespon
     public Stream ReadBody(long? length)
     {
         var sequence = reader.UnreadSequence;
-        if (length != null)
+        if (length != null && sequence.Length > length.Value)
         {
             sequence = sequence.Slice(0, length.Value);
         }
