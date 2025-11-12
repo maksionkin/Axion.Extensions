@@ -1,0 +1,57 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Axion.png" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path="snkey.snk" />
+  </Folder>
+  <Folder Name="/Solution Items/.github/" />
+  <Folder Name="/Solution Items/.github/codeql/">
+    <File Path=".github/codeql/codeql-config.yml" />
+  </Folder>
+  <Folder Name="/Solution Items/.github/workflows/">
+    <File Path=".github/workflows/build.yml" />
+    <File Path=".github/workflows/codeql.yml" />
+  </Folder>
+  <Folder Name="/src/">
+    <File Path="src/Directory.Build.props" />
+    <File Path="src/Directory.Build.targets" />
+    <File Path="src/version.json" />
+    <Project Path="src/Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Blobs/Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Blobs.csproj" />
+    <Project Path="src/Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Queues/Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Queues.csproj" />
+    <Project Path="src/Axion.Azure.Functions.Worker.Extensions.Binding/Axion.Azure.Functions.Worker.Extensions.Binding.csproj" />
+    <Project Path="src/Axion.Extensions.Caching.Azure.Storage.Blobs/Axion.Extensions.Caching.Azure.Storage.Blobs.csproj" />
+    <Project Path="src/Axion.Extensions.Caching.Hybrid.Serialization.Http/Axion.Extensions.Caching.Hybrid.Serialization.Http.csproj" />
+    <Project Path="src/Axion.Extensions.Caching.Transformed/Axion.Extensions.Caching.Transformed.csproj" />
+    <Project Path="src/Axion.Extensions.DependencyInjection/Axion.Extensions.DependencyInjection.csproj" />
+    <Project Path="src/Axion.Extensions.FileProviders.GitHub/Axion.Extensions.FileProviders.GitHub.csproj" />
+    <Project Path="src/Axion.Extensions.Http.Resilience.Caching.Hybrid/Axion.Extensions.Http.Resilience.Caching.Hybrid.csproj" />
+    <Project Path="src/Axion.Extensions.Http.Resilience.DuplicateRequestCollapsing.Caching.Hybrid/Axion.Extensions.Http.Resilience.DuplicateRequestCollapsing.Caching.Hybrid.csproj" />
+    <Project Path="src/Axion.Extensions.Polly.Caching.Hybrid/Axion.Extensions.Polly.Caching.Hybrid.csproj" />
+    <Project Path="src/Axion.Extensions.Polly.Caching.Serialization.Http/Axion.Extensions.Polly.Caching.Serialization.Http.csproj" />
+    <Project Path="src/Axion.Extensions.Polly.DuplicateRequestCollapsing.Caching.Hybrid/Axion.Extensions.Polly.DuplicateRequestCollapsing.Caching.Hybrid.csproj" />
+  </Folder>
+  <Folder Name="/src/Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Shared/">
+    <File Path="src/Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Shared/AzureComponentFactoryExtensions.cs" />
+    <File Path="src/Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Shared/ServiceProviderExtensions.cs" />
+  </Folder>
+  <Folder Name="/tests/">
+    <File Path="tests/Directory.Build.props" />
+    <File Path="tests/Directory.Build.targets" />
+    <Project Path="tests/Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Blobs.Tests/Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Blobs.Tests.csproj" />
+    <Project Path="tests/Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Queues.Tests/Axion.Azure.Functions.Worker.Extensions.Binding.Azure.Storage.Queues.Tests.csproj" />
+    <Project Path="tests/Axion.Azure.Functions.Worker.Extensions.Binding.Tests/Axion.Azure.Functions.Worker.Extensions.Binding.Tests.csproj" />
+    <Project Path="tests/Axion.Extensions.Caching.Azure.Storage.Blobs.Tests/Axion.Extensions.Caching.Azure.Storage.Blobs.Tests.csproj" />
+    <Project Path="tests/Axion.Extensions.Caching.Hybrid.Serialization.Http.Tests/Axion.Extensions.Caching.Hybrid.Serialization.Http.Tests.csproj" />
+    <Project Path="tests/Axion.Extensions.Caching.Transformed.Tests/Axion.Extensions.Caching.Transformed.Tests.csproj" />
+    <Project Path="tests/Axion.Extensions.DependencyInjection.Tests/Axion.Extensions.DependencyInjection.Tests.csproj" />
+    <Project Path="tests/Axion.Extensions.FileProviders.GitHub.Tests/Axion.Extensions.FileProviders.GitHub.Tests.csproj" />
+    <Project Path="tests/Axion.Extensions.Http.Resilience.DuplicateRequestCollapsing.Caching.Hybrid.Tests/Axion.Extensions.Http.Resilience.DuplicateRequestCollapsing.Caching.Hybrid.Tests.csproj" />
+    <Project Path="tests/Axion.Extensions.Polly.Caching.Serialization.Http.Tests/Axion.Extensions.Polly.Caching.Serialization.Http.Tests.csproj" />
+    <Project Path="tests/Axion.Extensions.Polly.DuplicateRequestCollapsing.Caching.Hybrid.Tests/Axion.Extensions.Polly.DuplicateRequestCollapsing.Caching.Hybrid.Tests.csproj" />
+  </Folder>
+</Solution>
