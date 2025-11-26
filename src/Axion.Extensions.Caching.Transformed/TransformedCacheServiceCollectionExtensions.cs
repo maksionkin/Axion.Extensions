@@ -78,7 +78,7 @@ public static class TransformedCacheServiceCollectionExtensions
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public
 #endif
-        static (Func<byte[], byte[]> Encode, Func<byte[], byte[]> Decode) GetTransformMethods(Type compressionStreamType, CompressionLevel compressionLevel = default)
+    static (Func<byte[], byte[]> Encode, Func<byte[], byte[]> Decode) GetTransformMethods(Type compressionStreamType, CompressionLevel compressionLevel = default)
     {
         ArgumentNullException.ThrowIfNull(compressionStreamType);
 

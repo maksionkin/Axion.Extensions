@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>File Provider implementation of GitHub or GitHub Enterprise repository.</Description>
-    <PackageTags>IFileProvider;GitHub;File Provider;FileProvider</PackageTags>
+    <Description>File Provider implementation of Git repository via Git Smart HTTP protocol.</Description>
+    <PackageTags>IFileProvider;Git;Git Smart HTTP; GitSmartHttp; SmartHttp;File Provider;FileProvider</PackageTags>
     <RootNamespace>Axion.Extensions.FileProviders</RootNamespace>
   </PropertyGroup>
   <ItemGroup>

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading;
@@ -10,7 +11,7 @@ using ICSharpCode.SharpZipLib.Zip.Compression;
 
 namespace Axion.Extensions.FileProviders;
 
-class ZLibFixedStream(Stream stream, long length, HashAlgorithm? hash) : Stream
+class ZLibFixedStream(Stream stream, long length, HashAlgorithm? hash, IEnumerable<IDisposable> disposables) : Stream
 {
     readonly Inflater inflater = new();
     readonly byte[] bytes = new byte[1];
@@ -64,6 +65,19 @@ class ZLibFixedStream(Stream stream, long length, HashAlgorithm? hash) : Stream
 
     public override void Write(byte[] buffer, int offset, int count) =>
         throw new InvalidOperationException();
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            foreach (var d in disposables)
+            {
+                d.Dispose();
+            }
+        }
+
+        base.Dispose(disposing);
+    }
 
     async ValueTask<int> ReadCoreAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {

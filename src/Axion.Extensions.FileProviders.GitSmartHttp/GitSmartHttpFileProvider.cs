@@ -10,8 +10,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -28,6 +28,10 @@ namespace Axion.Extensions.FileProviders;
 /// </summary>
 public class GitSmartHttpFileProvider : IFileProvider
 {
+    /// <summary>
+    /// Represents the key used to store or retrieve <see cref="RequestInfo"/> for HTTP requests related to the <see cref="GitSmartHttpFileProvider"/>.
+    /// </summary>
+
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public static readonly string HttpRequestOptionsKey = typeof(GitSmartHttpFileProvider).FullName!;
 
@@ -41,10 +45,10 @@ public class GitSmartHttpFileProvider : IFileProvider
     };
 
     readonly GitSmartFileProviderOptions options;
-    readonly Task<(ServerCapabilities ServerCapabilities, string Oid, bool Explicit)> repoInfo;
-    readonly Lazy<Task> initialObjectPopulate;
-    readonly ConcurrentDictionary<string, (string Oid, bool Folder)> objects = new();
+    readonly Uri uploadPackUri;
+    readonly Dictionary<string, (string Oid, bool Folder)> objects;
     readonly ConcurrentDictionary<string, long> blobLengths = new();
+
 
     /// <summary>
     /// Initializes a new instance of the GitSmartHttpFileProvider class using the specified options.
@@ -53,20 +57,25 @@ public class GitSmartHttpFileProvider : IFileProvider
     public GitSmartHttpFileProvider(IOptions<GitSmartFileProviderOptions> options)
     {
         ArgumentNullException.ThrowIfNull(options);
+        ArgumentOutOfRangeException.ThrowIfNotEqual(options.Value.Repository.IsAbsoluteUri, true);
+        ArgumentOutOfRangeException.ThrowIfNotEqual(options.Value.Repository.Scheme == Uri.UriSchemeHttp || options.Value.Repository.Scheme == Uri.UriSchemeHttps, true);
+
         this.options = options.Value;
-
-        repoInfo = Task.Run(async () => await GetRepoInfoAsync().ConfigureAwait(false));
-
-        async ValueTask InitialObjectPopulateAsync()
+        uploadPackUri = new UriBuilder(this.options.Repository)
         {
-            var info = await repoInfo.ConfigureAwait(false);
-            if (info != default)
-            {
-                await PopulateObjectsAsync().ConfigureAwait(false);
-            }
+            Path = this.options.Repository.AbsolutePath.EndsWith('/')
+                ? this.options.Repository.AbsolutePath + "git-upload-pack"
+                : this.options.Repository.AbsolutePath + "/git-upload-pack",
+        }.Uri;
+
+        async Task<Dictionary<string, (string Oid, bool Folder)>> InitialObjectPopulateAsync()
+        {
+            var info = await GetRepoInfoAsync(this.options).ConfigureAwait(false);
+
+            return await PopulateObjectsAsync(info.ServerCapabilities, info.Oid).ConfigureAwait(false);
         }
 
-        initialObjectPopulate = new(() => Task.Run(async () => await InitialObjectPopulateAsync().ConfigureAwait(false)));
+        objects = Task.Run(InitialObjectPopulateAsync).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     enum ObjectFormat
@@ -94,38 +103,41 @@ public class GitSmartHttpFileProvider : IFileProvider
     /// <inheritdoc/>
     public IDirectoryContents GetDirectoryContents(string subpath)
     {
-        ArgumentNullException.ThrowIfNull(subpath);
+        subpath = GetNormilizedPath(subpath);
 
-        var s = subpath.StartsWith('/') ? subpath : '/' + subpath;
-
-        EnsureInitialPopulate();
-
-
-        if (!objects.TryGetValue(s, out var i) || !i.Folder)
+        if (!objects.TryGetValue(subpath, out var i) || !i.Folder)
         {
             return NotFoundDirectoryContents.Singleton;
         }
 
-        if (!s.EndsWith('/'))
+        subpath += '/';
+
+        GitSmartHttpFileInfo? GetGitSmartHttpFileInfo(KeyValuePair<string, (string Oid, bool Folder)> p)
         {
-            s += '/';
+            if (p.Key.StartsWith(subpath, StringComparison.Ordinal))
+            {
+                var relativePath = p.Key[subpath.Length..];
+
+                if (relativePath.IndexOf('/') < 0)
+                {
+                    return new(this, relativePath, p.Value.Oid, p.Value.Folder);
+                }
+            }
+
+            return null;
         }
 
-        return new GitSmartHttpDirectoryContents(objects.Where(p => p.Key.StartsWith(s, StringComparison.Ordinal) && p.Key.LastIndexOf('/') == s.Length - 1)
-            .Select(p => new GitSmartHttpFileInfo(this, p.Key, p.Value.Oid, p.Value.Folder))
-            .ToList());
+        return new GitSmartHttpDirectoryContents(objects.Select(GetGitSmartHttpFileInfo).Where(f => f != null).ToList()!);
     }
 
     /// <inheritdoc/>
     public IFileInfo GetFileInfo(string subpath)
     {
-        ArgumentNullException.ThrowIfNull(subpath);
+        subpath = GetNormilizedPath(subpath);
 
-        var s = subpath.StartsWith('/') ? subpath : '/' + subpath;
-
-        if (objects.TryGetValue(s, out var i))
+        if (objects.TryGetValue(subpath, out var i))
         {
-            return new GitSmartHttpFileInfo(this, subpath, i.Oid, i.Folder);
+            return new GitSmartHttpFileInfo(this, subpath.Split('/').Last(), i.Oid, i.Folder);
         }
         else
         {
@@ -137,13 +149,32 @@ public class GitSmartHttpFileProvider : IFileProvider
     public IChangeToken Watch(string filter) =>
         NullChangeToken.Singleton;
 
+    static string GetNormilizedPath(string subpath, [CallerArgumentExpression(nameof(subpath))] string? paramName = null)
+    {
+        ArgumentNullException.ThrowIfNull(subpath, paramName);
+
+        if (subpath == "/" || subpath == "")
+        {
+            subpath = "";
+        }
+        else if (!subpath.StartsWith('/'))
+        {
+            subpath = '/' + subpath;
+        }
+
+        if (subpath.EndsWith('/'))
+        {
+            subpath = subpath[..^1];
+        }
+
+        return subpath.Replace('\\', '/');
+    }
+
     static bool IsHex(char c) =>
         (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f');
 
-    void EnsureInitialPopulate() =>
-        initialObjectPopulate.Value.ConfigureAwait(false).GetAwaiter().GetResult();
 
-    async Task<(ServerCapabilities ServerCapabilities, string Oid, bool Explicit)> GetRepoInfoAsync(CancellationToken cancellationToken = default)
+    static async Task<(ServerCapabilities ServerCapabilities, string Oid)> GetRepoInfoAsync(GitSmartFileProviderOptions options, CancellationToken cancellationToken = default)
     {
         ServerCapabilities serverCapabilities = default;
 
@@ -162,10 +193,6 @@ public class GitSmartHttpFileProvider : IFileProvider
         using var request = new HttpRequestMessage(HttpMethod.Get, url.Uri);
 
         using var response = await options.GetHttpClient().SendAsync(request, cancellationToken);
-        if (response.StatusCode == HttpStatusCode.NotFound || response.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            return default;
-        }
 
         using var stream = await response.EnsureSuccessStatusCode().Content.ReadAsStreamAsync(cancellationToken);
         using var pktStream = new PktLineReadStream(stream, false);
@@ -204,7 +231,6 @@ public class GitSmartHttpFileProvider : IFileProvider
                 {
                     var objectFormat = ObjectFormat.Sha1;
                     var filter = false;
-                    var shallow = false;
 
                     var capabilities = split[1].Split(' ');
                     foreach (var capability in capabilities)
@@ -229,46 +255,29 @@ public class GitSmartHttpFileProvider : IFileProvider
                         {
                             filter = true;
                         }
-                        else if (capability == "shallow")
-                        {
-                            shallow = true;
-                        }
                     }
 
-                    serverCapabilities = new(objectFormat, filter, shallow);
+                    serverCapabilities = new(objectFormat, filter);
                 }
 
                 if (options.Reference?.Length == serverCapabilities.IdStringSize && options.Reference.All(IsHex))
                 {
-                    return (serverCapabilities, oid, true);
+                    return (serverCapabilities, oid);
                 }
             }
 
             if (string.IsNullOrEmpty(options.Reference) || options.Reference == refs)
             {
-                return (serverCapabilities, oid, false);
+                return (serverCapabilities, oid);
             }
         }
 
         throw new FormatException($"Cannot resolve '{options.Reference}'");
     }
 
-    Uri GetUploadPackServiceUri()
+    async Task<Dictionary<string, (string Oid, bool Folder)>> PopulateObjectsAsync(ServerCapabilities capabilities, string oid, CancellationToken cancellationToken = default)
     {
-        var url = new UriBuilder(options.Repository);
-        if (!url.Path.EndsWith('/'))
-        {
-            url.Path += '/';
-        }
-
-        url.Path += "git-upload-pack";
-
-        return url.Uri;
-    }
-
-    async Task PopulateObjectsAsync(CancellationToken cancellationToken = default)
-    {
-        var (capabilities, oid, _) = await repoInfo.ConfigureAwait(false);
+        var objects = new Dictionary<string, (string Oid, bool Folder)>();
 
         using var ms = new MemoryStream(256);
         ms.WritePrkLine("want " + oid + (capabilities.Filter ? " filter" : null));
@@ -284,10 +293,11 @@ public class GitSmartHttpFileProvider : IFileProvider
 
         ms.Position = 0;
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, GetUploadPackServiceUri());
-        request.SetRequestInfo(new(this, oid));
+        using var request = new HttpRequestMessage(HttpMethod.Post, uploadPackUri);
+        request.SetRequestInfo(new(this, oid, []));
+        request.Content = new StreamContent(ms);
 
-        using var response = await options.GetHttpClient().PostAsync(GetUploadPackServiceUri(), new StreamContent(ms), cancellationToken);
+        using var response = await options.GetHttpClient().SendAsync(request, cancellationToken);
         using var stream = await response.EnsureSuccessStatusCode().Content.ReadAsStreamAsync(cancellationToken);
         using (var pktStream = new PktLineReadStream(stream, true))
         {
@@ -331,7 +341,7 @@ public class GitSmartHttpFileProvider : IFileProvider
                 packHeader[written] = 0;
                 hash.TransformBlock(packHeader, 0, written + 1, null, 0);
 
-                using var zlib = new ZLibFixedStream(stream, objectSize, hash);
+                using var zlib = new ZLibFixedStream(stream, objectSize, hash, []);
 
                 List<TreeEntry>? treeEntries = null;
                 string? treeObjectId = null;
@@ -362,7 +372,7 @@ public class GitSmartHttpFileProvider : IFileProvider
                     string? prefixPath = null;
                     if (treeObjectId != null && objectId == oid)
                     {
-                        objects.GetOrAdd("/", value: new(treeObjectId, true));
+                        objects[""] = new(treeObjectId, true);
 
                         if (availableTrees.TryGetValue(treeObjectId, out entries))
                         {
@@ -420,7 +430,7 @@ public class GitSmartHttpFileProvider : IFileProvider
 
                                 if (folder != null)
                                 {
-                                    objects.GetOrAdd(name, value: new(entry.Id, folder.Value));
+                                    objects[name] = new(entry.Id, folder.Value);
                                 }
                             }
                         }
@@ -430,9 +440,11 @@ public class GitSmartHttpFileProvider : IFileProvider
                 }
             }
         }
+
+        return objects;
     }
 
-    async ValueTask<string> GetTreeForCommitAsync(Stream stream, CancellationToken cancellationToken)
+    static async ValueTask<string> GetTreeForCommitAsync(Stream stream, CancellationToken cancellationToken)
     {
         using var sr = new StreamReader(stream, Utf8, false, -1, true);
         while (true)
@@ -452,7 +464,7 @@ public class GitSmartHttpFileProvider : IFileProvider
         return null!;
     }
 
-    async ValueTask<List<TreeEntry>> ParseTreeCommitAsync(Stream stream, ServerCapabilities capabilities, CancellationToken cancellationToken)
+    static async ValueTask<List<TreeEntry>> ParseTreeCommitAsync(Stream stream, ServerCapabilities capabilities, CancellationToken cancellationToken)
     {
         var res = new List<TreeEntry>();
         var objectIdLength = capabilities.IdStringSize / 2;
@@ -522,66 +534,144 @@ public class GitSmartHttpFileProvider : IFileProvider
 
         ms.Position = 0;
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, GetUploadPackServiceUri());
-        request.SetRequestInfo(new(this, oid));
+        using var request = new HttpRequestMessage(HttpMethod.Post, uploadPackUri);
+        request.SetRequestInfo(new(this, oid, []));
+        request.Content = new StreamContent(ms);
 
-        using var response = await options.GetHttpClient().PostAsync(GetUploadPackServiceUri(), new StreamContent(ms), cancellationToken);
-        using var stream = await response.EnsureSuccessStatusCode().Content.ReadAsStreamAsync(cancellationToken);
-        using (var pktStream = new PktLineReadStream(stream, true))
+        var response = await options.GetHttpClient().SendAsync(request, cancellationToken);
+        try
         {
-            await pktStream.SkipToEndAsync(cancellationToken);
+            var stream = await response.EnsureSuccessStatusCode().Content.ReadAsStreamAsync(cancellationToken);
+
+            try
+            {
+                using (var pktStream = new PktLineReadStream(stream, true))
+                {
+                    await pktStream.SkipToEndAsync(cancellationToken);
+                }
+
+                var packHeader = new byte[16];
+                await stream.ReadAtLeastAsync(packHeader.AsMemory(0, 8), 8, cancellationToken: cancellationToken);
+
+                var version = BinaryPrimitives.ReadUInt32BigEndian(packHeader.AsSpan(0, 4));
+
+                long objectCount = BinaryPrimitives.ReadUInt32BigEndian(packHeader.AsSpan(4, 4));
+
+                for (long i = 0; i < objectCount; i++)
+                {
+                    await stream.ReadAtLeastAsync(packHeader.AsMemory(0, 1), 1, cancellationToken: cancellationToken);
+
+                    var objectType = (ObjectType)(packHeader[0] & 0x70);
+
+                    long objectSize = packHeader[0] & 0xF;
+                    var shift = 4;
+
+                    while ((packHeader[0] & 0x80) != 0)
+                    {
+                        await stream.ReadAtLeastAsync(packHeader.AsMemory(0, 1), 1, cancellationToken: cancellationToken);
+
+                        objectSize |= (long)(packHeader[0] & 0x7F) << shift;
+                        shift += 7;
+                    }
+
+                    if (objectType == ObjectType.Blob)
+                    {
+                        blobLengths.GetOrAdd(oid, objectSize);
+
+                        Stream res = objectSize > 0 ? new ZLibFixedStream(stream, objectSize, null, [response, stream]) : new MemoryStream([]);
+                        stream = null;
+                        response = null;
+
+                        return res;
+                    }
+
+                    if (objectSize > 0)
+                    {
+                        using var zlib = new ZLibFixedStream(stream, objectSize, null, []);
+                        await zlib.SkipToEndAsync(cancellationToken);
+                    }
+                }
+            }
+            finally
+            {
+                stream?.Dispose();
+            }
+        }
+        finally
+        {
+            response?.Dispose();
         }
 
-        var packHeader = new byte[16];
-        await stream.ReadAtLeastAsync(packHeader.AsMemory(0, 8), 8, cancellationToken: cancellationToken);
-
-        var version = BinaryPrimitives.ReadUInt32BigEndian(packHeader.AsSpan(0, 4));
-
-        long objectCount = BinaryPrimitives.ReadUInt32BigEndian(packHeader.AsSpan(4, 4));
-
-        for (long i = 0; i < objectCount; i++)
-        {
-            await stream.ReadAtLeastAsync(packHeader.AsMemory(0, 1), 1, cancellationToken: cancellationToken);
-
-            var objectType = (ObjectType)(packHeader[0] & 0x70);
-
-            long objectSize = packHeader[0] & 0xF;
-            var shift = 4;
-
-            while ((packHeader[0] & 0x80) != 0)
-            {
-                await stream.ReadAtLeastAsync(packHeader.AsMemory(0, 1), 1, cancellationToken: cancellationToken);
-
-                objectSize |= (long)(packHeader[0] & 0x7F) << shift;
-                shift += 7;
-            }
-
-            if (objectType == ObjectType.Blob)
-            {
-                blobLengths.GetOrAdd(oid, objectSize);
-                return objectSize > 0 ? new ZLibFixedStream(stream, objectSize, null) : new MemoryStream([]);
-            }
-            if (objectSize > 0)
-            {
-                using var zlib = new ZLibFixedStream(stream, objectSize, null);
-                await zlib.SkipToEndAsync(cancellationToken);
-            }
-        }
-
-        throw new Exception();
+        throw new FormatException("Invalid payload.");
     }
 
+    /// <summary>
+    /// Represents information about a Git Smart HTTP request, including the target repository, the requested object,
+    /// and the set of objects already held by the client.
+    /// </summary>
+    /// <remarks>This class is intended for advanced scenarios involving low-level interactions with Git
+    /// repositories over the Smart HTTP protocol. Instances of this class are immutable and can be compared for
+    /// equality based on their repository, requested object, and held object IDs.</remarks>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public class RequestInfo(GitSmartHttpFileProvider Provider, string Oid)
+    public sealed class RequestInfo : IEquatable<RequestInfo>
     {
-        public Uri Repository => Provider.options.Repository;
-    }
+        internal RequestInfo(GitSmartHttpFileProvider provider, string want, IEnumerable<string> have)
+        {
+            Provider = provider;
+            Want = want;
+            Have = have.OrderBy(i => i);
+        }
 
-    record LengthWrapper(long Length);
+        /// <summary>
+        /// Gets the file provider used to access Git repositories over Smart HTTP.
+        /// </summary>
+        public GitSmartHttpFileProvider Provider { get; }
+
+        /// <summary>
+        /// Gets the requested object id.
+        /// </summary>
+        public string Want { get; }
+
+        /// <summary>
+        /// Gets the collection of object ids currently held by the instance.
+        /// </summary>
+        public IEnumerable<string> Have { get; }
+
+        /// <summary>
+        /// Gets the URI of the repository associated.
+        /// </summary>
+        public Uri Repository => Provider.options.Repository;
+
+        /// <inheritdoc/>
+        public override bool Equals(object? obj) =>
+            Equals(obj as RequestInfo);
+
+        /// <inheritdoc/>
+        public bool Equals(RequestInfo? other) =>
+            other != null
+                && Repository == other.Repository
+                && Want == other.Want
+                && Have.SequenceEqual(other.Have);
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            var hash = new HashCode();
+            hash.Add(Repository);
+            hash.Add(Want);
+
+            foreach (var i in Have)
+            {
+                hash.Add(i);
+            }
+
+            return hash.ToHashCode();
+        }
+    }
 
     record struct TreeEntry(TreeObjectType Type, string Name, string Id);
 
-    record struct ServerCapabilities(ObjectFormat ObjectFormat, bool Filter, bool Shallow)
+    record struct ServerCapabilities(ObjectFormat ObjectFormat, bool Filter)
     {
         public readonly int IdStringSize =>
             ObjectFormat == ObjectFormat.Sha1 ? 40 : 64;

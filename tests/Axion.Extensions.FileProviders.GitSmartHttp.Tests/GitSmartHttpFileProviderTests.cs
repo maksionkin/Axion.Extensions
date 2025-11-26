@@ -1,82 +1,21 @@
-﻿using System.Net.Http;
-using System.Runtime.CompilerServices;
+﻿using Axion.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders;
-using System.Net;
 
-namespace Axion.Extensions.FileProviders.GitHub.Tests;
+namespace Axion.Extensions.FileProviders.GitSmartHttp.Tests;
 
 [TestClass]
 public class GitSmartHttpFileProviderTests
 {
     public required TestContext TestContext { get; init; }
 
-
     [TestMethod]
-    public async Task  NotFoundRepo()
-    {
-        var provider = new GitSmartHttpFileProvider(new GitSmartFileProviderOptions() { Repository = new("https://github.com/maksionkin/missing") });
-
-        var contents = provider.GetDirectoryContents("/");
-
-        Assert.IsFalse(contents.Exists);
-
-        Assert.AreEqual(contents.Count(), 0);
-    }
-    /*
-    [TestMethod]
-    public void CheckAllDeep() =>
-        CheckAllDeep(false);
-
-    [TestMethod]
-    public void CheckAllDeepWithoutLastModified() =>
-        CheckAllDeep(true);
-
-    [TestMethod]
-    public void CheckLastModified()
-    {
-        var gitHubProvider = new GitHubFileProvider(new GitHubFileProviderOptions
-        {
-            Owner = "maksionkin",
-            Name = "Axion.Extensions",
-            Credentials = new(Environment.GetEnvironmentVariable("GITHUBTOKEN"))
-        });
-
-        using var textStream = File.OpenText(Path.Combine(Environment.GetEnvironmentVariable("RUNNER_TEMP")!, "gh-files.txt"));
-        while (!textStream.EndOfStream)
-        {
-            var line = textStream.ReadLine();
-            if (!string.IsNullOrEmpty(line))
-            {
-                var a = line.Split(['\t'], 2);
-
-                var subpath = a[1];
-                var lastModified = DateTimeOffset.Parse(a[0]).ToUniversalTime();
-
-                TestContext.WriteLine($"Processing [{subpath}].");
-
-                var item = gitHubProvider.GetFileInfo(a[1]);
-
-                Assert.IsTrue(item.Exists);
-                Assert.IsFalse(item.IsDirectory);
-
-                Assert.AreEqual(lastModified, item.LastModified.ToUniversalTime());
-            }
-        }
-    }
-
-    void CheckAllDeep(bool skipLastModified)
+    public void CheckAllDeep()
     {
         var root = Path.Combine(Environment.GetEnvironmentVariable("RUNNER_TEMP")!, "gh");
 
         using var physicalProvider = new PhysicalFileProvider(root, Microsoft.Extensions.FileProviders.Physical.ExclusionFilters.None);
 
-        var gitHubProvider = new GitHubFileProvider(new GitHubFileProviderOptions
-        {
-            Owner = "maksionkin",
-            Name = "Axion.Extensions",
-            Credentials = new(Environment.GetEnvironmentVariable("GITHUBTOKEN")),
-            SkipLoadingLastModified = skipLastModified
-        });
+        var gitProvider = new GitSmartHttpFileProvider(new GitSmartFileProviderOptions() { Repository = new("https://github.com/maksionkin/Axion.Extensions") });
 
         var toProcess = new Stack<string>();
         toProcess.Push("");
@@ -89,7 +28,7 @@ public class GitSmartHttpFileProviderTests
 
             var phisycals = physicalProvider.GetDirectoryContents(subpath).ToDictionary(file => file.Name);
 
-            foreach (var gitHubItem in gitHubProvider.GetDirectoryContents(subpath))
+            foreach (var gitHubItem in gitProvider.GetDirectoryContents(subpath))
             {
                 Assert.IsTrue(gitHubItem.Exists);
 
@@ -123,5 +62,5 @@ public class GitSmartHttpFileProviderTests
                 }
             }
         }
-    }*/
+    }
 }
