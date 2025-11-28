@@ -48,6 +48,7 @@ public class GitSmartHttpFileProvider : IFileProvider
     readonly Uri uploadPackUri;
     readonly Dictionary<string, (string Oid, bool Folder)> objects;
     readonly ConcurrentDictionary<string, long> blobLengths = new();
+    readonly ConcurrentDictionary<string, Lazy<object>> getLengthLocks = new();
 
 
     /// <summary>
@@ -572,6 +573,7 @@ public class GitSmartHttpFileProvider : IFileProvider
                     if (objectType == ObjectType.Blob)
                     {
                         blobLengths.GetOrAdd(oid, objectSize);
+                        getLengthLocks.TryRemove(oid, out _);
 
                         Stream res = objectSize > 0 ? new ZLibFixedStream(stream, objectSize, null, [response, stream]) : new MemoryStream([]);
                         stream = null;
@@ -685,33 +687,34 @@ public class GitSmartHttpFileProvider : IFileProvider
 
     class GitSmartHttpFileInfo(GitSmartHttpFileProvider provider, string name, string oid, bool folder) : IFileInfo
     {
-        long? length = folder
-            ? -1
-            : (provider.blobLengths.TryGetValue(oid, out var l) ? l : null);
-
         public bool Exists => true;
 
         public long Length
         {
             get
             {
-                if (length == null)
+                long? GetLength() =>
+                    IsDirectory
+                        ? -1
+                        : (provider.blobLengths.TryGetValue(oid, out var l) ? l : null);
+
+                if (GetLength() == null)
                 {
-                    lock (this)
+                    lock (provider.getLengthLocks.GetOrAdd(oid, value: new()).Value)
                     {
-                        if (length == null)
+                        if (GetLength() == null)
                         {
                             using var stream = Task.Run(async () => await provider.LoadStreamAsync(oid).ConfigureAwait(false))
                                 .ConfigureAwait(false)
                                 .GetAwaiter()
                                 .GetResult();
-
-                            length = stream.Length;
                         }
                     }
+
+                    provider.getLengthLocks.TryRemove(oid, out _);
                 }
 
-                return length!.Value;
+                return GetLength()!.Value;
             }
         }
 
