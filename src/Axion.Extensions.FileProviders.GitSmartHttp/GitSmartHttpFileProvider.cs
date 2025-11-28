@@ -538,9 +538,7 @@ public class GitSmartHttpFileProvider : IFileProvider
                 case TreeObjectType.File:
                 case TreeObjectType.Directory:
                     using (var reader = new StreamReader(nameStream, Utf8, false, -1, true))
-                    {
                         name = await reader.ReadToEndAsync(cancellationToken);
-                    }
                     break;
 
                 default:
