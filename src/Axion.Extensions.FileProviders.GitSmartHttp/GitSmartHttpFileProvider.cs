@@ -273,7 +273,7 @@ public class GitSmartHttpFileProvider : IFileProvider
 
     async Task<Dictionary<string, (string Oid, bool Folder)>> PopulateObjectsAsync(ServerCapabilities capabilities, string oid, CancellationToken cancellationToken = default)
     {
-        var objects = new Dictionary<string, (string Oid, bool Folder)>();
+        var res = new Dictionary<string, (string Oid, bool Folder)>();
 
         using var ms = new MemoryStream(256);
         ms.WritePrkLine("want " + oid + (capabilities.Filter ? " filter" : null));
@@ -368,7 +368,7 @@ public class GitSmartHttpFileProvider : IFileProvider
                     string? prefixPath = null;
                     if (treeObjectId != null && objectId == oid)
                     {
-                        objects[""] = new(treeObjectId, true);
+                        res[""] = new(treeObjectId, true);
 
                         if (availableTrees.TryGetValue(treeObjectId, out entries))
                         {
@@ -426,7 +426,7 @@ public class GitSmartHttpFileProvider : IFileProvider
 
                                 if (folder != null)
                                 {
-                                    objects[name] = new(entry.Id, folder.Value);
+                                    res[name] = new(entry.Id, folder.Value);
                                 }
                             }
                         }
@@ -437,7 +437,7 @@ public class GitSmartHttpFileProvider : IFileProvider
             }
         }
 
-        return objects;
+        return res;
     }
 
     static async ValueTask<string> GetTreeForCommitAsync(Stream stream, CancellationToken cancellationToken)
