@@ -281,7 +281,7 @@ public class GitSmartHttpFileProvider : IFileProvider
     async Task<(Dictionary<string, (string Oid, bool Folder)> Objects, DateTimeOffset LastModified)> PopulateObjectsAsync(ServerCapabilities capabilities, string oid, CancellationToken cancellationToken = default)
     {
         var res = new Dictionary<string, (string Oid, bool Folder)>();
-        DateTimeOffset lastModified = default;
+        DateTimeOffset commitDate = default;
 
         using var ms = new MemoryStream(256);
         ms.WritePrkLine("want " + oid + (capabilities.Filter ? " filter" : null));
@@ -377,9 +377,9 @@ public class GitSmartHttpFileProvider : IFileProvider
                     string? prefixPath = null;
                     if (treeObjectId != null && objectId == oid)
                     {
-                        if (lastModified < last)
+                        if (commitDate < last)
                         {
-                            lastModified = last;
+                            commitDate = last;
                         }
 
                         res[""] = new(treeObjectId, true);
@@ -451,7 +451,7 @@ public class GitSmartHttpFileProvider : IFileProvider
             }
         }
 
-        return (res, lastModified);
+        return (res, commitDate);
     }
 
     static async ValueTask<(string Oid, DateTimeOffset LastModified)> GetTreeForCommitAsync(Stream stream, CancellationToken cancellationToken)
@@ -538,7 +538,10 @@ public class GitSmartHttpFileProvider : IFileProvider
                 case TreeObjectType.File:
                 case TreeObjectType.Directory:
                     using (var reader = new StreamReader(nameStream, Utf8, false, -1, true))
+                    {
                         name = await reader.ReadToEndAsync(cancellationToken);
+                    }
+
                     break;
 
                 default:
