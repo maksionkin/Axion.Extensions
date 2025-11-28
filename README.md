@@ -31,6 +31,12 @@ Read more [Distributed caching in ASP.NET Core](https://learn.microsoft.com/en-u
 
 Read more [File Providers in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/file-providers).
 
+## [Axion.Extensions.FileProviders.GitSmart](https://github.com/maksionkin/Axion.Extensions/tree/main/src/Axion.Extensions.FileProviders.GitSmartHttp) [![NuGet version](https://badge.fury.io/nu/Axion.Extensions.FileProviders.GitSmartHttp.svg)](https://badge.fury.io/nu/Axion.Extensions.FileProviders.GitSmartHttp) 
+
+[File Provider](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.fileproviders.ifileprovider) implementation of git repository over git Smart HTTP protocol.
+
+Read more [File Providers in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/file-providers).
+
 
 ## [Axion.Extensions.Polly.Caching.Serialization.Http](https://github.com/maksionkin/Axion.Extensions/tree/main/src/Axion.Extensions.Polly.Caching.Serialization.Http) [![NuGet version](https://badge.fury.io/nu/Axion.Extensions.Polly.Caching.Serialization.Http.svg)](https://badge.fury.io/nu/Axion.Extensions.Polly.Caching.Serialization.Http) 
  A plugin for the [Polly](https://github.com/App-vNext/Polly) [Cache policy](https://github.com/App-vNext/Polly/wiki/Cache) to serialize/deserialize [System.Net.Http.HttpResponseMessage](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpresponsemessage). Can be used with [Microsoft.Extensions.Http.PolicyHttpMessageHandler](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.http.policyhttpmessagehandler) 

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>File Provider implementation of Git repository via Git Smart HTTP protocol.</Description>
+    <PackageTags>IFileProvider;Git;Git Smart HTTP; GitSmartHttp; SmartHttp;File Provider;FileProvider</PackageTags>
+    <RootNamespace>Axion.Extensions.FileProviders</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="$(PlatformVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="$(PlatformVersion)" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Axion.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="README.nuget.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>

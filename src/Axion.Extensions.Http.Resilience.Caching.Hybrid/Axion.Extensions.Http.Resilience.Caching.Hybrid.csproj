@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
-    <TargetFrameworks>net9.0;net8.0;net462</TargetFrameworks>
     <Description>Caching Resilience mechanism for HttpClient built on the Polly Caching Strategy that utilizes HybridCache.</Description>
     <PackageTags>HttpClient;Cache;DistributedCache;Distributed Cache;Caching;IDistributedCache;HybridCache;Hybrid Cache;Resilience;Polly;Strategy</PackageTags>
     <RootNamespace>Axion.Extensions.Http.Resilience</RootNamespace>

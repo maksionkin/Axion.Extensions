@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="$(PlatformVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Axion.Extensions.FileProviders.GitSmartHttp\Axion.Extensions.FileProviders.GitSmartHttp.csproj" >
+      <HintPath>..\..\src\Axion.Extensions.FileProviders.GitHub\bin\$(Configuration)\$(LibraryTargetFramework)\Axion.Extensions.FileProviders.GitSmartHttp.dll</HintPath>
+    </ProjectReference>
+  </ItemGroup>
+
+</Project>
