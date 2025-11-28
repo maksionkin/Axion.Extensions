@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -47,6 +48,7 @@ public class GitSmartHttpFileProvider : IFileProvider
     readonly GitSmartFileProviderOptions options;
     readonly Uri uploadPackUri;
     readonly Dictionary<string, (string Oid, bool Folder)> objects;
+    readonly DateTimeOffset lastModified;
     readonly ConcurrentDictionary<string, long> blobLengths = new();
     readonly ConcurrentDictionary<string, Lazy<object>> getLengthLocks = new();
 
@@ -69,14 +71,19 @@ public class GitSmartHttpFileProvider : IFileProvider
                 : this.options.Repository.AbsolutePath + "/git-upload-pack",
         }.Uri;
 
-        async Task<Dictionary<string, (string Oid, bool Folder)>> InitialObjectPopulateAsync()
+        async Task<(Dictionary<string, (string Oid, bool Folder)>, DateTimeOffset)> InitialObjectPopulateAsync()
         {
             var info = await GetRepoInfoAsync(this.options).ConfigureAwait(false);
 
             return await PopulateObjectsAsync(info.ServerCapabilities, info.Oid).ConfigureAwait(false);
         }
 
-        objects = Task.Run(InitialObjectPopulateAsync).ConfigureAwait(false).GetAwaiter().GetResult();
+        (objects, lastModified) = Task.Run(InitialObjectPopulateAsync).ConfigureAwait(false).GetAwaiter().GetResult();
+
+        if (lastModified == default)
+        {
+            lastModified = DateTimeOffset.UtcNow;
+        }
     }
 
     enum ObjectFormat
@@ -271,9 +278,10 @@ public class GitSmartHttpFileProvider : IFileProvider
         throw new FormatException($"Cannot resolve '{options.Reference}'");
     }
 
-    async Task<Dictionary<string, (string Oid, bool Folder)>> PopulateObjectsAsync(ServerCapabilities capabilities, string oid, CancellationToken cancellationToken = default)
+    async Task<(Dictionary<string, (string Oid, bool Folder)> Objects, DateTimeOffset LastModified)> PopulateObjectsAsync(ServerCapabilities capabilities, string oid, CancellationToken cancellationToken = default)
     {
         var res = new Dictionary<string, (string Oid, bool Folder)>();
+        DateTimeOffset lastModified = default;
 
         using var ms = new MemoryStream(256);
         ms.WritePrkLine("want " + oid + (capabilities.Filter ? " filter" : null));
@@ -341,10 +349,11 @@ public class GitSmartHttpFileProvider : IFileProvider
 
                 List<TreeEntry>? treeEntries = null;
                 string? treeObjectId = null;
+                DateTimeOffset last = default;
                 switch (objectType)
                 {
                     case ObjectType.Commit:
-                        treeObjectId = await GetTreeForCommitAsync(zlib, cancellationToken);
+                        (treeObjectId, last) = await GetTreeForCommitAsync(zlib, cancellationToken);
                         break;
 
                     case ObjectType.Tree:
@@ -368,6 +377,11 @@ public class GitSmartHttpFileProvider : IFileProvider
                     string? prefixPath = null;
                     if (treeObjectId != null && objectId == oid)
                     {
+                        if (lastModified < last)
+                        {
+                            lastModified = last;
+                        }
+
                         res[""] = new(treeObjectId, true);
 
                         if (availableTrees.TryGetValue(treeObjectId, out entries))
@@ -437,11 +451,13 @@ public class GitSmartHttpFileProvider : IFileProvider
             }
         }
 
-        return res;
+        return (res, lastModified);
     }
 
-    static async ValueTask<string> GetTreeForCommitAsync(Stream stream, CancellationToken cancellationToken)
+    static async ValueTask<(string Oid, DateTimeOffset LastModified)> GetTreeForCommitAsync(Stream stream, CancellationToken cancellationToken)
     {
+        string? oid = null;
+        DateTimeOffset date = default;
         using var sr = new StreamReader(stream, Utf8, false, -1, true);
         while (true)
         {
@@ -453,11 +469,32 @@ public class GitSmartHttpFileProvider : IFileProvider
 
             if (line.StartsWith("tree ", StringComparison.Ordinal))
             {
-                return line["tree ".Length..];
+                oid = line["tree ".Length..];
+            }
+            else if (line.StartsWith("committer ", StringComparison.Ordinal) || line.StartsWith("author ", StringComparison.Ordinal))
+            {
+                var split = line.Split(' ');
+
+                if (split.Length > 3
+                    && split[^1].Length <= 5 && int.TryParse(split.Last(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var tz) && (Math.Abs(tz) % 100) < 60
+                    && long.TryParse(split[^2], NumberStyles.None, CultureInfo.InvariantCulture, out var seconds))
+                {
+                    var offset = TimeSpan.FromMinutes(tz);
+                    var d = DateTimeOffset.FromUnixTimeSeconds(seconds).ToOffset(offset);
+                    if (d > date)
+                    {
+                        date = d;
+                    }
+                }
             }
         }
 
-        return null!;
+        if (oid == null)
+        {
+            throw new FormatException("Invalid payload.");
+        }
+
+        return new(oid, date);
     }
 
     static async ValueTask<List<TreeEntry>> ParseTreeCommitAsync(Stream stream, ServerCapabilities capabilities, CancellationToken cancellationToken)
@@ -722,7 +759,7 @@ public class GitSmartHttpFileProvider : IFileProvider
 
         public string Name => name;
 
-        public DateTimeOffset LastModified => DateTimeOffset.UtcNow;
+        public DateTimeOffset LastModified => provider.lastModified;
 
         public bool IsDirectory => folder;
 

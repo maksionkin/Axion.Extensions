@@ -38,11 +38,11 @@ class PktLineReadStream(Stream stream, bool expectPack) : Stream
         return await ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
     }
 
-    public async
+    public
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
         override
 #endif
-        ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
         if (ended || buffer.Length == 0)
         {
