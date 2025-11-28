@@ -135,14 +135,9 @@ public class GitSmartHttpFileProvider : IFileProvider
     {
         subpath = GetNormilizedPath(subpath);
 
-        if (objects.TryGetValue(subpath, out var i))
-        {
-            return new GitSmartHttpFileInfo(this, subpath.Split('/').Last(), i.Oid, i.Folder);
-        }
-        else
-        {
-            return new NotFoundFileInfo(subpath);
-        }
+        return objects.TryGetValue(subpath, out var i)
+            ? new GitSmartHttpFileInfo(this, subpath.Split('/').Last(), i.Oid, i.Folder)
+            : new NotFoundFileInfo(subpath);
     }
 
     /// <inheritdoc/>
