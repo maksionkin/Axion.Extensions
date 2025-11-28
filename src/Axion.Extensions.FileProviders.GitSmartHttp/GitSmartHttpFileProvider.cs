@@ -311,7 +311,7 @@ public class GitSmartHttpFileProvider : IFileProvider
         var packHeader = new byte[16];
         await stream.ReadAtLeastAsync(packHeader.AsMemory(0, 8), 8, cancellationToken: cancellationToken);
 
-        var version = BinaryPrimitives.ReadUInt32BigEndian(packHeader.AsSpan(0, 4));
+        // var version = BinaryPrimitives.ReadUInt32BigEndian(packHeader.AsSpan(0, 4));
 
         long objectCount = BinaryPrimitives.ReadUInt32BigEndian(packHeader.AsSpan(4, 4));
 
@@ -586,7 +586,7 @@ public class GitSmartHttpFileProvider : IFileProvider
                 var packHeader = new byte[16];
                 await stream.ReadAtLeastAsync(packHeader.AsMemory(0, 8), 8, cancellationToken: cancellationToken);
 
-                var version = BinaryPrimitives.ReadUInt32BigEndian(packHeader.AsSpan(0, 4));
+                // var version = BinaryPrimitives.ReadUInt32BigEndian(packHeader.AsSpan(0, 4));
 
                 long objectCount = BinaryPrimitives.ReadUInt32BigEndian(packHeader.AsSpan(4, 4));
 
