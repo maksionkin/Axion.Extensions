@@ -479,7 +479,13 @@ public class GitSmartHttpFileProvider : IFileProvider
                     && split[^1].Length <= 5 && int.TryParse(split.Last(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var tz) && (Math.Abs(tz) % 100) < 60
                     && long.TryParse(split[^2], NumberStyles.None, CultureInfo.InvariantCulture, out var seconds))
                 {
-                    var offset = TimeSpan.FromMinutes(tz);
+                    var abs = Math.Abs(tz);
+                    var offset = new TimeSpan(abs / 100, abs % 100, 0);
+                    if (tz < 0)
+                    {
+                        offset = -offset;
+                    }
+
                     var d = DateTimeOffset.FromUnixTimeSeconds(seconds).ToOffset(offset);
                     if (d > date)
                     {

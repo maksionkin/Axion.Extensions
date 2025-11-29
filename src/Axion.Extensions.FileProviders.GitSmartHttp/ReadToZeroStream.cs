@@ -33,6 +33,15 @@ class ReadToZeroStream(Stream stream) : Stream
     {
         ArgumentNullException.ThrowIfNull(buffer);
 
+        return await ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
+    }
+
+    public
+#if NET5_0_OR_GREATER
+        override 
+#endif
+        async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+    {
         if (ended)
         {
             return 0;
@@ -47,7 +56,7 @@ class ReadToZeroStream(Stream stream) : Stream
                 break;
             }
 
-            buffer[read] = (byte)b;
+            buffer.Span[read] = (byte)b;
             read++;
         }
 
