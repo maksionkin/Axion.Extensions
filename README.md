@@ -24,6 +24,23 @@ Read more [Distributed caching in ASP.NET Core](https://learn.microsoft.com/en-u
 
 Read more [Distributed caching in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/performance/caching/distributed).
 
+## [Axion.Extensions.FileProviders.Git.Smart](https://github.com/maksionkin/Axion.Extensions/tree/main/src/Axion.Extensions.FileProviders.Git.Smart) [![NuGet version](https://badge.fury.io/nu/Axion.Extensions.FileProviders.Git.Smart.svg)](https://badge.fury.io/nu/Axion.Extensions.FileProviders.Git.Smart) 
+
+Base implementation of [File Provider](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.fileproviders.ifileprovider) of git repository over git Smart protocol.
+
+Read more [File Providers in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/file-providers).
+
+## [Axion.Extensions.FileProviders.Git.Smart.Http](https://github.com/maksionkin/Axion.Extensions/tree/main/src/Axion.Extensions.FileProviders.Git.Smart.Http) [![NuGet version](https://badge.fury.io/nu/Axion.Extensions.FileProviders.Git.Smart.Http.svg)](https://badge.fury.io/nu/Axion.Extensions.FileProviders.Git.Smart.Http) 
+
+[File Provider](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.fileproviders.ifileprovider) implementation of git repository over git Smart HTTP protocol.
+
+Read more [File Providers in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/file-providers).
+
+## [Axion.Extensions.FileProviders.Git.Smart.Ssh](https://github.com/maksionkin/Axion.Extensions/tree/main/src/Axion.Extensions.FileProviders.Git.Smart.Ssh) [![NuGet version](https://badge.fury.io/nu/Axion.Extensions.FileProviders.Git.Smart.Ssh.svg)](https://badge.fury.io/nu/Axion.Extensions.FileProviders.Git.Smart.Ssh) 
+
+[File Provider](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.fileproviders.ifileprovider) implementation of git repository over git Smart HTTP protocol.
+
+Read more [File Providers in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/file-providers).
 
 ## [Axion.Extensions.FileProviders.GitHub](https://github.com/maksionkin/Axion.Extensions/tree/main/src/Axion.Extensions.FileProviders.GitHub) [![NuGet version](https://badge.fury.io/nu/Axion.Extensions.FileProviders.GitHub.svg)](https://badge.fury.io/nu/Axion.Extensions.FileProviders.GitHub) 
 

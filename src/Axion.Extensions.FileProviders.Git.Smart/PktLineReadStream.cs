@@ -2,22 +2,24 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Buffers.Text;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Axion.Extensions.FileProviders;
 
-class ReadToZeroStream(Stream stream) : Stream
+class PktLineReadStream(Stream stream, bool expectPack) : Stream
 {
     bool ended;
-    readonly byte[] bytes = new byte[1];
+    int leftBytes;
+    readonly byte[] length = new byte[4];
 
     public override bool CanRead => true;
 
-    public override bool CanSeek => throw new InvalidOperationException();
+    public override bool CanSeek => false;
 
-    public override bool CanWrite => throw new InvalidOperationException();
+    public override bool CanWrite => false;
 
     public override long Length => throw new InvalidOperationException();
 
@@ -37,30 +39,46 @@ class ReadToZeroStream(Stream stream) : Stream
     }
 
     public
-#if NET5_0_OR_GREATER
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
         override
 #endif
         async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        if (ended)
+        if (ended || buffer.Length == 0)
         {
             return 0;
         }
 
-        var read = 0;
-        while (read < buffer.Length)
+        while (leftBytes == 0)
         {
-            var b = await ReadByteAsync(cancellationToken);
-            if (b == -1)
+            var read = await stream.ReadAtLeastAsync(length, 4, false, cancellationToken);
+            if (read == 0)
             {
-                break;
+                ended = true;
+
+                return 0;
             }
 
-            buffer.Span[read] = (byte)b;
-            read++;
+            if (expectPack && length.StartsWith("PACK"u8))
+            {
+                ended = true;
+
+                return 0;
+            }
+
+            if (read != 4 || !Utf8Parser.TryParse(length, out ushort size, out var consumed, 'x') || consumed != 4 || (size != 0 && size < 4))
+            {
+                throw new FormatException("Unknown payload.");
+            }
+
+            leftBytes = size == 0 ? 0 : size - 4;
         }
 
-        return read;
+        var toRead = Math.Min(buffer.Length, leftBytes);
+        var actuallyRead = await stream.ReadAtLeastAsync(buffer[..toRead], toRead, true, cancellationToken);
+        leftBytes -= actuallyRead;
+
+        return actuallyRead;
     }
 
     public override long Seek(long offset, SeekOrigin origin) =>
@@ -71,23 +89,4 @@ class ReadToZeroStream(Stream stream) : Stream
 
     public override void Write(byte[] buffer, int offset, int count) =>
         throw new InvalidOperationException();
-
-    async ValueTask<int> ReadByteAsync(CancellationToken cancellationToken = default)
-    {
-        if (ended)
-        {
-            return -1;
-        }
-
-        var read = await stream.ReadAtLeastAsync(bytes, 1, false, cancellationToken);
-        if (read == 0 || bytes[0] == 0)
-        {
-            ended = true;
-            return -1;
-        }
-        else
-        {
-            return bytes[0];
-        }
-    }
 }

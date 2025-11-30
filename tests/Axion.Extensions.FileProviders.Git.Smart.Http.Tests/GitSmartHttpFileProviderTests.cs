@@ -1,7 +1,7 @@
 ﻿using Axion.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders;
 
-namespace Axion.Extensions.FileProviders.GitSmartHttp.Tests;
+namespace Axion.Extensions.FileProviders.Git.Smart.Http.Tests;
 
 [TestClass]
 public class GitSmartHttpFileProviderTests
@@ -15,7 +15,7 @@ public class GitSmartHttpFileProviderTests
 
         using var physicalProvider = new PhysicalFileProvider(root, Microsoft.Extensions.FileProviders.Physical.ExclusionFilters.None);
 
-        var gitProvider = new GitSmartHttpFileProvider(new GitSmartFileProviderOptions() { Repository = new("https://github.com/maksionkin/Axion.Extensions") });
+        var gitProvider = new GitSmartHttpFileProvider(new GitFileProviderOptions() { Repository = new("https://github.com/maksionkin/Axion.Extensions") });
 
         var toProcess = new Stack<string>();
         toProcess.Push("");
