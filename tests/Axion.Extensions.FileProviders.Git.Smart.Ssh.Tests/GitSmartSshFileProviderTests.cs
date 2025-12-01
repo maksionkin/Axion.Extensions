@@ -1,10 +1,12 @@
-﻿using Axion.Extensions.FileProviders;
+﻿using System.Text;
+using Axion.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders;
+using Renci.SshNet;
 
 namespace Axion.Extensions.FileProviders.Git.Smart.Http.Tests;
 
 [TestClass]
-public class GitSmartHttpFileProviderTests
+public class GitSmartSshFileProviderTests
 {
     public required TestContext TestContext { get; init; }
 
@@ -12,10 +14,11 @@ public class GitSmartHttpFileProviderTests
     public void CheckAllDeep()
     {
         var root = Path.Combine(Environment.GetEnvironmentVariable("RUNNER_TEMP")!, "gh");
+        var key = new UTF8Encoding(false, false).GetBytes(Environment.GetEnvironmentVariable("SSH_TEST_KEY")!);
 
         using var physicalProvider = new PhysicalFileProvider(root, Microsoft.Extensions.FileProviders.Physical.ExclusionFilters.None);
 
-        using var gitProvider = new GitSmartHttpFileProvider(new GitFileProviderOptions() { Repository = new("https://github.com/maksionkin/Axion.Extensions") });
+        var gitProvider = new GitSmartSshFileProvider(new GitFileProviderOptions() { Repository = new("ssh://git@github.com/maksionkin/Axion.Extensions") }, [new PrivateKeyFile(new MemoryStream(key))]);
 
         var toProcess = new Stack<string>();
         toProcess.Push("");

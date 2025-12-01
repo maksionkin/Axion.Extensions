@@ -53,6 +53,7 @@
     <Project Path="tests/Axion.Extensions.Caching.Transformed.Tests/Axion.Extensions.Caching.Transformed.Tests.csproj" />
     <Project Path="tests/Axion.Extensions.DependencyInjection.Tests/Axion.Extensions.DependencyInjection.Tests.csproj" />
     <Project Path="tests/Axion.Extensions.FileProviders.Git.Smart.Http.Tests/Axion.Extensions.FileProviders.Git.Smart.Http.Tests.csproj" />
+    <Project Path="tests/Axion.Extensions.FileProviders.Git.Smart.Ssh.Tests/Axion.Extensions.FileProviders.Git.Smart.Ssh.Tests.csproj" />
     <Project Path="tests/Axion.Extensions.FileProviders.GitHub.Tests/Axion.Extensions.FileProviders.GitHub.Tests.csproj" />
     <Project Path="tests/Axion.Extensions.Http.Resilience.DuplicateRequestCollapsing.Caching.Hybrid.Tests/Axion.Extensions.Http.Resilience.DuplicateRequestCollapsing.Caching.Hybrid.Tests.csproj" />
     <Project Path="tests/Axion.Extensions.Polly.Caching.Serialization.Http.Tests/Axion.Extensions.Polly.Caching.Serialization.Http.Tests.csproj" />
