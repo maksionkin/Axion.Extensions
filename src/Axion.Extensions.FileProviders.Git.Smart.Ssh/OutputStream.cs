@@ -15,9 +15,9 @@ class OutputStream(SshCommand command, IAsyncResult asyncResult) : Stream
 
     public override bool CanRead => true;
 
-    public override bool CanSeek => throw new InvalidOperationException();
+    public override bool CanSeek => false;
 
-    public override bool CanWrite => throw new InvalidOperationException();
+    public override bool CanWrite => false;
 
     public override long Length => throw new InvalidOperationException();
 

@@ -307,7 +307,7 @@ public abstract class GitSmartFileProvider : IFileProvider, IDisposable
         var res = new Dictionary<string, (string Oid, bool Folder)>();
         DateTimeOffset commitDate = default;
 
-        using var ms = new MemoryStream(256);
+        using var ms = new ArrayPoolBufferWriter<byte>(256);
         ms.WritePrkLine("want " + oid + (capabilities.Filter ? " filter" : null));
         ms.WritePrkLine("deepen 1");
 
@@ -319,10 +319,19 @@ public abstract class GitSmartFileProvider : IFileProvider, IDisposable
         ms.FlushPktLine();
         ms.WritePrkLine("done");
 
-        using var stream = await GetObjectsAsync(ms.ToArray(), cancellationToken);
+        using var stream = await GetObjectsAsync(ms.WrittenMemory, cancellationToken);
         using (var pktStream = new PktLineReadStream(stream, true))
         {
-            await pktStream.SkipToEndAsync(cancellationToken);
+            using var sr = new StreamReader(pktStream, null, false, 4096, true);
+            while(true)
+            {
+                var line = await sr.ReadLineAsync();
+
+                if (line == null)
+                {
+                    break;
+                }
+            }
         }
 
         var packHeader = new byte[16];

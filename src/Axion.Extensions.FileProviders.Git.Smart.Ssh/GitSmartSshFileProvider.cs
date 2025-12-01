@@ -95,7 +95,7 @@ public class GitSmartSshFileProvider(IOptions<GitFileProviderOptions> options, I
             task = command.BeginExecute();
             using (var stream = command.CreateInputStream())
             {
-                if (payload.IsEmpty)
+                if (!payload.IsEmpty)
                 {
                     await stream.WriteAsync(payload, cancellationToken);
                 }
