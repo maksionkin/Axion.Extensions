@@ -56,12 +56,24 @@ class OutputStream(SshCommand command, IAsyncResult asyncResult) : Stream
     {
         if (disposing)
         {
+
             if (asyncResult.IsCompleted)
             {
-                command.EndExecute(asyncResult);
+                try
+                {
+                    command.EndExecute(asyncResult);
+                }
+                catch
+                {
+                }
             }
-
-            command.Dispose();
+            try
+            {
+                command.Dispose();
+            }
+            catch
+            {
+            }
         }
 
         base.Dispose(disposing);
