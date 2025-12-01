@@ -5,19 +5,19 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Renci.SshNet;
 
 namespace Axion.Extensions.FileProviders;
 
-class ReadToZeroStream(Stream stream) : Stream
+class OutputStream(SshCommand command, IAsyncResult asyncResult) : Stream
 {
-    bool ended;
-    readonly byte[] bytes = new byte[1];
+    readonly Stream stream = command.OutputStream;
 
     public override bool CanRead => true;
 
-    public override bool CanSeek => throw new InvalidOperationException();
+    public override bool CanSeek => false;
 
-    public override bool CanWrite => throw new InvalidOperationException();
+    public override bool CanWrite => false;
 
     public override long Length => throw new InvalidOperationException();
 
@@ -40,28 +40,8 @@ class ReadToZeroStream(Stream stream) : Stream
 #if NET5_0_OR_GREATER
         override
 #endif
-        async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
-    {
-        if (ended)
-        {
-            return 0;
-        }
-
-        var read = 0;
-        while (read < buffer.Length)
-        {
-            var b = await ReadByteAsync(cancellationToken);
-            if (b == -1)
-            {
-                break;
-            }
-
-            buffer.Span[read] = (byte)b;
-            read++;
-        }
-
-        return read;
-    }
+        async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) =>
+        await stream.ReadAsync(buffer, cancellationToken);
 
     public override long Seek(long offset, SeekOrigin origin) =>
         throw new InvalidOperationException();
@@ -72,22 +52,35 @@ class ReadToZeroStream(Stream stream) : Stream
     public override void Write(byte[] buffer, int offset, int count) =>
         throw new InvalidOperationException();
 
-    async ValueTask<int> ReadByteAsync(CancellationToken cancellationToken = default)
+    protected override void Dispose(bool disposing)
     {
-        if (ended)
+        if (disposing)
         {
-            return -1;
+
+            if (asyncResult.IsCompleted)
+            {
+                try
+                {
+                    command.EndExecute(asyncResult);
+                }
+                catch
+                {
+                }
+            }
+            try
+            {
+                command.Dispose();
+            }
+            catch
+            {
+            }
         }
 
-        var read = await stream.ReadAtLeastAsync(bytes, 1, false, cancellationToken);
-        if (read == 0 || bytes[0] == 0)
-        {
-            ended = true;
-            return -1;
-        }
-        else
-        {
-            return bytes[0];
-        }
+        base.Dispose(disposing);
     }
+
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+    public override async ValueTask DisposeAsync() =>
+        Dispose(true);
+#endif
 }

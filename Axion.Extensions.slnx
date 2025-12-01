@@ -28,8 +28,10 @@
     <Project Path="src/Axion.Extensions.Caching.Hybrid.Serialization.Http/Axion.Extensions.Caching.Hybrid.Serialization.Http.csproj" />
     <Project Path="src/Axion.Extensions.Caching.Transformed/Axion.Extensions.Caching.Transformed.csproj" />
     <Project Path="src/Axion.Extensions.DependencyInjection/Axion.Extensions.DependencyInjection.csproj" />
+    <Project Path="src/Axion.Extensions.FileProviders.Git.Smart.Http/Axion.Extensions.FileProviders.Git.Smart.Http.csproj" />
+    <Project Path="src/Axion.Extensions.FileProviders.Git.Smart.Ssh/Axion.Extensions.FileProviders.Git.Smart.Ssh.csproj" />
+    <Project Path="src/Axion.Extensions.FileProviders.Git.Smart/Axion.Extensions.FileProviders.Git.Smart.csproj" />
     <Project Path="src/Axion.Extensions.FileProviders.GitHub/Axion.Extensions.FileProviders.GitHub.csproj" />
-    <Project Path="src/Axion.Extensions.FileProviders.GitSmartHttp/Axion.Extensions.FileProviders.GitSmartHttp.csproj" />
     <Project Path="src/Axion.Extensions.Http.Resilience.Caching.Hybrid/Axion.Extensions.Http.Resilience.Caching.Hybrid.csproj" />
     <Project Path="src/Axion.Extensions.Http.Resilience.DuplicateRequestCollapsing.Caching.Hybrid/Axion.Extensions.Http.Resilience.DuplicateRequestCollapsing.Caching.Hybrid.csproj" />
     <Project Path="src/Axion.Extensions.Polly.Caching.Hybrid/Axion.Extensions.Polly.Caching.Hybrid.csproj" />
@@ -50,8 +52,9 @@
     <Project Path="tests/Axion.Extensions.Caching.Hybrid.Serialization.Http.Tests/Axion.Extensions.Caching.Hybrid.Serialization.Http.Tests.csproj" />
     <Project Path="tests/Axion.Extensions.Caching.Transformed.Tests/Axion.Extensions.Caching.Transformed.Tests.csproj" />
     <Project Path="tests/Axion.Extensions.DependencyInjection.Tests/Axion.Extensions.DependencyInjection.Tests.csproj" />
+    <Project Path="tests/Axion.Extensions.FileProviders.Git.Smart.Http.Tests/Axion.Extensions.FileProviders.Git.Smart.Http.Tests.csproj" />
+    <Project Path="tests/Axion.Extensions.FileProviders.Git.Smart.Ssh.Tests/Axion.Extensions.FileProviders.Git.Smart.Ssh.Tests.csproj" />
     <Project Path="tests/Axion.Extensions.FileProviders.GitHub.Tests/Axion.Extensions.FileProviders.GitHub.Tests.csproj" />
-    <Project Path="tests/Axion.Extensions.FileProviders.GitSmartHttp.Tests/Axion.Extensions.FileProviders.GitSmartHttp.Tests.csproj" />
     <Project Path="tests/Axion.Extensions.Http.Resilience.DuplicateRequestCollapsing.Caching.Hybrid.Tests/Axion.Extensions.Http.Resilience.DuplicateRequestCollapsing.Caching.Hybrid.Tests.csproj" />
     <Project Path="tests/Axion.Extensions.Polly.Caching.Serialization.Http.Tests/Axion.Extensions.Polly.Caching.Serialization.Http.Tests.csproj" />
     <Project Path="tests/Axion.Extensions.Polly.DuplicateRequestCollapsing.Caching.Hybrid.Tests/Axion.Extensions.Polly.DuplicateRequestCollapsing.Caching.Hybrid.Tests.csproj" />
