@@ -40,6 +40,15 @@ public class GitSmartSshFileProvider(IOptions<GitFileProviderOptions> options, I
     public GitSmartSshFileProvider(IOptions<GitFileProviderOptions> options, IEnumerable<IPrivateKeySource> keys) : this(options, CreateSshClient(options.Value.Repository, keys)) =>
         ownsSshClient = true;
 
+    /// <summary>
+    /// Initializes a new instance of the GitSmartSshFileProvider class using the specified options and SSH client.
+    /// </summary>
+    /// <param name="options">The configuration options for the Git file provider. Cannot be <see langword="null"/>.</param>
+    /// <param name="sshClient">The SSH client used to establish secure connections to the remote Git repository. Cannot be <see langword="null"/>.</param>
+    public GitSmartSshFileProvider(IOptions<GitFileProviderOptions> options, SshClient sshClient) : this(options, (ISshClient)sshClient)
+    {
+    }
+
     /// <inheritdoc/>
     protected override async ValueTask<Stream> GetInfoRefsAsync(CancellationToken cancellationToken = default) =>
         await RunAsync(default, cancellationToken);

@@ -5,7 +5,7 @@
     <RootNamespace>Axion.Extensions.FileProviders</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SSH.NET" Version="2025.1.0" />
+    <PackageReference Include="SSH.NET" Version="2025.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Axion.png">
