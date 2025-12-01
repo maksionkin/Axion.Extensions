@@ -18,49 +18,55 @@ public class GitSmartSshFileProviderTests
 
         using var physicalProvider = new PhysicalFileProvider(root, Microsoft.Extensions.FileProviders.Physical.ExclusionFilters.None);
 
-        var gitProvider = new GitSmartSshFileProvider(new GitFileProviderOptions() { Repository = new("ssh://git@github.com/maksionkin/Axion.Extensions") }, [new PrivateKeyFile(new MemoryStream(key))]);
-
-        var toProcess = new Stack<string>();
-        toProcess.Push("");
-
-        while (toProcess.Count > 0)
+        using (var keyStream = new MemoryStream(key))
         {
-            var subpath = toProcess.Pop();
+            using var gitProvider = new GitSmartSshFileProvider(
+                new GitFileProviderOptions() { Repository = new("ssh://git@github.com/maksionkin/Axion.Extensions") },
+                [new PrivateKeyFile(keyStream)]
+            );
 
-            TestContext.WriteLine($"Processing [{subpath}].");
+            var toProcess = new Stack<string>();
+            toProcess.Push("");
 
-            var phisycals = physicalProvider.GetDirectoryContents(subpath).ToDictionary(file => file.Name);
-
-            foreach (var gitHubItem in gitProvider.GetDirectoryContents(subpath))
+            while (toProcess.Count > 0)
             {
-                Assert.IsTrue(gitHubItem.Exists);
+                var subpath = toProcess.Pop();
 
-                if (phisycals.TryGetValue(gitHubItem.Name, out var physicalItem))
+                TestContext.WriteLine($"Processing [{subpath}].");
+
+                var phisycals = physicalProvider.GetDirectoryContents(subpath).ToDictionary(file => file.Name);
+
+                foreach (var gitHubItem in gitProvider.GetDirectoryContents(subpath))
                 {
-                    Assert.AreEqual(physicalItem.IsDirectory, gitHubItem.IsDirectory);
+                    Assert.IsTrue(gitHubItem.Exists);
 
-                    Assert.AreEqual(physicalItem.Length, gitHubItem.Length);
-                    if (gitHubItem.IsDirectory)
+                    if (phisycals.TryGetValue(gitHubItem.Name, out var physicalItem))
                     {
-                        toProcess.Push(Path.Combine(subpath, gitHubItem.Name));
-                    }
-                    else
-                    {
-                        using var stream = gitHubItem.CreateReadStream();
-                        var buffer = new byte[4096];
-                        var length = 0L;
-                        while (true)
+                        Assert.AreEqual(physicalItem.IsDirectory, gitHubItem.IsDirectory);
+
+                        Assert.AreEqual(physicalItem.Length, gitHubItem.Length);
+                        if (gitHubItem.IsDirectory)
                         {
-                            var read = stream.Read(buffer, 0, buffer.Length);
-                            length += read;
-
-                            if (read <= 0)
-                            {
-                                break;
-                            }
+                            toProcess.Push(Path.Combine(subpath, gitHubItem.Name));
                         }
+                        else
+                        {
+                            using var stream = gitHubItem.CreateReadStream();
+                            var buffer = new byte[4096];
+                            var length = 0L;
+                            while (true)
+                            {
+                                var read = stream.Read(buffer, 0, buffer.Length);
+                                length += read;
 
-                        Assert.AreEqual(gitHubItem.Length, length);
+                                if (read <= 0)
+                                {
+                                    break;
+                                }
+                            }
+
+                            Assert.AreEqual(gitHubItem.Length, length);
+                        }
                     }
                 }
             }
