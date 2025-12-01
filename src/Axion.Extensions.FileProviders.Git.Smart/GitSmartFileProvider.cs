@@ -234,11 +234,11 @@ public abstract class GitSmartFileProvider : IFileProvider, IDisposable
                 break;
             }
 
-            if (line.StartsWith('#') || line.Length == 0)
+            if (line.EnsureNotError().StartsWith('#') || line.Length == 0)
             {
                 continue;
             }
-
+                
             var split = line.Split(' ', 2);
             if (split.Length != 2)
             {
@@ -322,15 +322,17 @@ public abstract class GitSmartFileProvider : IFileProvider, IDisposable
         using var stream = await GetObjectsAsync(ms.WrittenMemory, cancellationToken);
         using (var pktStream = new PktLineReadStream(stream, true))
         {
-            using var sr = new StreamReader(pktStream, null, false, 4096, true);
+            using var sr = new StreamReader(pktStream, Utf8, false, 4096, true);
             while(true)
             {
-                var line = await sr.ReadLineAsync();
+                var line = await sr.ReadLineAsync(cancellationToken);
 
                 if (line == null)
                 {
                     break;
                 }
+
+                line.EnsureNotError();
             }
         }
 
