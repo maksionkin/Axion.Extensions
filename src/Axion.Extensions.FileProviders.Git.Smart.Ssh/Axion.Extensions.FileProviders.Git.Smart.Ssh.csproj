@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>File Provider implementation of Git repository via Git Smart SSH protocol.</Description>
-    <PackageTags>IFileProvider;Git;Git Smart SHH; GitSmartHttp; SmartSSH;File Provider;FileProvider</PackageTags>
+    <PackageTags>IFileProvider;Git;Git Smart SSH; GitSmartHttp; SmartSSH;File Provider;FileProvider</PackageTags>
     <RootNamespace>Axion.Extensions.FileProviders</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
