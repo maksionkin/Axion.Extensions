@@ -53,7 +53,7 @@ jobs:
     - name: Test
       env:
         GITHUBTOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SSH_TEST_KEY: ${{ secrets.SSH_TEST_KEY }}
+        SSHTESTKEY: ${{ secrets.SSHTESTKEY }}
         DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1 
       run: dotnet test --no-build --verbosity normal -c Release  --logger trx --results-directory TestResults -f net10.0
               
