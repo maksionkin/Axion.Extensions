@@ -74,8 +74,12 @@ class PktLineReadStream(Stream stream, bool expectPack) : Stream
             leftBytes = size == 0 ? 0 : size - 4;
         }
 
-        var toRead = Math.Min(buffer.Length, leftBytes);
-        var actuallyRead = await stream.ReadAtLeastAsync(buffer[..toRead], toRead, true, cancellationToken);
+        var actuallyRead = await stream.ReadAtLeastAsync(
+            buffer[..Math.Min(buffer.Length, leftBytes)],
+            Math.Min(buffer.Length, leftBytes),
+            true,
+            cancellationToken);
+
         leftBytes -= actuallyRead;
 
         return actuallyRead;
