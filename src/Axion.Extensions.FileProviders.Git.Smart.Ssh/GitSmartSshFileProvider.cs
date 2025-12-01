@@ -22,8 +22,10 @@ namespace Axion.Extensions.FileProviders;
 /// </remarks>
 /// <param name="options">The configuration options for the <see cref="GitSmartSshFileProvider"/>. Cannot be <see langword="null"/>.</param>
 /// <param name="sshClient">The <see cref="ISshClient"/> to connect to the repository.</param>
-public class GitSmartSshFileProvider(IOptions<GitFileProviderOptions> options, ISshClient sshClient) : GitSmartFileProvider(options, "ssh")
+public class GitSmartSshFileProvider(IOptions<GitFileProviderOptions> options, ISshClient sshClient) : GitSmartFileProvider(options, Scheme)
 {
+    const string Scheme = "ssh";
+
     readonly bool ownsSshClient;
 
     readonly ISshClient sshClient = sshClient ?? throw new ArgumentNullException(nameof(sshClient));
@@ -55,7 +57,7 @@ public class GitSmartSshFileProvider(IOptions<GitFileProviderOptions> options, I
 
     /// <inheritdoc/>
     protected override async ValueTask<Stream> GetObjectsAsync(ReadOnlyMemory<byte> payload, CancellationToken cancellationToken = default) =>
-                await RunAsync(payload, cancellationToken);
+        await RunAsync(payload, cancellationToken);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -71,12 +73,14 @@ public class GitSmartSshFileProvider(IOptions<GitFileProviderOptions> options, I
     static SshClient CreateSshClient(Uri repository, IEnumerable<IPrivateKeySource> keyFiles)
     {
         ArgumentNullException.ThrowIfNull(repository);
+        ArgumentOutOfRangeException.ThrowIfNotEqual(repository.Scheme, Scheme);
         ArgumentOutOfRangeException.ThrowIfNotEqual(repository.IsAbsoluteUri, true);
         ArgumentNullException.ThrowIfNull(keyFiles);
         ArgumentOutOfRangeException.ThrowIfEqual(keyFiles.Any(), false);
 
         return new(repository.Host, repository.IsDefaultPort ? 22 : repository.Port, repository.UserInfo.Split(':', 2).First(), [.. keyFiles]);
     }
+
     async ValueTask<Stream> RunAsync(ReadOnlyMemory<byte> payload, CancellationToken cancellationToken = default)
     {
         var repository = Repository;
