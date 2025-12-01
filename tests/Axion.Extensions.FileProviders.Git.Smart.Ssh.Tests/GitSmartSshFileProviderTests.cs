@@ -14,59 +14,57 @@ public class GitSmartSshFileProviderTests
     public void CheckAllDeep()
     {
         var root = Path.Combine(Environment.GetEnvironmentVariable("RUNNER_TEMP")!, "gh");
-        var key = new UTF8Encoding(false, false).GetBytes(Environment.GetEnvironmentVariable("SSH_TEST_KEY")!);
+        var key = new UTF8Encoding(false, false).GetBytes(Environment.GetEnvironmentVariable("SSHTESTKEY")!);
 
         using var physicalProvider = new PhysicalFileProvider(root, Microsoft.Extensions.FileProviders.Physical.ExclusionFilters.None);
 
-        using (var keyStream = new MemoryStream(key))
+        using var keyStream = new MemoryStream(key);
+        using var gitProvider = new GitSmartSshFileProvider(
+            new GitFileProviderOptions() { Repository = new("ssh://git@github.com/maksionkin/Axion.Extensions") },
+            [new PrivateKeyFile(keyStream)]
+        );
+
+        var toProcess = new Stack<string>();
+        toProcess.Push("");
+
+        while (toProcess.Count > 0)
         {
-            using var gitProvider = new GitSmartSshFileProvider(
-                new GitFileProviderOptions() { Repository = new("ssh://git@github.com/maksionkin/Axion.Extensions") },
-                [new PrivateKeyFile(keyStream)]
-            );
+            var subpath = toProcess.Pop();
 
-            var toProcess = new Stack<string>();
-            toProcess.Push("");
+            TestContext.WriteLine($"Processing [{subpath}].");
 
-            while (toProcess.Count > 0)
+            var phisycals = physicalProvider.GetDirectoryContents(subpath).ToDictionary(file => file.Name);
+
+            foreach (var gitHubItem in gitProvider.GetDirectoryContents(subpath))
             {
-                var subpath = toProcess.Pop();
+                Assert.IsTrue(gitHubItem.Exists);
 
-                TestContext.WriteLine($"Processing [{subpath}].");
-
-                var phisycals = physicalProvider.GetDirectoryContents(subpath).ToDictionary(file => file.Name);
-
-                foreach (var gitHubItem in gitProvider.GetDirectoryContents(subpath))
+                if (phisycals.TryGetValue(gitHubItem.Name, out var physicalItem))
                 {
-                    Assert.IsTrue(gitHubItem.Exists);
+                    Assert.AreEqual(physicalItem.IsDirectory, gitHubItem.IsDirectory);
 
-                    if (phisycals.TryGetValue(gitHubItem.Name, out var physicalItem))
+                    Assert.AreEqual(physicalItem.Length, gitHubItem.Length);
+                    if (gitHubItem.IsDirectory)
                     {
-                        Assert.AreEqual(physicalItem.IsDirectory, gitHubItem.IsDirectory);
+                        toProcess.Push(Path.Combine(subpath, gitHubItem.Name));
+                    }
+                    else
+                    {
+                        using var stream = gitHubItem.CreateReadStream();
+                        var buffer = new byte[4096];
+                        var length = 0L;
+                        while (true)
+                        {
+                            var read = stream.Read(buffer, 0, buffer.Length);
+                            length += read;
 
-                        Assert.AreEqual(physicalItem.Length, gitHubItem.Length);
-                        if (gitHubItem.IsDirectory)
-                        {
-                            toProcess.Push(Path.Combine(subpath, gitHubItem.Name));
-                        }
-                        else
-                        {
-                            using var stream = gitHubItem.CreateReadStream();
-                            var buffer = new byte[4096];
-                            var length = 0L;
-                            while (true)
+                            if (read <= 0)
                             {
-                                var read = stream.Read(buffer, 0, buffer.Length);
-                                length += read;
-
-                                if (read <= 0)
-                                {
-                                    break;
-                                }
+                                break;
                             }
-
-                            Assert.AreEqual(gitHubItem.Length, length);
                         }
+
+                        Assert.AreEqual(gitHubItem.Length, length);
                     }
                 }
             }
