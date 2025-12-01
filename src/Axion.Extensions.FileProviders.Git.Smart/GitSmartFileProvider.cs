@@ -223,7 +223,7 @@ public abstract class GitSmartFileProvider : IFileProvider, IDisposable
 
         using var stream = await GetInfoRefsAsync(cancellationToken);
         using var pktStream = new PktLineReadStream(stream, false);
-        using var reader = new StreamReader(pktStream, Utf8, false, -1, true);
+        using var reader = new StreamReader(pktStream, Utf8, false, 4096, true);
 
         var first = true;
         while (true)
@@ -475,7 +475,7 @@ public abstract class GitSmartFileProvider : IFileProvider, IDisposable
     {
         string? oid = null;
         DateTimeOffset date = default;
-        using var sr = new StreamReader(stream, Utf8, false, -1, true);
+        using var sr = new StreamReader(stream, Utf8, false, 4096, true);
         while (true)
         {
             var line = await sr.ReadLineAsync(cancellationToken);
@@ -560,7 +560,7 @@ public abstract class GitSmartFileProvider : IFileProvider, IDisposable
             {
                 case TreeObjectType.File:
                 case TreeObjectType.Directory:
-                    using (var reader = new StreamReader(nameStream, Utf8, false, -1, true))
+                    using (var reader = new StreamReader(nameStream, Utf8, false, 4096, true))
                     {
                         name = await reader.ReadToEndAsync(cancellationToken);
                     }
