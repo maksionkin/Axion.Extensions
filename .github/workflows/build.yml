@@ -53,8 +53,9 @@ jobs:
     - name: Test
       env:
         GITHUBTOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SSH_TEST_KEY: ${{ secrets.SSH_TEST_KEY }}
         DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1 
-      run: dotnet test --no-build --verbosity normal -c Release  --logger trx --results-directory TestResults -f net9.0
+      run: dotnet test --no-build --verbosity normal -c Release  --logger trx --results-directory TestResults -f net10.0
               
     - name: Upload dotnet test results
       uses: actions/upload-artifact@v4
