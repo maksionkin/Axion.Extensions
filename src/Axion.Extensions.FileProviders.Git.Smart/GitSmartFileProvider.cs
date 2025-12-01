@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -221,8 +220,6 @@ public abstract class GitSmartFileProvider : IFileProvider, IDisposable
         }
 
         url.Path += "info/refs";
-
-        using var request = new HttpRequestMessage(HttpMethod.Get, url.Uri);
 
         using var stream = await GetInfoRefsAsync(cancellationToken);
         using var pktStream = new PktLineReadStream(stream, false);
