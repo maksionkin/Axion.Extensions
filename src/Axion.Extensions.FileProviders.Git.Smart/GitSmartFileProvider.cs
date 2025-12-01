@@ -238,7 +238,7 @@ public abstract class GitSmartFileProvider : IFileProvider, IDisposable
             {
                 continue;
             }
-                
+
             var split = line.Split(' ', 2);
             if (split.Length != 2)
             {
@@ -323,7 +323,7 @@ public abstract class GitSmartFileProvider : IFileProvider, IDisposable
         using (var pktStream = new PktLineReadStream(stream, true))
         {
             using var sr = new StreamReader(pktStream, Utf8, false, 4096, true);
-            while(true)
+            while (true)
             {
                 var line = await sr.ReadLineAsync(cancellationToken);
 
