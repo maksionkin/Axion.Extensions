@@ -20,7 +20,7 @@ public class GitSmartSshFileProviderTests
 
         using var keyStream = new MemoryStream(key);
         using var gitProvider = new GitSmartSshFileProvider(
-            new GitFileProviderOptions() { Repository = new("ssh://git@github.com/maksionkin/Axion.Extensions") },
+            new GitFileProviderOptions() { Repository = Uri.CreateFromScp("git@github.com:/maksionkin/Axion.Extensions") },
             [new PrivateKeyFile(keyStream)]
         );
 
