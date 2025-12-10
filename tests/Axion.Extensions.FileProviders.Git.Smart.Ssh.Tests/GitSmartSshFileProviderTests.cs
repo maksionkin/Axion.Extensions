@@ -3,7 +3,7 @@ using Axion.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders;
 using Renci.SshNet;
 
-namespace Axion.Extensions.FileProviders.Git.Smart.Http.Tests;
+namespace Axion.Extensions.FileProviders.Git.Smart.Ssh.Tests;
 
 [TestClass]
 public class GitSmartSshFileProviderTests
