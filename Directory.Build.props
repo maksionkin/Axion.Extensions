@@ -1,8 +1,8 @@
 <Project>
   <PropertyGroup>
-    <PlatformVersion>10.0.0</PlatformVersion>
+    <PlatformVersion>10.0.1</PlatformVersion>
     <HybridCachePlatformVersion>10.0.0</HybridCachePlatformVersion>
-    <ResiliencePlatformVersion>10.0.0</ResiliencePlatformVersion>
+    <ResiliencePlatformVersion>10.1.0</ResiliencePlatformVersion>
     <AzureFunctionsPlatformVersion>2.0.0</AzureFunctionsPlatformVersion>
   </PropertyGroup>
 

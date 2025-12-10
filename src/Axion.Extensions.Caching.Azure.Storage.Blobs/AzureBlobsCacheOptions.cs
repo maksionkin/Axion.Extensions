@@ -41,6 +41,7 @@ public class AzureBlobsCacheOptions : IOptions<AzureBlobsCacheOptions>
     /// <summary>
     /// The connection string to the Azure storage.
     /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public string? ConnectionString { get; set; }
 
     /// <summary>
@@ -60,6 +61,7 @@ public class AzureBlobsCacheOptions : IOptions<AzureBlobsCacheOptions>
     /// <summary>
     /// A <see cref="BlobContainerClient"/> factory method.
     /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public Func<BlobContainerClient> GetBlobContainerClient
     {
         get => getBlobContainerClient ?? DefaultGetBlobContainerClient;
