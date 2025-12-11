@@ -3,12 +3,30 @@ using Axion.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders;
 using Renci.SshNet;
 
-namespace Axion.Extensions.FileProviders.Git.Smart.Http.Tests;
+namespace Axion.Extensions.FileProviders.Git.Smart.Ssh.Tests;
 
 [TestClass]
 public class GitSmartSshFileProviderTests
 {
     public required TestContext TestContext { get; init; }
+    
+    [TestMethod]
+    public void CheckScpWithoutSlash()
+    {
+        Assert.AreEqual(new Uri("ssh://git@github.com/maksionkin/Axion.Extensions"), UriExtensions.CreateFromScp("git@github.com:maksionkin/Axion.Extensions"));
+    }
+
+    [TestMethod]
+    public void CheckScpWithSlash()
+    {
+        Assert.AreEqual(new Uri("ssh://git@github.com/maksionkin/Axion.Extensions"), UriExtensions.CreateFromScp("git@github.com:/maksionkin/Axion.Extensions"));
+    }
+
+    [TestMethod]
+    public void CheckScpWithSlashAndPort()
+    {
+        Assert.AreEqual(new Uri("ssh://git@github.com:22/maksionkin/Axion.Extensions"), UriExtensions.CreateFromScp("git@github.com:/maksionkin/Axion.Extensions", 22));
+    }
 
     [TestMethod]
     public void CheckAllDeep()

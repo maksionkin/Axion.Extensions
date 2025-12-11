@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace System;
@@ -22,26 +23,39 @@ public static class UriExtensions
         /// <param name="port">The port.</param>
         /// <param name="uri">The constructed <see cref="Uri"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="scp"/> has been parsed and <see langword="false"/> otherwise.</returns>
-        public static bool TryCreateFromScp(string? scp, int port, [NotNullWhen(true)] out Uri? uri)
+        public static bool TryCreateFromScp(string? scp, int? port, [NotNullWhen(true)] out Uri? uri)
         {
             uri = null;
 
-            if (string.IsNullOrWhiteSpace(scp) || port <= 0 || port > ushort.MaxValue)
+            if (string.IsNullOrWhiteSpace(scp) || (port.HasValue && (port.Value <= 0 || port.Value > ushort.MaxValue)))
             {
                 return false;
             }
             else
             {
                 var colon = scp!.IndexOf(':');
+                if (colon > 0 && colon < scp.Length - 1)
+                {
+                    var sb = new StringBuilder("ssh://");
+                    sb.Append(scp, 0, colon);
+                    if (port.HasValue)
+                    {
+                        sb.Append(':')
+                            .Append(port);
+                    }
 
-                string Port() =>
-                    port == 22
-                     ? ""
-                     : $":{port}";
+                    if (scp[colon + 1] != '/')
+                    {
+                        sb.Append('/');
+                    }
 
-                return colon > 0
-                    && Uri.TryCreate($"ssh://{scp[..colon]}{Port()}{scp[(colon + 1)..]}", UriKind.Absolute, out uri);
+                    sb.Append(scp, colon + 1, scp.Length - colon - 1);
+
+                    return Uri.TryCreate(sb.ToString(), UriKind.Absolute, out uri);
+                }
             }
+
+            return false;
         }
 
         /// <summary>
@@ -51,7 +65,7 @@ public static class UriExtensions
         /// <param name="uri">The constructed <see cref="Uri"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="scp"/> has been parsed and <see langword="false"/> otherwise.</returns>
         public static bool TryCreateFromScp(string? scp, [NotNullWhen(true)] out Uri? uri) =>
-            TryCreateFromScp(scp, 22, out uri);
+            TryCreateFromScp(scp, null, out uri);
 
         /// <summary>
         /// Creates the ssh <see cref="Uri"/> from the SCP string.
@@ -61,7 +75,7 @@ public static class UriExtensions
         /// <returns>The ssh <see cref="Uri"/>.</returns>
         /// <exception cref="ArgumentNullException">Throws if the value of <paramref name="scp"/> is <see langword="null"/>.</exception>
         /// <exception cref="FormatException">Throws if the value <paramref name="scp"/> is not valid SCP string.</exception>
-        public static Uri CreateFromScp(string scp, int port = 22)
+        public static Uri CreateFromScp(string scp, int? port = null)
         {
             ArgumentNullException.ThrowIfNull(scp);
 
