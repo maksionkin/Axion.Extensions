@@ -1,8 +1,8 @@
 <Project>
   <PropertyGroup>
-    <PlatformVersion>10.0.1</PlatformVersion>
-    <HybridCachePlatformVersion>10.1.0</HybridCachePlatformVersion>
-    <ResiliencePlatformVersion>10.1.0</ResiliencePlatformVersion>
+    <PlatformVersion>10.0.2</PlatformVersion>
+    <HybridCachePlatformVersion>10.2.0</HybridCachePlatformVersion>
+    <ResiliencePlatformVersion>10.2.0</ResiliencePlatformVersion>
     <AzureFunctionsPlatformVersion>2.0.0</AzureFunctionsPlatformVersion>
   </PropertyGroup>
 
@@ -26,7 +26,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.*" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.*" PrivateAssets="All" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.*" Condition="!Exists('packages.config')">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
