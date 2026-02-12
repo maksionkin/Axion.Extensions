@@ -28,8 +28,13 @@ jobs:
           8.0.x
           9.0.x
           10.0.x
+
+    - name: Setup .NET preview
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |        
           11.0.x
-        dotnet-quality: 'preview'  
+        dotnet-quality: 'preview' 
 
     - name: Build 
       run: dotnet build -c Release
