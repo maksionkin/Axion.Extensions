@@ -5,6 +5,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Axion.Azure.Functions.Worker;
@@ -95,6 +96,11 @@ public static class BindingServiceCollectionExtensions
         services.AddConverter((UInt128 input) => input.ToString(CultureInfo.InvariantCulture));
         services.AddConverter((string input) => Int128.Parse(input, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture));
         services.AddConverter((string input) => UInt128.Parse(input, NumberStyles.None, CultureInfo.InvariantCulture));
+#endif
+
+#if NET11_0_OR_GREATER
+        services.AddConverter((BFloat16 input) => input.ToString(CultureInfo.InvariantCulture));
+        services.AddConverter((string input) => BFloat16.Parse(input, NumberStyles.AllowTrailingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture));
 #endif
 
         services.AddSingleton<IFunctionContextAccessor, FunctionContextAccessor>();
